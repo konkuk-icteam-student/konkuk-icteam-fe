@@ -1,9 +1,9 @@
 ---
 name: Task
 about: to-spec가 대화 내용을 정리해 발행하는 작업 티켓
-title: ""
+title: ''
 labels: ready-for-agent
-assignees: ""
+assignees: ''
 ---
 
 ## 배경

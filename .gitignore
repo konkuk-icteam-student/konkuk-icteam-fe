@@ -1,1 +1,38 @@
+# claude
 .claude/settings.local.json
+
+# dependencies
+node_modules/
+
+# turborepo
+.turbo/
+
+# next.js
+.next/
+out/
+
+# build
+dist/
+build/
+
+# testing
+coverage/
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
+
+# misc
+.DS_Store
+*.pem
+*.tsbuildinfo
+next-env.d.ts
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# vercel
+.vercel
