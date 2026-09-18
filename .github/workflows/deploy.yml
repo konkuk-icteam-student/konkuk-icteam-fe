@@ -1,0 +1,38 @@
+name: Synchronize to forked repo
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-fork-main
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    name: Sync forked repo
+    if: github.repository == '' # TODO: 원본 저장소 (예: konkuk-icteam-student/konkuk-icteam-fe)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          token: ${} # TODO: 푸시 권한이 있는 토큰 시크릿 (예: secrets.AUTO_ACTIONS)
+          fetch-depth: 0
+          ref: main
+
+      - name: Add remote-url
+        run: |
+          git remote add forked-repo  # TODO: 동기화 대상 포크 저장소 URL (origin과 달라야 함)
+          git config user.name ""  # TODO: 커밋에 사용할 git 사용자명
+          git config user.email ${}  # TODO: git 사용자 이메일 시크릿 (예: secrets.EMAIL)
+
+      - name: Push changes to forked-repo
+        run: git push -f forked-repo main
+
+      - name: Clean up
+        run: git remote remove forked-repo
