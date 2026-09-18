@@ -1,0 +1,24 @@
+{
+  "name": "@konkuk-icteam-fe/design-system",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "exports": {
+    "./cn": "./src/lib/cn.ts"
+  },
+  "scripts": {
+    "build:icons": "tsx scripts/generate-icon-exports.ts"
+  },
+  "dependencies": {
+    "@svgr/core": "^8.1.0",
+    "@svgr/plugin-jsx": "^8.1.0",
+    "@svgr/plugin-svgo": "^8.1.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.7.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.8",
+    "tsx": "^4.23.13"
+  }
+}
