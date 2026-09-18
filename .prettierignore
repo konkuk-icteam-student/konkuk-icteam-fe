@@ -1,0 +1,23 @@
+node_modules/
+
+.next/
+out/
+build/
+dist/
+
+next-env.d.ts
+.env*
+!.env.example
+
+coverage/
+
+pnpm-lock.yaml
+
+*.log
+.DS_Store
+
+# vendored Claude Code skills — not ours to reformat
+.claude/
+
+# hand-authored SVG, not prose/code
+docs/images/
