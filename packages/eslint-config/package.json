@@ -1,0 +1,21 @@
+{
+  "name": "@konkuk-icteam-fe/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "exports": {
+    ".": "./base.mjs",
+    "./next": "./next.mjs"
+  },
+  "dependencies": {
+    "@eslint/js": "^9",
+    "eslint-config-prettier": "^10",
+    "eslint-plugin-turbo": "^2.10.13",
+    "typescript-eslint": "^8"
+  },
+  "peerDependencies": {
+    "eslint": "^9",
+    "eslint-config-next": "*"
+  }
+}
