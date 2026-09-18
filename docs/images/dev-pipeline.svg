@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 1550" role="img"
+     aria-label="grill-with-docs로 기획 인터뷰를 하고 to-spec으로 이슈를 발행한 뒤, GitHub 이슈와 /start-work로 브랜치를 만든다. 코드 작성 단계에서는 /implement가 오케스트레이션하며 next-best-practices, nextjs-seo, vercel-react-best-practices, monorepo-architecture-review, tdd 다섯 개 스킬이 각자의 용도로 개입한다. git commit 이후 husky pre-commit이 pnpm lint를 돌려 실패 시 커밋을 중단시키고, 통과하면 /ship이 typecheck 후 PR을 생성한다. PR 리뷰 단계에서는 code-review 스킬이 Standards(컨벤션 검토)와 Spec(이슈 요건 검토) 두 축을 병렬로 검토한다.">
+  <style>
+    text { font-family: "IBM Plex Sans KR", "Pretendard", -apple-system, sans-serif; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace; }
+    .step-title { font-size: 15.5px; font-weight: 700; }
+    .step-sub { font-size: 11.5px; }
+    .tag { font-size: 10px; font-weight: 600; letter-spacing: 0.02em; }
+    .card-title { font-size: 12.5px; font-weight: 700; }
+    .card-sub { font-size: 10.5px; }
+    .legend-label { font-size: 12px; }
+    .arrow-label { font-size: 10.5px; font-weight: 600; }
+
+    :root {
+      --bg: #f6f4ef; --surface: #ffffff; --ink: #221f1a; --ink-soft: #6f6a5e;
+      --step-bg: #f1efe8; --step-border: #d9d4c6;
+      --skill-bg: #ece9fb; --skill-border: #c3bbf2; --skill-ink: #493cad;
+      --gate-bg: #e5f4ec; --gate-border: #a9dcc0; --gate-ink: #146138;
+      --fail-bg: #fbeae7; --fail-border: #eeb3a8; --fail-ink: #b7402c;
+      --arrow: #8b8578;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #15141a; --surface: #1f1e25; --ink: #efece6; --ink-soft: #a29c8e;
+        --step-bg: #26252d; --step-border: #3c3a46;
+        --skill-bg: #2a2554; --skill-border: #4f47a8; --skill-ink: #bab1ff;
+        --gate-bg: #15321f; --gate-border: #2f6b4d; --gate-ink: #7fe0ab;
+        --fail-bg: #3a211d; --fail-border: #7a3b30; --fail-ink: #ff9c86;
+        --arrow: #7d7889;
+      }
+    }
+  </style>
+
+  <rect x="0" y="0" width="980" height="1550" fill="var(--bg)"></rect>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--arrow)"></path>
+    </marker>
+    <marker id="arrow-fail" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--fail-ink)"></path>
+    </marker>
+    <marker id="arrow-sm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"></path>
+    </marker>
+  </defs>
+
+  <!-- ===== main spine connectors ===== -->
+  <line x1="480" y1="132" x2="480" y2="170" stroke="var(--arrow)" stroke-width="2" marker-end="url(#arrow)"></line>
+  <line x1="480" y1="264" x2="480" y2="302" stroke="var(--arrow)" stroke-width="2" marker-end="url(#arrow)"></line>
+  <line x1="480" y1="396" x2="480" y2="434" stroke="var(--arrow)" stroke-width="2" marker-end="url(#arrow)"></line>
+  <line x1="480" y1="528" x2="480" y2="566" stroke="var(--arrow)" stroke-width="2" marker-end="url(#arrow)"></line>
+  <line x1="480" y1="966" x2="480" y2="1004" stroke="var(--arrow)" stroke-width="2" marker-end="url(#arrow)"></line>
+  <line x1="480" y1="1102" x2="480" y2="1140" stroke="var(--arrow)" stroke-width="2" marker-end="url(#arrow)"></line>
+  <line x1="480" y1="1234" x2="480" y2="1272" stroke="var(--arrow)" stroke-width="2" marker-end="url(#arrow)"></line>
+
+  <!-- fail connector (husky) -->
+  <line x1="690" y1="1054" x2="706" y2="1054" stroke="var(--fail-ink)" stroke-width="2" marker-end="url(#arrow-fail)"></line>
+  <text x="698" y="1044" text-anchor="middle" class="arrow-label" fill="var(--fail-ink)">실패</text>
+
+  <!-- box A: 기획 세션 (grill-with-docs, skill) -->
+  <rect x="270" y="40" width="420" height="92" rx="10" fill="var(--skill-bg)" stroke="var(--skill-border)"></rect>
+  <text x="480" y="70" text-anchor="middle" class="step-title" fill="var(--skill-ink)">기획 세션</text>
+  <text x="480" y="88" text-anchor="middle" class="step-sub mono" fill="var(--skill-ink)">grill-with-docs</text>
+  <text x="480" y="105" text-anchor="middle" class="step-sub" fill="var(--skill-ink)">관통 질문으로 계획을 다듬고 ADR·glossary 기록</text>
+
+  <!-- box B: 스펙 작성 (to-spec, skill) -->
+  <rect x="270" y="172" width="420" height="92" rx="10" fill="var(--skill-bg)" stroke="var(--skill-border)"></rect>
+  <text x="480" y="202" text-anchor="middle" class="step-title" fill="var(--skill-ink)">스펙 작성</text>
+  <text x="480" y="220" text-anchor="middle" class="step-sub mono" fill="var(--skill-ink)">to-spec</text>
+  <text x="480" y="237" text-anchor="middle" class="step-sub" fill="var(--skill-ink)">대화 내용을 정리해 이슈 트래커에 발행</text>
+
+  <!-- box C: GitHub 이슈 -->
+  <rect x="270" y="304" width="420" height="92" rx="10" fill="var(--step-bg)" stroke="var(--step-border)"></rect>
+  <text x="480" y="336" text-anchor="middle" class="step-title" fill="var(--ink)">GitHub 이슈</text>
+  <text x="480" y="357" text-anchor="middle" class="step-sub" fill="var(--ink-soft)">spec.md 템플릿 · ready-for-agent 라벨</text>
+
+  <!-- box D: /start-work -->
+  <rect x="270" y="436" width="420" height="92" rx="10" fill="var(--step-bg)" stroke="var(--step-border)"></rect>
+  <text x="480" y="468" text-anchor="middle" class="step-title mono" fill="var(--ink)">/start-work</text>
+  <text x="480" y="489" text-anchor="middle" class="step-sub" fill="var(--ink-soft)">라벨→타입 매핑, init/#이슈번호/작업내용 브랜치 생성</text>
+
+  <!-- box E header: 코드 작성 -->
+  <rect x="270" y="568" width="420" height="72" rx="10" fill="var(--step-bg)" stroke="var(--step-border)"></rect>
+  <text x="480" y="598" text-anchor="middle" class="step-title" fill="var(--ink)">코드 작성</text>
+  <text x="480" y="619" text-anchor="middle" class="step-sub mono" fill="var(--ink-soft)">Claude Code 세션 · /implement 오케스트레이션</text>
+
+  <!-- fan-out stem -->
+  <line x1="480" y1="640" x2="480" y2="650" stroke="var(--arrow)" stroke-width="1.5"></line>
+  <line x1="480" y1="650" x2="230" y2="650" stroke="var(--arrow)" stroke-width="1.5"></line>
+  <line x1="480" y1="650" x2="730" y2="650" stroke="var(--arrow)" stroke-width="1.5"></line>
+  <line x1="230" y1="650" x2="230" y2="654" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arrow-sm)"></line>
+  <line x1="480" y1="650" x2="480" y2="654" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arrow-sm)"></line>
+  <line x1="730" y1="650" x2="730" y2="654" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arrow-sm)"></line>
+  <line x1="355" y1="640" x2="355" y2="744" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arrow-sm)"></line>
+  <line x1="605" y1="640" x2="605" y2="744" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arrow-sm)"></line>
+
+  <!-- row 1: 3 skill cards -->
+  <rect x="115" y="656" width="230" height="74" rx="9" fill="var(--skill-bg)" stroke="var(--skill-border)"></rect>
+  <text x="230" y="678" text-anchor="middle" class="card-title mono" fill="var(--skill-ink)">next-best-practices</text>
+  <text x="230" y="696" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">Next.js App Router 규칙 점검</text>
+  <text x="230" y="712" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">(파일 컨벤션·RSC 경계·데이터 패턴)</text>
+
+  <rect x="365" y="656" width="230" height="74" rx="9" fill="var(--skill-bg)" stroke="var(--skill-border)"></rect>
+  <text x="480" y="678" text-anchor="middle" class="card-title mono" fill="var(--skill-ink)">nextjs-seo</text>
+  <text x="480" y="696" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">메타데이터·sitemap·OG 이미지 점검</text>
+  <text x="480" y="712" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">(SEO 구현/진단)</text>
+
+  <rect x="615" y="656" width="230" height="74" rx="9" fill="var(--skill-bg)" stroke="var(--skill-border)"></rect>
+  <text x="730" y="678" text-anchor="middle" class="card-title mono" fill="var(--skill-ink)">vercel-react-best-practices</text>
+  <text x="730" y="696" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">React/Next 성능 최적화 패턴 적용</text>
+  <text x="730" y="712" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">(리렌더·번들·서버 캐시)</text>
+
+  <!-- row 2: 2 skill cards -->
+  <rect x="240" y="750" width="230" height="74" rx="9" fill="var(--skill-bg)" stroke="var(--skill-border)"></rect>
+  <text x="355" y="772" text-anchor="middle" class="card-title mono" fill="var(--skill-ink)">monorepo-architecture-review</text>
+  <text x="355" y="790" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">패키지 경계·의존성 방향 리뷰</text>
+  <text x="355" y="806" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">(공유 코드 배치 점검)</text>
+
+  <rect x="490" y="750" width="230" height="74" rx="9" fill="var(--skill-bg)" stroke="var(--skill-border)"></rect>
+  <text x="605" y="772" text-anchor="middle" class="card-title mono" fill="var(--skill-ink)">tdd</text>
+  <text x="605" y="790" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">레드-그린-리팩터로 테스트 우선 개발</text>
+  <text x="605" y="806" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">(테스트 시딩·목킹)</text>
+
+  <!-- fan-in to git commit -->
+  <line x1="230" y1="730" x2="230" y2="858" stroke="var(--arrow)" stroke-width="1.5"></line>
+  <line x1="730" y1="730" x2="730" y2="858" stroke="var(--arrow)" stroke-width="1.5"></line>
+  <line x1="230" y1="858" x2="730" y2="858" stroke="var(--arrow)" stroke-width="1.5"></line>
+  <line x1="355" y1="824" x2="355" y2="858" stroke="var(--arrow)" stroke-width="1.5"></line>
+  <line x1="605" y1="824" x2="605" y2="858" stroke="var(--arrow)" stroke-width="1.5"></line>
+  <line x1="480" y1="858" x2="480" y2="864" stroke="var(--arrow)" stroke-width="2" marker-end="url(#arrow)"></line>
+
+  <!-- box F: git commit -->
+  <rect x="270" y="874" width="420" height="92" rx="10" fill="var(--step-bg)" stroke="var(--step-border)"></rect>
+  <text x="480" y="906" text-anchor="middle" class="step-title mono" fill="var(--ink)">git commit</text>
+  <text x="480" y="927" text-anchor="middle" class="step-sub" fill="var(--ink-soft)">변경사항 스테이징</text>
+
+  <!-- box G: husky pre-commit (gate) -->
+  <rect x="270" y="1006" width="420" height="96" rx="10" fill="var(--gate-bg)" stroke="var(--gate-border)"></rect>
+  <text x="480" y="1040" text-anchor="middle" class="step-title mono" fill="var(--gate-ink)">husky pre-commit</text>
+  <text x="480" y="1061" text-anchor="middle" class="step-sub" fill="var(--gate-ink)">pnpm lint 자동 실행</text>
+  <text x="480" y="1082" text-anchor="middle" class="tag mono" fill="var(--gate-ink)">신규 게이트 · 예정</text>
+
+  <!-- fail box -->
+  <rect x="710" y="1016" width="230" height="80" rx="10" fill="var(--fail-bg)" stroke="var(--fail-border)"></rect>
+  <text x="825" y="1051" text-anchor="middle" class="step-title" fill="var(--fail-ink)">커밋 중단</text>
+  <text x="825" y="1072" text-anchor="middle" class="step-sub" fill="var(--fail-ink)">lint 에러 발생</text>
+
+  <!-- box H: /ship -->
+  <rect x="270" y="1142" width="420" height="92" rx="10" fill="var(--step-bg)" stroke="var(--step-border)"></rect>
+  <text x="480" y="1174" text-anchor="middle" class="step-title mono" fill="var(--ink)">/ship</text>
+  <text x="480" y="1195" text-anchor="middle" class="step-sub" fill="var(--ink-soft)">전체 typecheck 통과 후 PR 자동 생성</text>
+
+  <!-- box I header: PR 리뷰 -->
+  <rect x="270" y="1274" width="420" height="72" rx="10" fill="var(--step-bg)" stroke="var(--step-border)"></rect>
+  <text x="480" y="1304" text-anchor="middle" class="step-title" fill="var(--ink)">PR 리뷰</text>
+  <text x="480" y="1325" text-anchor="middle" class="step-sub mono" fill="var(--ink-soft)">code-review 스킬 · Standards/Spec 병렬 리뷰</text>
+
+  <!-- fan-out stem to review cards -->
+  <line x1="480" y1="1346" x2="480" y2="1356" stroke="var(--arrow)" stroke-width="1.5"></line>
+  <line x1="355" y1="1356" x2="605" y2="1356" stroke="var(--arrow)" stroke-width="1.5"></line>
+  <line x1="480" y1="1346" x2="480" y2="1356" stroke="var(--arrow)" stroke-width="1.5"></line>
+  <line x1="355" y1="1356" x2="355" y2="1360" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arrow-sm)"></line>
+  <line x1="605" y1="1356" x2="605" y2="1360" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arrow-sm)"></line>
+
+  <!-- review cards -->
+  <rect x="240" y="1362" width="230" height="80" rx="9" fill="var(--skill-bg)" stroke="var(--skill-border)"></rect>
+  <text x="355" y="1386" text-anchor="middle" class="card-title mono" fill="var(--skill-ink)">Standards</text>
+  <text x="355" y="1404" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">저장소 컨벤션 준수 여부 검토</text>
+  <text x="355" y="1420" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">(코드 스멜 기준선 포함)</text>
+
+  <rect x="490" y="1362" width="230" height="80" rx="9" fill="var(--skill-bg)" stroke="var(--skill-border)"></rect>
+  <text x="605" y="1386" text-anchor="middle" class="card-title mono" fill="var(--skill-ink)">Spec</text>
+  <text x="605" y="1404" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">이슈/PRD 요건 충족 여부 검토</text>
+  <text x="605" y="1420" text-anchor="middle" class="card-sub" fill="var(--skill-ink)">(원 이슈와 diff 대조)</text>
+
+  <!-- legend -->
+  <line x1="130" y1="1478" x2="850" y2="1478" stroke="var(--step-border)" stroke-width="1"></line>
+
+  <rect x="130" y="1498" width="14" height="14" rx="4" fill="var(--step-bg)" stroke="var(--step-border)"></rect>
+  <text x="152" y="1509" class="legend-label" fill="var(--ink-soft)">일반 단계</text>
+
+  <rect x="320" y="1498" width="14" height="14" rx="4" fill="var(--gate-bg)" stroke="var(--gate-border)"></rect>
+  <text x="342" y="1509" class="legend-label" fill="var(--ink-soft)">husky 게이트 (신규)</text>
+
+  <rect x="550" y="1498" width="14" height="14" rx="4" fill="var(--skill-bg)" stroke="var(--skill-border)"></rect>
+  <text x="572" y="1509" class="legend-label" fill="var(--ink-soft)">Claude 스킬 (이름 + 용도)</text>
+
+  <rect x="770" y="1498" width="14" height="14" rx="4" fill="var(--fail-bg)" stroke="var(--fail-border)"></rect>
+  <text x="792" y="1509" class="legend-label" fill="var(--ink-soft)">실패 시 중단</text>
+</svg>
