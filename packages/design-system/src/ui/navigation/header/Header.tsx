@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 
-type NavigationProps = React.HTMLAttributes<HTMLElement> & {
+type HeaderProps = React.HTMLAttributes<HTMLElement> & {
   left?: React.ReactNode;
   center?: React.ReactNode;
   right?: React.ReactNode;
@@ -9,9 +9,9 @@ type NavigationProps = React.HTMLAttributes<HTMLElement> & {
   isFixed?: boolean;
 };
 
-const NAVIGATION_HEIGHT = 'h-[5.6rem]';
+const HEADER_HEIGHT = 'h-[5.6rem]';
 
-export default function Navigation({
+export default function Header({
   left,
   center,
   right,
@@ -19,13 +19,13 @@ export default function Navigation({
   isSticky = false,
   isFixed = false,
   ...props
-}: NavigationProps) {
+}: HeaderProps) {
   return (
     <>
       <header
         className={cn(
           'bg-black-1 grid w-full grid-cols-3 items-center px-[2rem] py-[0.3rem]',
-          NAVIGATION_HEIGHT,
+          HEADER_HEIGHT,
           isSticky && 'sticky top-0 z-10',
           isFixed && 'fixed inset-x-0 top-0 z-10',
           className,
@@ -37,7 +37,7 @@ export default function Navigation({
         <div className='justify-self-end'>{right}</div>
       </header>
       {/* fixed일 때 본문이 네비게이션에 가려지지 않도록 같은 높이의 자리를 차지한다 */}
-      {isFixed && <div aria-hidden='true' className={NAVIGATION_HEIGHT} />}
+      {isFixed && <div aria-hidden='true' className={HEADER_HEIGHT} />}
     </>
   );
 }

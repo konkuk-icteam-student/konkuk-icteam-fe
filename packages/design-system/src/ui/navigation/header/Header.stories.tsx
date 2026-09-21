@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import Navigation from './Navigation';
 import { IconAdd, IconArrowBack, IconSearch } from '@konkuk-icteam-fe/design-system/assets';
+import Header from './Header';
 
-const meta: Meta<typeof Navigation> = {
-  title: 'navigation/Navigation',
-  component: Navigation,
+const meta: Meta<typeof Header> = {
+  title: 'navigation/Header',
+  component: Header,
   tags: ['autodocs'],
   parameters: {
     docs: {
@@ -47,9 +47,9 @@ const meta: Meta<typeof Navigation> = {
 
 export default meta;
 
-type StoryNavigation = StoryObj<typeof Navigation>;
+type StoryHeader = StoryObj<typeof Header>;
 
-export const Default: StoryNavigation = {
+export const Default: StoryHeader = {
   args: {
     left: <IconArrowBack />,
     center: <span className='text-black'>Title</span>,
@@ -58,7 +58,7 @@ export const Default: StoryNavigation = {
   },
 };
 
-export const WithCenterAndRight: StoryNavigation = {
+export const WithCenterAndRight: StoryHeader = {
   args: {
     center: <span className='text-black'>Title</span>,
     right: <IconSearch />,
@@ -66,7 +66,7 @@ export const WithCenterAndRight: StoryNavigation = {
   },
 };
 
-export const WithLeftAndRight: StoryNavigation = {
+export const WithLeftAndRight: StoryHeader = {
   args: {
     left: <IconArrowBack />,
     right: <IconSearch />,
@@ -74,7 +74,7 @@ export const WithLeftAndRight: StoryNavigation = {
   },
 };
 
-export const WithLeftAndCenter: StoryNavigation = {
+export const WithLeftAndCenter: StoryHeader = {
   args: {
     left: <IconArrowBack />,
     center: <span className='text-black'>Settings</span>,
@@ -82,7 +82,7 @@ export const WithLeftAndCenter: StoryNavigation = {
   },
 };
 
-export const WithLeftAndCenterAndRight: StoryNavigation = {
+export const WithLeftAndCenterAndRight: StoryHeader = {
   args: {
     left: <IconArrowBack />,
     center: <span className='text-black'>My List</span>,
@@ -91,7 +91,7 @@ export const WithLeftAndCenterAndRight: StoryNavigation = {
   },
 };
 
-export const OnlyCenter: StoryNavigation = {
+export const OnlyCenter: StoryHeader = {
   args: {
     center: <span className='text-lg font-semibold text-black'>Center Title</span>,
     isFixed: true,
