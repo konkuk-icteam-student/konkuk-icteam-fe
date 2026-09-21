@@ -1,0 +1,37 @@
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '../base/Carousel';
+import type { ImageCarouselProps } from './ImageCarousel';
+
+export default function ImageCarouselWithSideBtn({
+  images,
+  initialIndex,
+  className,
+  ...props
+}: ImageCarouselProps) {
+  return (
+    <Carousel opts={{ startIndex: initialIndex }} className={className} {...props}>
+      <CarouselContent>
+        {images.map((image, idx) => (
+          <CarouselItem key={`${image.src}-${idx}`} className='flex h-[480px] w-full items-center'>
+            <img
+              src={image.src}
+              alt={image.alt ?? `image-${image.src}`}
+              className='h-full w-full object-cover'
+            />
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      {images.length > 1 && (
+        <>
+          <CarouselPrevious className='top-1/2 left-0 mt-[4rem] flex h-[4.4rem] w-[4.4rem] -translate-y-1/2 items-center justify-center rounded-none' />
+          <CarouselNext className='top-1/2 right-0 mt-[4rem] flex h-[4.4rem] w-[4.4rem] -translate-y-1/2 items-center justify-center rounded-none' />
+        </>
+      )}
+    </Carousel>
+  );
+}
