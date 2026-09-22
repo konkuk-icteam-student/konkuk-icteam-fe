@@ -4,7 +4,7 @@ import ImageCarouselWithSideBtn from './ImageCarouselWithSideBtn';
 
 type Variant = 'sideButtons' | 'dots';
 
-export type ImageCarouselBaseProps = React.ComponentProps<'div'> & {
+type ImageCarouselBaseProps = React.ComponentProps<'div'> & {
   images: { src: string; alt?: string }[];
   initialIndex?: number;
 };
