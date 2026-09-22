@@ -52,19 +52,6 @@ function CommandGroup({
   );
 }
 
-function CommandSeparator({
-  className,
-  ...props
-}: React.ComponentProps<typeof CommandPrimitive.Separator>) {
-  return (
-    <CommandPrimitive.Separator
-      data-slot='command-separator'
-      className={cn('-mx-1 h-px bg-gray-50', className)}
-      {...props}
-    />
-  );
-}
-
 function CommandItem({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Item>) {
   return (
     <CommandPrimitive.Item
@@ -78,22 +65,4 @@ function CommandItem({ className, ...props }: React.ComponentProps<typeof Comman
   );
 }
 
-function CommandShortcut({ className, ...props }: React.ComponentProps<'span'>) {
-  return (
-    <span
-      data-slot='command-shortcut'
-      className={cn('ml-auto text-xs tracking-widest text-gray-500', className)}
-      {...props}
-    />
-  );
-}
-
-export {
-  Command,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandShortcut,
-  CommandSeparator,
-};
+export { Command, CommandList, CommandEmpty, CommandGroup, CommandItem };

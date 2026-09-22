@@ -3,13 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { IconArrowDown } from '@konkuk-icteam-fe/design-system/assets';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from '../combo-box/base/command';
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '../base/command';
 
 type DropdownProps = {
   options: string[];

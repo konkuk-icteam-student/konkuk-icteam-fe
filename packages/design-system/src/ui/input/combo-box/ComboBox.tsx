@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import Input from '../base/Input';
-import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from './base/command';
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '../base/command';
 
 type ComboBoxProps = {
   options: string[];
