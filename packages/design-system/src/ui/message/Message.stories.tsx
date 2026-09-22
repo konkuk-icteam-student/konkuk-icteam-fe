@@ -3,7 +3,7 @@ import { expect } from 'storybook/test';
 import Message from './Message';
 
 const meta: Meta<typeof Message> = {
-  title: 'input/Message',
+  title: 'message/Message',
   tags: ['autodocs'],
   component: Message,
   args: {
