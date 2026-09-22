@@ -1,48 +1,42 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { IconArrowDown } from '@konkuk-icteam-fe/design-system/assets';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from '../combo-box/base/command';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
+import Input from '../base/Input';
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from './base/command';
 
-type DropdownProps = {
+type ComboBoxProps = {
   options: string[];
   placeholder?: string;
   value?: string;
   onChange?: (v: string) => void;
-  onBlur?: () => void;
-  triggerClassName?: string;
+  inputClassName?: string;
   optionClassName?: string;
   optionWrapperClassName?: string;
+  onBlur?: () => void;
 };
 
-export default function Dropdown({
+export default function ComboBox({
   options,
-  placeholder = '선택해주세요',
+  placeholder = '검색어를 입력해주세요',
   value,
   onChange,
   onBlur,
-  triggerClassName,
+  inputClassName,
   optionClassName,
   optionWrapperClassName,
-}: DropdownProps) {
+}: ComboBoxProps) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   const isControlled = value !== undefined;
 
   const [isOpen, setIsOpen] = useState(false);
-  const [uncontrolledValue, setUncontrolledValue] = useState('');
+  const [uncontrolledQuery, setUncontrolledQuery] = useState('');
 
-  const selectedValue = isControlled ? value : uncontrolledValue;
+  const query = isControlled ? value : uncontrolledQuery;
 
-  const setSelectedValue = (next: string) => {
-    if (!isControlled) setUncontrolledValue(next);
+  const setQuery = (next: string) => {
+    if (!isControlled) setUncontrolledQuery(next);
     onChange?.(next);
   };
 
@@ -61,8 +55,8 @@ export default function Dropdown({
     };
   }, []);
 
-  const handleOptionSelect = (option: string) => {
-    setSelectedValue(option);
+  const handleOptionSelect = (v: string) => {
+    setQuery(v);
     setIsOpen(false);
   };
 
@@ -78,21 +72,16 @@ export default function Dropdown({
       }}
     >
       <Command className='h-[4.2rem] w-full'>
-        <button
-          type='button'
-          onClick={() => setIsOpen((prev) => !prev)}
-          className={cn(
-            'bg-black-1 caption-14-md flex h-[4.2rem] w-full items-center justify-between rounded-[0.6rem] border border-gray-400 px-[1.2rem] text-left text-black focus:border-black focus:outline-none',
-            !selectedValue && 'text-gray-400',
-            triggerClassName,
-          )}
-        >
-          <span className='truncate'>{selectedValue || placeholder}</span>
-          <IconArrowDown
-            aria-hidden='true'
-            className='h-[2.4rem] w-[2.4rem] shrink-0 text-gray-500'
-          />
-        </button>
+        <Input
+          placeholder={placeholder}
+          hasBorder={false}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setIsOpen(true);
+          }}
+          value={query}
+          className={cn('h-[4.2rem] w-full', inputClassName)}
+        />
 
         {isOpen && (
           <div className='absolute top-[calc(4.2rem+0.5rem)] left-0 w-full'>
@@ -114,7 +103,6 @@ export default function Dropdown({
                     onSelect={() => handleOptionSelect(option)}
                     className={cn(
                       'caption-14-md rounded-[0.4rem] p-[1rem] hover:cursor-pointer hover:bg-gray-50',
-                      option === selectedValue && 'bg-gray-50',
                       optionClassName,
                     )}
                   >

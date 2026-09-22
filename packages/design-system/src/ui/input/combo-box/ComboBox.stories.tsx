@@ -1,10 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect } from 'storybook/test';
-import Dropdown from './Dropdown';
+import ComboBox from './ComboBox';
 
-const meta: Meta<typeof Dropdown> = {
-  title: 'dropdown/Dropdown',
-  component: Dropdown,
+const meta: Meta<typeof ComboBox> = {
+  title: 'input/ComboBox',
+  component: ComboBox,
   tags: ['autodocs'],
   args: {
     options: ['옵션 1', '옵션 2', '옵션 3'],
@@ -13,13 +12,13 @@ const meta: Meta<typeof Dropdown> = {
     layout: 'centered',
     docs: {
       description: {
-        component: '클릭으로 목록을 열어 값을 고르는 드롭다운 컴포넌트입니다.',
+        component: '검색 가능한 콤보박스 컴포넌트입니다.',
       },
     },
   },
   decorators: [
     (Story) => (
-      <div className='w-[20rem]'>
+      <div className='w-[45rem]'>
         <Story />
       </div>
     ),
@@ -28,7 +27,7 @@ const meta: Meta<typeof Dropdown> = {
 
 export default meta;
 
-type Story = StoryObj<typeof Dropdown>;
+type Story = StoryObj<typeof ComboBox>;
 
 export const Default: Story = {};
 
@@ -56,13 +55,8 @@ export const ManyOptions: Story = {
   },
 };
 
-export const SelectsOption: Story = {
-  tags: ['ai-generated'],
-  play: async ({ canvas, userEvent }) => {
-    const trigger = canvas.getByText('선택해주세요');
-    await userEvent.click(trigger);
-
-    await userEvent.click(await canvas.findByText('옵션 2'));
-    await expect(canvas.getByRole('button')).toHaveTextContent('옵션 2');
+export const NoOptions: Story = {
+  args: {
+    options: [],
   },
 };
