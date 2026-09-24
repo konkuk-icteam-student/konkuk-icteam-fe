@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@source '../design-system/src';
+
 @import './tokens/typography.css';
 @import './tokens/color.css';
 @import './styles/reset.css';
