@@ -16,9 +16,7 @@ export default function ImageCarouselWithDots({
   const [selectedIndex, setSelectedIndex] = useState<number>(initialIndex ?? 0);
   const [imageMetaMap, setImageMetaMap] = useState<Record<string, { isLandscape: boolean }>>({});
 
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>, src: string) => {
-    const target = e.target as HTMLImageElement;
-
+  const handleImageLoad = (target: HTMLImageElement, src: string) => {
     target
       .decode()
       .then(() => {
@@ -29,6 +27,14 @@ export default function ImageCarouselWithDots({
         console.error(`이미지(${src}) 디코딩 실패:`, err);
         setImageMetaMap((prev) => ({ ...prev, [src]: { isLandscape: false } }));
       });
+  };
+
+  // 캐시된 이미지나 data URI는 React가 onLoad 리스너를 붙이기 전에 이미 로드가 끝나 있어
+  // onLoad가 발생하지 않을 수 있다. ref에서 img.complete를 한 번 더 확인해 그 경우를 보완한다
+  const handleImageRef = (node: HTMLImageElement | null, src: string) => {
+    if (node && node.complete && node.naturalWidth > 0 && !imageMetaMap[src]) {
+      handleImageLoad(node, src);
+    }
   };
 
   useEffect(() => {
@@ -58,6 +64,7 @@ export default function ImageCarouselWithDots({
                 )}
               >
                 <img
+                  ref={(node) => handleImageRef(node, img.src)}
                   src={img.src}
                   alt={img.alt ?? `image-${img.src}`}
                   className={cn(
@@ -65,7 +72,7 @@ export default function ImageCarouselWithDots({
                     imageMetaMap[img.src] ? 'opacity-100' : 'opacity-0',
                     imageMetaMap[img.src]?.isLandscape ? 'object-contain' : 'object-cover',
                   )}
-                  onLoad={(e) => handleImageLoad(e, img.src)}
+                  onLoad={(e) => handleImageLoad(e.target as HTMLImageElement, img.src)}
                 />
               </div>
             </CarouselItem>
