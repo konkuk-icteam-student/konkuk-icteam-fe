@@ -1,15 +1,16 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import Input from '../base/Input';
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '../base/command';
+import useClickOutside from '../hooks/useClickOutside';
 
 type ComboBoxProps = {
   options: string[];
   placeholder?: string;
   value?: string;
-  onChange?: (v: string) => void;
+  onChange?: (value: string) => void;
   inputClassName?: string;
   optionClassName?: string;
   optionWrapperClassName?: string;
@@ -40,23 +41,10 @@ export default function ComboBox({
     onChange?.(next);
   };
 
-  // 바깥 클릭 시 닫기
-  useEffect(() => {
-    const onDown = (e: MouseEvent | TouchEvent) => {
-      const el = rootRef.current;
-      if (!el) return;
-      if (!el.contains(e.target as Node)) setIsOpen(false);
-    };
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('touchstart', onDown);
-    return () => {
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('touchstart', onDown);
-    };
-  }, []);
+  useClickOutside(rootRef, () => setIsOpen(false));
 
-  const handleOptionSelect = (v: string) => {
-    setQuery(v);
+  const handleOptionSelect = (option: string) => {
+    setQuery(option);
     setIsOpen(false);
   };
 

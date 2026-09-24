@@ -1,15 +1,16 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { IconArrowDown } from '@konkuk-icteam-fe/design-system/assets';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '../base/command';
+import useClickOutside from '../hooks/useClickOutside';
 
 type DropdownProps = {
   options: string[];
   placeholder?: string;
   value?: string;
-  onChange?: (v: string) => void;
+  onChange?: (value: string) => void;
   onBlur?: () => void;
   triggerClassName?: string;
   optionClassName?: string;
@@ -40,20 +41,7 @@ export default function Dropdown({
     onChange?.(next);
   };
 
-  // 바깥 클릭 시 닫기
-  useEffect(() => {
-    const onDown = (e: MouseEvent | TouchEvent) => {
-      const el = rootRef.current;
-      if (!el) return;
-      if (!el.contains(e.target as Node)) setIsOpen(false);
-    };
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('touchstart', onDown);
-    return () => {
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('touchstart', onDown);
-    };
-  }, []);
+  useClickOutside(rootRef, () => setIsOpen(false));
 
   const handleOptionSelect = (option: string) => {
     setSelectedValue(option);
