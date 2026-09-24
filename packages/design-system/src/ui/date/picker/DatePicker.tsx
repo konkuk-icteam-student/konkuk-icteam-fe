@@ -224,8 +224,9 @@ export default function DatePicker(props: DatePickerProps) {
         </div>
         {/* 달력 각 셀 */}
         <div className='flex flex-col gap-y-[0.8rem] px-[1.6rem]'>
-          {cellRows.map((row, rowIndex) => (
-            <div key={rowIndex} role='row' className='grid grid-cols-7 place-items-center'>
+          {cellRows.map((row) => (
+            // 각 행은 cells를 7개씩 나눈 것이라, 첫 칸의 key가 그 행의 고유값이 된다
+            <div key={row[0]?.key} role='row' className='grid grid-cols-7 place-items-center'>
               {row.map((cell) =>
                 cell.kind === 'day' ? (
                   <DateCell
