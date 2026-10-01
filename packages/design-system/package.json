@@ -1,0 +1,63 @@
+{
+  "name": "@konkuk-icteam-fe/design-system",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "exports": {
+    "./ui": "./src/ui/index.ts",
+    "./assets": "./src/assets/index.ts",
+    "./cn": "./src/lib/cn.ts"
+  },
+  "scripts": {
+    "build": "pnpm run build:icons && pnpm run build:ui && tsc -p tsconfig.build.json",
+    "lint": "eslint",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "build:icons": "tsx scripts/generate-icon-exports.ts",
+    "build:ui": "tsx scripts/generate-ui-exports.ts",
+    "test": "vitest run --project storybook"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@svgr/core": "^8.1.0",
+    "@svgr/plugin-jsx": "^8.1.0",
+    "@svgr/plugin-svgo": "^8.1.0",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^13.4.0",
+    "tailwind-merge": "^3.7.0",
+    "vaul": "^1.1.2"
+  },
+  "devDependencies": {
+    "@konkuk-icteam-fe/eslint-config": "workspace:*",
+    "@konkuk-icteam-fe/tailwind-config": "workspace:*",
+    "@konkuk-icteam-fe/typescript-config": "workspace:*",
+    "@storybook/addon-a11y": "^10.6.0",
+    "@storybook/addon-docs": "^10.6.0",
+    "@storybook/addon-vitest": "^10.6.0",
+    "@storybook/react-vite": "^10.6.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^20.19.43",
+    "@types/react": "^19",
+    "@types/react-dom": "^19.3.0",
+    "@vitest/browser-playwright": "^4.1.11",
+    "eslint": "^9",
+    "eslint-plugin-storybook": "^10.6.0",
+    "playwright": "^1.63.0",
+    "prettier": "^3.9.8",
+    "react": "^19",
+    "react-dom": "^19.2.8",
+    "storybook": "^10.6.0",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.13",
+    "typescript": "^5",
+    "vite": "^8.3.0",
+    "vitest": "^4.1.11"
+  },
+  "peerDependencies": {
+    "react": "^19"
+  },
+  "sideEffects": false
+}
