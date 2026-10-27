@@ -19,11 +19,28 @@ describe('getWorkersByPeriod', () => {
       createSlot('12:00', [[3, '이서준']]),
     ]);
 
-    expect(workers.MORNING).toEqual([
+    expect(workers.MORNING.map(({ userId, userName }) => ({ userId, userName }))).toEqual([
       { userId: 1, userName: '홍길동' },
       { userId: 2, userName: '김민지' },
     ]);
-    expect(workers.AFTERNOON).toEqual([{ userId: 3, userName: '이서준' }]);
+    expect(workers.AFTERNOON.map(({ userId }) => userId)).toEqual([3]);
+  });
+
+  it('사람마다 그 시간대에 근무하는 칸을 시작 시각 순으로 담는다', () => {
+    const workers = getWorkersByPeriod([
+      createSlot('09:00', [[1, '홍길동']]),
+      createSlot('10:00', [[2, '김민지']]),
+      createSlot('11:00', [
+        [1, '홍길동'],
+        [2, '김민지'],
+      ]),
+    ]);
+
+    expect(workers.MORNING[0]?.workSlots).toEqual([
+      { start: '09:00', end: '10:00' },
+      { start: '11:00', end: '12:00' },
+    ]);
+    expect(workers.MORNING[1]?.workSlots.map(({ start }) => start)).toEqual(['10:00', '11:00']);
   });
 
   it('근무자가 없으면 빈 배열이다', () => {
