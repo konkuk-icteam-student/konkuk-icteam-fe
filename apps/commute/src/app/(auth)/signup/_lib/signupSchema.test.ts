@@ -49,6 +49,15 @@ describe('signupSchema', () => {
     ).toBe('비밀번호가 서로 달라요.');
   });
 
+  it('비밀번호가 규칙에 맞지 않아도 확인이 다르면 두 칸 모두에 알려 준다', () => {
+    const values = { password: 'pass123', passwordConfirm: 'pass124' };
+
+    expect(getFieldError(values, 'password')).toBe(
+      '비밀번호는 영문과 숫자를 섞어 8자 이상으로 입력해 주세요.',
+    );
+    expect(getFieldError(values, 'passwordConfirm')).toBe('비밀번호가 서로 달라요.');
+  });
+
   it('이름이 비어 있으면 이름을 입력하라고 안내한다', () => {
     ['', '   '].forEach((name) => {
       expect(getFieldError({ name }, 'name')).toBe('이름을 입력해 주세요.');
