@@ -40,6 +40,15 @@ describe('signupSchema', () => {
     );
   });
 
+  it('다른 칸을 아직 채우지 않았어도 비밀번호 확인이 다르면 바로 알려 준다', () => {
+    expect(
+      getFieldError(
+        { name: '', workDepartmentId: undefined, passwordConfirm: 'password9999' },
+        'passwordConfirm',
+      ),
+    ).toBe('비밀번호가 서로 달라요.');
+  });
+
   it('이름이 비어 있으면 이름을 입력하라고 안내한다', () => {
     ['', '   '].forEach((name) => {
       expect(getFieldError({ name }, 'name')).toBe('이름을 입력해 주세요.');
