@@ -3,13 +3,14 @@
 import { useId, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useController, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Input, Message } from '@konkuk-icteam-fe/design-system/ui';
+import { Button, ComboBox, Message } from '@konkuk-icteam-fe/design-system/ui';
 import { ROUTES } from '@/shared/config/routes';
 import { USER_ROLE, type UserRole } from '@/shared/constants/userRole';
 import { login } from '../../_apis/auth';
 import { loginSchema, type LoginFormValues } from '../_lib/loginSchema';
+import { getSchoolEmailSuggestions } from '../_utils/schoolEmail';
 import PasswordInput from './PasswordInput';
 
 // 로그인에 실패했을 때 폼 아래에 보여 줄 글자. 메일이 없는지 비밀번호가 틀렸는지는 알려 주지 않는다
@@ -26,10 +27,13 @@ export default function LoginForm() {
   const router = useRouter();
   // 로그인 뒤 다음 화면으로 넘어가는 동안. 이때도 버튼을 로딩으로 두어 다시 누르지 못하게 한다
   const [isNavigating, startNavigation] = useTransition();
-  const { formState, handleSubmit, register, setError } = useForm<LoginFormValues>({
+  const { control, formState, handleSubmit, register, setError } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
+  // 메일 칸은 ComboBox라 register 대신 useController로 잇는다. 비밀번호(register)보다 먼저 불러야
+  // 폼 순서대로 등록돼, 둘 다 틀렸을 때 메일 칸에 먼저 초점이 간다
+  const { field: emailField } = useController({ control, name: 'email' });
   const fieldIdPrefix = useId();
   const emailError = formState.errors.email?.message;
   const passwordError = formState.errors.password?.message;
@@ -60,16 +64,26 @@ export default function LoginForm() {
           <label htmlFor={`${fieldIdPrefix}-email`} className='font-14-bd text-black'>
             학교 메일
           </label>
-          <Input
-            id={`${fieldIdPrefix}-email`}
-            type='email'
-            inputMode='email'
-            autoComplete='username'
+          {/* 아이디만 입력해도 @konkuk.ac.kr을 붙인 메일을 후보로 띄운다 */}
+          <ComboBox
+            options={getSchoolEmailSuggestions(emailField.value)}
+            value={emailField.value}
+            onChange={emailField.onChange}
+            onBlur={emailField.onBlur}
             placeholder='아이디@konkuk.ac.kr'
-            hasError={emailError !== undefined}
-            aria-invalid={emailError !== undefined}
-            aria-describedby={`${fieldIdPrefix}-email-error`}
-            {...register('email')}
+            showEmptyMessage={false}
+            inputProps={{
+              id: `${fieldIdPrefix}-email`,
+              name: emailField.name,
+              ref: emailField.ref,
+              type: 'email',
+              inputMode: 'email',
+              autoComplete: 'username',
+              hasBorder: true,
+              hasError: emailError !== undefined,
+              'aria-invalid': emailError !== undefined,
+              'aria-describedby': `${fieldIdPrefix}-email-error`,
+            }}
           />
           <Message id={`${fieldIdPrefix}-email-error`} message={emailError} variant='error' />
         </div>
@@ -78,8 +92,10 @@ export default function LoginForm() {
           <label htmlFor={`${fieldIdPrefix}-password`} className='font-14-bd text-black'>
             비밀번호
           </label>
+          {/* 메일 칸(ComboBox)이 높이를 4.2rem으로 두므로 두 칸 높이를 맞춘다 */}
           <PasswordInput
             id={`${fieldIdPrefix}-password`}
+            className='h-[4.2rem]'
             autoComplete='current-password'
             placeholder='비밀번호를 입력해 주세요'
             hasError={passwordError !== undefined}
