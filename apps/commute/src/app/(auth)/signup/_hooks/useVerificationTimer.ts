@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { formatRemainingTime, getRemainingSeconds } from '../_utils/verificationTimer';
 
-// 인증번호 남은 시간. 인증번호를 보낸 때 start로 시작하고, 1초마다 다시 센다
+// 인증번호 남은 시간. 인증번호를 보낸 때 start로 시작하고, 만료될 때까지 1초마다 다시 센다
 const useVerificationTimer = () => {
   const [expiresAt, setExpiresAt] = useState<Date | null>(null);
   const [now, setNow] = useState(() => new Date());
@@ -9,7 +9,12 @@ const useVerificationTimer = () => {
   useEffect(() => {
     if (!expiresAt) return;
 
-    const intervalId = setInterval(() => setNow(new Date()), 1000);
+    const intervalId = setInterval(() => {
+      const nextNow = new Date();
+      setNow(nextNow);
+      // 만료되면 더 셀 것이 없으니 멈춘다
+      if (getRemainingSeconds(expiresAt, nextNow) === 0) clearInterval(intervalId);
+    }, 1000);
     return () => clearInterval(intervalId);
   }, [expiresAt]);
 
@@ -24,7 +29,6 @@ const useVerificationTimer = () => {
   const stop = () => setExpiresAt(null);
 
   return {
-    isRunning: expiresAt !== null,
     isExpired: expiresAt !== null && remainingSeconds === 0,
     remainingTimeLabel: formatRemainingTime(remainingSeconds),
     start,
