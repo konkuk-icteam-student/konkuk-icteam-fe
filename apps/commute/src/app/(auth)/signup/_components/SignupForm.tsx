@@ -28,7 +28,7 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
   // 가입 뒤 승인 대기 화면으로 넘어가는 동안. 이때도 버튼을 로딩으로 두어 다시 누르지 못하게 한다
   const [isNavigating, startNavigation] = useTransition();
   const emailVerification = useEmailVerification();
-  const { control, formState, getValues, handleSubmit, register, setError, trigger } =
+  const { control, formState, getValues, handleSubmit, register, setError, setFocus, trigger } =
     useForm<SignupFormValues>({
       resolver: zodResolver(signupSchema),
       defaultValues: { name: '', email: '', password: '', passwordConfirm: '' },
@@ -42,6 +42,7 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
   const { field: workDepartmentField } = useController({ control, name: 'workDepartmentId' });
   const fieldIdPrefix = useId();
   const { errors } = formState;
+  const hasEmailError = errors.email !== undefined || emailVerification.isAlreadyRegistered;
   const selectedWorkDepartmentName =
     workDepartments.find(({ workDepartmentId }) => workDepartmentId === workDepartmentField.value)
       ?.name ?? '';
@@ -59,12 +60,17 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
     emailVerification.send(schoolEmailSchema.parse(getValues('email')));
   };
 
+  // 인증을 마치면 인증번호 칸이 사라지므로, 초점을 다음 칸(비밀번호)으로 옮긴다
+  const handleConfirmCode = () => {
+    if (emailVerification.confirm()) setFocus('password');
+  };
+
   // 인증번호 칸에서 Enter를 누르면 가입이 아니라 인증번호 확인을 한다
   const handleCodeKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== 'Enter') return;
 
     event.preventDefault();
-    emailVerification.confirm();
+    handleConfirmCode();
   };
 
   const handleWorkDepartmentChange = (workDepartmentName: string) => {
@@ -140,9 +146,8 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
                   name: emailField.name,
                   ref: emailField.ref,
                   autoComplete: 'email',
-                  hasError: errors.email !== undefined || emailVerification.isAlreadyRegistered,
-                  'aria-invalid':
-                    errors.email !== undefined || emailVerification.isAlreadyRegistered,
+                  hasError: hasEmailError,
+                  'aria-invalid': hasEmailError,
                   'aria-describedby': `${fieldIdPrefix}-email-message`,
                 }}
               />
@@ -173,11 +178,14 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
                 </Link>
               </p>
             )}
-            <Message
-              id={`${fieldIdPrefix}-email-verified`}
-              message={emailVerification.isVerified ? '메일 인증을 마쳤어요.' : undefined}
-              variant='success'
-            />
+            {/* 늘 그려 두는 알림 영역이라, 인증을 마친 순간 스크린리더가 읽어 준다 */}
+            <div role='status'>
+              <Message
+                id={`${fieldIdPrefix}-email-verified`}
+                message={emailVerification.isVerified ? '메일 인증을 마쳤어요.' : undefined}
+                variant='success'
+              />
+            </div>
           </div>
         </div>
 
@@ -188,8 +196,10 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
             </label>
             <div className='flex gap-[0.8rem]'>
               <div className='relative min-w-0 flex-1'>
+                {/* 인증번호를 보내면 이 칸이 나타나며 초점을 받고, 스크린리더가 아래 안내를 함께 읽는다 */}
                 <Input
                   id={`${fieldIdPrefix}-code`}
+                  autoFocus
                   inputMode='numeric'
                   autoComplete='one-time-code'
                   maxLength={6}
@@ -213,7 +223,7 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
                 color='blue'
                 className='h-[4.2rem] w-auto shrink-0 px-[1.6rem]'
                 disabled={emailVerification.isExpired}
-                onClick={emailVerification.confirm}
+                onClick={handleConfirmCode}
               >
                 확인
               </Button>
@@ -221,21 +231,10 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
             <div id={`${fieldIdPrefix}-code-message`}>
               <Message
                 id={`${fieldIdPrefix}-code-error`}
-                message={
-                  emailVerification.isExpired
-                    ? '인증번호가 만료됐어요. 다시 받아 주세요.'
-                    : emailVerification.codeError
-                }
+                message={emailVerification.codeError}
                 variant='error'
               />
-              <Message
-                id={`${fieldIdPrefix}-code-help`}
-                message={
-                  emailVerification.isExpired || emailVerification.codeError
-                    ? undefined
-                    : '메일로 받은 인증번호 6자리를 5분 안에 입력해 주세요.'
-                }
-              />
+              <Message id={`${fieldIdPrefix}-code-help`} message={emailVerification.codeHelp} />
             </div>
           </div>
         )}

@@ -16,13 +16,17 @@ const CONFIRM_ERROR_MESSAGE: Record<
   EXPIRED_CODE: '인증번호가 만료됐어요. 다시 받아 주세요.',
 };
 
+// 인증번호 칸 아래에 오류가 없을 때 보여 줄 안내
+const CODE_HELP_MESSAGE = '메일로 받은 인증번호 6자리를 5분 안에 입력해 주세요.';
+
 // 회원가입 메일 인증. 인증번호 보내기 → 확인 순서이고, 확인하면 가입할 때 보낼 인증 토큰을 받는다
 const useEmailVerification = () => {
   const timer = useVerificationTimer();
   // 인증번호를 보낸 메일. 확인할 때 이 메일로 확인한다
   const [sentEmail, setSentEmail] = useState<string | null>(null);
   const [verificationCode, setVerificationCode] = useState('');
-  const [codeError, setCodeError] = useState<string>();
+  // [확인]을 눌렀을 때 생긴 오류 (번호 형식·틀린 번호)
+  const [confirmError, setConfirmError] = useState<string>();
   const [verificationToken, setVerificationToken] = useState<string | null>(null);
   const [isAlreadyRegistered, setIsAlreadyRegistered] = useState(false);
 
@@ -31,7 +35,7 @@ const useEmailVerification = () => {
     timer.stop();
     setSentEmail(null);
     setVerificationCode('');
-    setCodeError(undefined);
+    setConfirmError(undefined);
     setVerificationToken(null);
     setIsAlreadyRegistered(false);
   };
@@ -54,34 +58,40 @@ const useEmailVerification = () => {
     timer.start(result.expiresAt);
   };
 
+  // 인증을 마쳤으면 true. 만료된 번호는 서버에 보내지 않는다 (버튼이 꺼져도 Enter로 부를 수 있다)
   const confirm = () => {
-    if (!sentEmail) return;
+    if (!sentEmail || timer.isExpired) return false;
 
     const parsedCode = verificationCodeSchema.safeParse(verificationCode);
     if (!parsedCode.success) {
-      setCodeError(parsedCode.error.issues[0]?.message);
-      return;
+      setConfirmError(parsedCode.error.issues[0]?.message);
+      return false;
     }
 
     const result = confirmEmailVerification({ email: sentEmail, code: parsedCode.data });
     if (result.isSuccess) {
       timer.stop();
-      setCodeError(undefined);
+      setConfirmError(undefined);
       setVerificationToken(result.verificationToken);
-      return;
+      return true;
     }
     if (result.errorCode === 'ALREADY_REGISTERED') {
       markAlreadyRegistered();
-      return;
+      return false;
     }
 
-    setCodeError(CONFIRM_ERROR_MESSAGE[result.errorCode]);
+    setConfirmError(CONFIRM_ERROR_MESSAGE[result.errorCode]);
+    return false;
   };
 
   const changeVerificationCode = (nextCode: string) => {
     setVerificationCode(nextCode);
-    setCodeError(undefined);
+    setConfirmError(undefined);
   };
+
+  // 인증번호 칸 아래 글자. 만료됐으면 만료 안내, 아니면 [확인] 오류, 오류가 없으면 도움말
+  const codeError = timer.isExpired ? CONFIRM_ERROR_MESSAGE.EXPIRED_CODE : confirmError;
+  const codeHelp = codeError ? undefined : CODE_HELP_MESSAGE;
 
   return {
     isSent: sentEmail !== null,
@@ -90,6 +100,7 @@ const useEmailVerification = () => {
     verificationToken,
     verificationCode,
     codeError,
+    codeHelp,
     isExpired: timer.isExpired,
     remainingTimeLabel: timer.remainingTimeLabel,
     send,
