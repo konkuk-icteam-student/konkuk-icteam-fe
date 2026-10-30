@@ -66,3 +66,28 @@ export const SelectsOption: Story = {
     await expect(canvas.getByRole('button')).toHaveTextContent('옵션 2');
   },
 };
+
+// 폼에서 라벨과 잇고, 고르지 않고 제출했을 때처럼 오류를 보여 준다
+export const WithLabelAndError: Story = {
+  args: {
+    placeholder: '근무 부서를 골라 주세요',
+    options: ['정보운영팀', '장학관리팀', '도서관'],
+    hasError: true,
+    triggerProps: { id: 'work-department', 'aria-invalid': true },
+  },
+  decorators: [
+    (Story) => (
+      <div className='flex flex-col gap-[0.8rem]'>
+        <label htmlFor='work-department' className='caption-14-md'>
+          근무 부서
+        </label>
+        <Story />
+      </div>
+    ),
+  ],
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole('button', { name: '근무 부서' });
+
+    await expect(trigger).toHaveAttribute('aria-invalid', 'true');
+  },
+};
