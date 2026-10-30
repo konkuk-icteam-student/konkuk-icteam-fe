@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useController, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, ComboBox, Message } from '@konkuk-icteam-fe/design-system/ui';
+import { Button, Message } from '@konkuk-icteam-fe/design-system/ui';
 import { ROUTES } from '@/shared/config/routes';
 import { USER_ROLE, type UserRole } from '@/shared/constants/userRole';
 import { login } from '../../_apis/auth';
+import PasswordInput from '../../_components/PasswordInput';
+import SchoolEmailInput from '../../_components/SchoolEmailInput';
 import { loginSchema, type LoginFormValues } from '../_lib/loginSchema';
-import { getSchoolEmailSuggestions } from '../_utils/schoolEmail';
-import PasswordInput from './PasswordInput';
 
 // 로그인에 실패했을 때 폼 아래에 보여 줄 글자. 메일이 없는지 비밀번호가 틀렸는지는 알려 주지 않는다
 const INVALID_CREDENTIALS_MESSAGE = '이메일 또는 비밀번호가 틀렸습니다.';
@@ -31,7 +31,7 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
-  // 메일 칸은 ComboBox라 register 대신 useController로 잇는다. 비밀번호(register)보다 먼저 불러야
+  // 메일 칸(SchoolEmailInput)은 ComboBox라 register 대신 useController로 잇는다. 비밀번호(register)보다 먼저 불러야
   // 폼 순서대로 등록돼, 둘 다 틀렸을 때 메일 칸에 먼저 초점이 간다
   const { field: emailField } = useController({ control, name: 'email' });
   const fieldIdPrefix = useId();
@@ -64,22 +64,14 @@ export default function LoginForm() {
           <label htmlFor={`${fieldIdPrefix}-email`} className='font-14-bd text-black'>
             학교 메일
           </label>
-          {/* 아이디만 입력해도 @konkuk.ac.kr을 붙인 메일을 후보로 띄운다 */}
-          <ComboBox
-            options={getSchoolEmailSuggestions(emailField.value)}
+          <SchoolEmailInput
             value={emailField.value}
             onChange={emailField.onChange}
             onBlur={emailField.onBlur}
-            placeholder='아이디@konkuk.ac.kr'
-            showEmptyMessage={false}
             inputProps={{
               id: `${fieldIdPrefix}-email`,
               name: emailField.name,
               ref: emailField.ref,
-              type: 'email',
-              inputMode: 'email',
-              autoComplete: 'username',
-              hasBorder: true,
               hasError: emailError !== undefined,
               'aria-invalid': emailError !== undefined,
               'aria-describedby': `${fieldIdPrefix}-email-error`,
@@ -92,7 +84,7 @@ export default function LoginForm() {
           <label htmlFor={`${fieldIdPrefix}-password`} className='font-14-bd text-black'>
             비밀번호
           </label>
-          {/* 메일 칸(ComboBox)이 높이를 4.2rem으로 두므로 두 칸 높이를 맞춘다 */}
+          {/* 메일 칸(SchoolEmailInput)이 높이를 4.2rem으로 두므로 두 칸 높이를 맞춘다 */}
           <PasswordInput
             id={`${fieldIdPrefix}-password`}
             className='h-[4.2rem]'
