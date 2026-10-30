@@ -6,6 +6,15 @@ import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '../base/command';
 import useClickOutside from '../hooks/useClickOutside';
 
+// 펼치는 버튼에 그대로 넘기는 속성 (라벨과 잇는 id, aria-*, ref 등).
+// 열고 닫기·글자·모양은 Dropdown이 다루므로 type·onClick·children·className은 받지 않는다
+type DropdownTriggerProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'type' | 'onClick' | 'children' | 'className'
+> & {
+  ref?: React.Ref<HTMLButtonElement>;
+};
+
 type DropdownProps = {
   options: string[];
   placeholder?: string;
@@ -15,6 +24,9 @@ type DropdownProps = {
   triggerClassName?: string;
   optionClassName?: string;
   optionWrapperClassName?: string;
+  triggerProps?: DropdownTriggerProps;
+  // 고른 값이 잘못됐을 때(예: 고르지 않고 제출) 테두리를 빨갛게 보여 준다
+  hasError?: boolean;
 };
 
 export default function Dropdown({
@@ -26,6 +38,8 @@ export default function Dropdown({
   triggerClassName,
   optionClassName,
   optionWrapperClassName,
+  triggerProps,
+  hasError = false,
 }: DropdownProps) {
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -61,11 +75,13 @@ export default function Dropdown({
     >
       <Command className='h-[4.2rem] w-full'>
         <button
+          {...triggerProps}
           type='button'
           onClick={() => setIsOpen((prev) => !prev)}
           className={cn(
             'bg-black-1 caption-14-md flex h-[4.2rem] w-full items-center justify-between rounded-[0.6rem] border border-gray-400 px-[1.2rem] text-left text-black focus:border-black focus:outline-none',
             !selectedValue && 'text-gray-400',
+            hasError && 'border-red focus:border-red',
             triggerClassName,
           )}
         >
