@@ -44,10 +44,54 @@ const PENDING_ACCOUNT_MOCK: AccountMock = {
   isApproved: false,
 };
 
-const findAccountMock = (email: string) =>
-  [getStudentAccountMock(), ADMIN_ACCOUNT_MOCK, PENDING_ACCOUNT_MOCK].find(
-    (account) => account?.email === email,
-  );
+// 회원가입으로 만든 계정. 모두 근로장학생 승인 대기로 시작한다
+const SIGNED_UP_ACCOUNTS_MOCK: AccountMock[] = [];
+
+// 가입한 계정에 줄 다음 userId. 기존 목업 계정과 겹치지 않게 300부터 쓴다
+const FIRST_SIGNED_UP_USER_ID = 300;
+
+/**
+ * 회원가입한 근로장학생을 승인 대기 계정으로 추가합니다.
+ * @param account 가입한 사람
+ * @param account.email 학교 메일 (소문자)
+ * @param account.password 비밀번호
+ * @param account.name 이름
+ * @example addSignedUpAccountMock({ email: 'a@konkuk.ac.kr', password: 'password1234', name: '김새내' });
+ */
+export const addSignedUpAccountMock = ({
+  email,
+  password,
+  name,
+}: {
+  email: string;
+  password: string;
+  name: string;
+}) => {
+  SIGNED_UP_ACCOUNTS_MOCK.push({
+    email,
+    password,
+    user: {
+      userId: FIRST_SIGNED_UP_USER_ID + SIGNED_UP_ACCOUNTS_MOCK.length,
+      name,
+      role: USER_ROLE.STUDENT,
+    },
+    isApproved: false,
+  });
+};
+
+/**
+ * 메일로 가입된 계정을 찾습니다.
+ * @param email 학교 메일 (소문자)
+ * @returns 그 메일의 계정. 없으면 undefined
+ * @example findAccountMock('admin@konkuk.ac.kr')?.user.role; // 'ADMIN'
+ */
+export const findAccountMock = (email: string) =>
+  [
+    getStudentAccountMock(),
+    ADMIN_ACCOUNT_MOCK,
+    PENDING_ACCOUNT_MOCK,
+    ...SIGNED_UP_ACCOUNTS_MOCK,
+  ].find((account) => account?.email === email);
 
 /**
  * 서버의 로그인 판정을 흉내 냅니다. 승인 대기는 비밀번호까지 맞을 때만 알려 줍니다.
