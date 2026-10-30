@@ -8,7 +8,7 @@ import { checkVerificationTokenMock } from './emailVerifications';
  * @returns 가입되면 undefined(본문 없음), 아니면 오류 코드 (서버가 보낼 JSON 모양)
  * @example signupMock({ ...request, verificationToken: 'not-a-real-token' }); // { code: 'EMAIL_NOT_VERIFIED' }
  */
-export const signupMock = ({
+const signupMock = ({
   name,
   email,
   password,
@@ -20,3 +20,5 @@ export const signupMock = ({
   addSignedUpAccountMock({ email, password, name });
   return undefined;
 };
+
+export default signupMock;
