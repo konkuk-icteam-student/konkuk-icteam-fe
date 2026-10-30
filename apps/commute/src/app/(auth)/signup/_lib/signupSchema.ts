@@ -16,15 +16,17 @@ const signupFieldsSchema = z.object({
   workDepartmentId: z.number({ error: '근무 부서를 골라 주세요.' }),
 });
 
+// 비밀번호와 확인 두 칸에 글자가 들어 있는지만 본다 (규칙에 맞는지는 보지 않는다)
+const passwordPairSchema = z.object({ password: z.string(), passwordConfirm: z.string() });
+
 // 회원가입 폼. 두 칸을 비교하는 규칙은 화면에 안내할 칸(path)에 오류를 붙인다.
-// 객체 규칙은 기본으로 다른 칸에 오류가 하나라도 있으면 건너뛰므로, 비밀번호 두 칸만 맞으면 바로 비교한다
+// 객체 규칙은 기본으로 다른 칸에 오류가 하나라도 있으면 건너뛰므로, 비밀번호 두 칸만 있으면 늘 비교한다
 export const signupSchema = signupFieldsSchema.refine(
   ({ password, passwordConfirm }) => password === passwordConfirm,
   {
     message: '비밀번호가 서로 달라요.',
     path: ['passwordConfirm'],
-    when: ({ value }) =>
-      signupFieldsSchema.pick({ password: true, passwordConfirm: true }).safeParse(value).success,
+    when: ({ value }) => passwordPairSchema.safeParse(value).success,
   },
 );
 
