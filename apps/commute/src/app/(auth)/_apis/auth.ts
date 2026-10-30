@@ -1,6 +1,6 @@
 import type { UserRole } from '@/shared/constants/userRole';
 import { loginMock } from './mock/auth';
-import { signupMock } from './mock/signup';
+import signupMock from './mock/signup';
 
 export type LoginRequest = {
   // 학교 메일 (@konkuk.ac.kr)

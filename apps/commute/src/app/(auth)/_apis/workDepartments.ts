@@ -1,4 +1,4 @@
-import { WORK_DEPARTMENTS_MOCK } from './mock/workDepartments';
+import WORK_DEPARTMENTS_MOCK from './mock/workDepartments';
 
 // 근로장학생이 일하는 학교 부서 (예: 정보운영팀). 학과(department)와 다르다
 export type WorkDepartment = {
