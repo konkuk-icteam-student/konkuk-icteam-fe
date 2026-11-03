@@ -43,6 +43,8 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
   const fieldIdPrefix = useId();
   const { errors } = formState;
   const hasEmailError = errors.email !== undefined || emailVerification.isAlreadyRegistered;
+  // 학교 메일 형식으로 입력했으면 [인증번호 받기]를 파랗게 보여 눌러도 된다는 것을 알린다
+  const isEmailReady = schoolEmailSchema.safeParse(emailField.value).success;
   const selectedWorkDepartmentName =
     workDepartments.find(({ workDepartmentId }) => workDepartmentId === workDepartmentField.value)
       ?.name ?? '';
@@ -155,8 +157,8 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
             <Button
               display='inline'
               size='medium'
-              tone='subtle_2'
-              color='gray'
+              tone={isEmailReady ? 'solid' : 'subtle_2'}
+              color={isEmailReady ? 'blue' : 'gray'}
               className='h-[4.2rem] w-auto shrink-0 px-[1.6rem]'
               disabled={emailVerification.isVerified}
               onClick={() => void handleSendCode()}
@@ -291,6 +293,8 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
             onChange={handleWorkDepartmentChange}
             onBlur={workDepartmentField.onBlur}
             placeholder='근무 부서를 골라 주세요'
+            // 한 번에 4개씩 보이게 한다 (항목 4rem × 4 + 위아래 여백 0.8rem). 화면 아래 끝에 붙지 않게 한다
+            optionWrapperClassName='max-h-[16.8rem]'
             hasError={errors.workDepartmentId !== undefined}
             triggerProps={{
               id: `${fieldIdPrefix}-work-department`,
