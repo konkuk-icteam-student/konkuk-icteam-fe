@@ -16,7 +16,7 @@ type SchoolEmailInputProps = Omit<
   ref?: React.Ref<HTMLInputElement>;
 };
 
-// 학교 메일 칸. 아이디만 입력해도 @konkuk.ac.kr을 붙인 메일을 후보로 띄운다.
+// 학교 메일 칸 (로그인·회원가입 공통). 아이디만 입력해도 @konkuk.ac.kr을 붙인 메일을 후보로 띄운다.
 // 디자인 시스템 ComboBox는 입력칸에 라벨 id·오류 표시·ref를 넘길 수 없어, Input에 후보 목록을 직접 붙인다
 export default function SchoolEmailInput({
   value,

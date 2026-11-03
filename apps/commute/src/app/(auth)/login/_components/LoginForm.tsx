@@ -9,9 +9,9 @@ import { Button, Message } from '@konkuk-icteam-fe/design-system/ui';
 import { ROUTES } from '@/shared/config/routes';
 import { USER_ROLE, type UserRole } from '@/shared/constants/userRole';
 import { login } from '../../_apis/auth';
+import PasswordInput from '../../_components/PasswordInput';
+import SchoolEmailInput from '../../_components/SchoolEmailInput';
 import { loginSchema, type LoginFormValues } from '../_lib/loginSchema';
-import PasswordInput from './PasswordInput';
-import SchoolEmailInput from './SchoolEmailInput';
 
 // 로그인에 실패했을 때 폼 아래에 보여 줄 글자. 메일이 없는지 비밀번호가 틀렸는지는 알려 주지 않는다
 const INVALID_CREDENTIALS_MESSAGE = '이메일 또는 비밀번호가 틀렸습니다.';
