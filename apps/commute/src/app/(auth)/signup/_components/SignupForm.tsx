@@ -17,9 +17,6 @@ import PasswordStep from './password-step/PasswordStep';
 import ProfileStep from './profile-step/ProfileStep';
 import SignupProgress from './SignupProgress';
 
-// 메일 인증이 풀린 채로 가입을 누르면(다른 곳에서 인증이 끝났거나 만료) 다시 인증하게 한다
-const EMAIL_NOT_VERIFIED_MESSAGE = '메일 인증이 풀렸어요. 메일을 다시 인증해 주세요.';
-
 type SignupFormProps = {
   workDepartments: WorkDepartment[];
 };
@@ -96,7 +93,7 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
     }
 
     emailVerification.reset();
-    setError('root', { message: EMAIL_NOT_VERIFIED_MESSAGE });
+    setError('root', { message: '메일 인증이 풀렸어요. 메일을 다시 인증해 주세요.' });
   };
 
   // 지나간 단계의 칸이 틀렸으면(드문 경우) 그 단계로 돌아가 보여 준다
