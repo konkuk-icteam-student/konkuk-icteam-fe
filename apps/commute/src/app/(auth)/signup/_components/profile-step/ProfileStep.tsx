@@ -1,9 +1,10 @@
 'use client';
 
-import { useId } from 'react';
-import { useController, useFormContext } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { Button, Input, Message } from '@konkuk-icteam-fe/design-system/ui';
 import type { WorkDepartment } from '../../../_apis/workDepartments';
+import FormField from '../../../_components/FormField';
+import useFormField from '../../../_hooks/useFormField';
 import type { SignupFormValues } from '../../_lib/signupSchema';
 import WorkDepartmentSelect from './WorkDepartmentSelect';
 
@@ -15,58 +16,45 @@ type ProfileStepProps = {
 
 // 3단계: 이름과 근무 부서. [가입하기]를 누르면 폼이 전체를 검사하고 가입한다
 export default function ProfileStep({ workDepartments, isSubmitting }: ProfileStepProps) {
-  const { control, formState, register } = useFormContext<SignupFormValues>();
-  // 화면 순서대로 등록해야 둘 다 틀렸을 때 이름 칸에 먼저 초점이 간다
-  const nameRegistration = register('name');
+  const form = useFormContext<SignupFormValues>();
+  // 화면 순서대로 불러야 둘 다 틀렸을 때 이름 칸에 먼저 초점이 간다
+  const name = useFormField(form, 'name');
+  const workDepartment = useFormField(form, 'workDepartmentId');
+  // 근무 부서 고르기는 입력칸이 아니라 inputProps를 펼쳐 넘기지 않으므로 ref만 꺼내 넘긴다
   const {
-    field: { ref: workDepartmentRef, ...workDepartmentField },
-  } = useController({ control, name: 'workDepartmentId' });
-  const fieldIdPrefix = useId();
-  const nameError = formState.errors.name?.message;
-  const workDepartmentError = formState.errors.workDepartmentId?.message;
+    inputProps: { ref: workDepartmentRef },
+  } = workDepartment;
+  // Dropdown 펼침 버튼에 id를 줄 수 없어 label 대신 이름 글자를 두고 묶음에 잇는다
+  const workDepartmentLabelId = `${workDepartment.inputId}-label`;
 
   return (
     <div className='flex flex-col gap-[2.4rem]'>
       <div className='flex flex-col gap-[1.6rem]'>
-        <div className='flex flex-col gap-[0.8rem]'>
-          <label htmlFor={`${fieldIdPrefix}-name`} className='font-14-bd text-black'>
-            이름
-          </label>
-          <div className='flex flex-col'>
-            <Input
-              id={`${fieldIdPrefix}-name`}
-              autoComplete='name'
-              placeholder='이름을 입력해 주세요'
-              hasError={nameError !== undefined}
-              aria-invalid={nameError !== undefined}
-              aria-describedby={`${fieldIdPrefix}-name-error`}
-              {...nameRegistration}
-            />
-            <Message id={`${fieldIdPrefix}-name-error`} message={nameError} variant='error' />
-          </div>
-        </div>
+        <FormField label='이름' htmlFor={name.inputId} errorProps={name.errorProps}>
+          <Input
+            {...name.field}
+            {...name.inputProps}
+            autoComplete='name'
+            placeholder='이름을 입력해 주세요'
+          />
+        </FormField>
 
         <div className='flex flex-col gap-[0.8rem]'>
-          {/* Dropdown 펼침 버튼에 id를 줄 수 없어 label 대신 이름 글자를 두고 묶음에 잇는다 */}
-          <span id={`${fieldIdPrefix}-work-department`} className='font-14-bd text-black'>
+          <span id={workDepartmentLabelId} className='font-14-bd text-black'>
             근무 부서
           </span>
           <div className='flex flex-col'>
             <WorkDepartmentSelect
               ref={workDepartmentRef}
               workDepartments={workDepartments}
-              value={workDepartmentField.value}
-              onChange={workDepartmentField.onChange}
-              onBlur={workDepartmentField.onBlur}
-              labelId={`${fieldIdPrefix}-work-department`}
-              errorId={`${fieldIdPrefix}-work-department-error`}
-              hasError={workDepartmentError !== undefined}
+              value={workDepartment.field.value}
+              onChange={workDepartment.field.onChange}
+              onBlur={workDepartment.field.onBlur}
+              labelId={workDepartmentLabelId}
+              errorId={workDepartment.errorId}
+              hasError={workDepartment.hasError}
             />
-            <Message
-              id={`${fieldIdPrefix}-work-department-error`}
-              message={workDepartmentError}
-              variant='error'
-            />
+            <Message {...workDepartment.errorProps} />
           </div>
         </div>
       </div>
