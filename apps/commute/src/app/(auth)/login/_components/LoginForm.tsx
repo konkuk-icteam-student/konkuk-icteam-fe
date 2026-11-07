@@ -1,11 +1,11 @@
 'use client';
 
-import { useId, useTransition } from 'react';
+import { useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Message } from '@konkuk-icteam-fe/design-system/ui';
+import { Button } from '@konkuk-icteam-fe/design-system/ui';
 import { ROUTES } from '@/shared/config/routes';
 import { USER_ROLE, type UserRole } from '@/shared/constants/userRole';
 import { login } from '../../_apis/auth';
@@ -15,7 +15,7 @@ import SchoolEmailInput from '../../_components/SchoolEmailInput';
 import useFormField from '../../_hooks/useFormField';
 import { loginSchema, type LoginFormValues } from '../_lib/loginSchema';
 
-// 로그인에 실패했을 때 폼 아래에 보여 줄 글자. 메일이 없는지 비밀번호가 틀렸는지는 알려 주지 않는다
+// 로그인에 실패했을 때 비밀번호 칸 아래에 보여 줄 글자. 메일이 없는지 비밀번호가 틀렸는지는 알려 주지 않는다
 const INVALID_CREDENTIALS_MESSAGE = '이메일 또는 비밀번호가 틀렸습니다.';
 
 // 로그인한 뒤 역할에 따라 처음 보여 줄 화면
@@ -37,8 +37,6 @@ export default function LoginForm() {
   // 화면 순서대로 불러야 둘 다 틀렸을 때 메일 칸에 먼저 초점이 간다
   const email = useFormField(form, 'email');
   const password = useFormField(form, 'password');
-  const loginErrorId = useId();
-  const loginError = formState.errors.root?.message;
 
   const handleValidSubmit = (values: LoginFormValues) => {
     const result = login(values);
@@ -51,7 +49,7 @@ export default function LoginForm() {
       return;
     }
 
-    setError('root', { message: INVALID_CREDENTIALS_MESSAGE });
+    setError('password', { message: INVALID_CREDENTIALS_MESSAGE }, { shouldFocus: true });
   };
 
   return (
@@ -85,7 +83,6 @@ export default function LoginForm() {
       </div>
 
       <div className='flex flex-col gap-[1.2rem]'>
-        <Message id={loginErrorId} message={loginError} variant='error' />
         <Button type='submit' color='blue' isLoading={formState.isSubmitting || isNavigating}>
           로그인
         </Button>
