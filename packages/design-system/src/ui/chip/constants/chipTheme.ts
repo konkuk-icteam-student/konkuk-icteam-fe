@@ -3,7 +3,24 @@ type ChipTheme = {
   labelClassName: string;
 };
 
-export type ChipTone = 'gray' | 'blue' | 'red' | 'purple' | 'green' | 'black' | 'white';
+export type ChipTone =
+  | 'gray'
+  | 'blue'
+  | 'red'
+  | 'purple'
+  | 'green'
+  | 'black'
+  | 'white'
+  | 'lavender'
+  | 'cotton'
+  | 'powder'
+  | 'sage'
+  | 'peach'
+  | 'blush'
+  | 'mauve'
+  | 'dusk'
+  | 'navy'
+  | 'gold';
 
 // subtle: 옅은 배경 + tone 색 글자 / solid: tone 색으로 채운 배경
 type ChipVariant = 'subtle' | 'solid';
@@ -42,5 +59,46 @@ export const CHIP_THEME: Record<ChipTone, Record<ChipVariant, ChipTheme>> = {
   white: {
     subtle: { chipClassName: 'bg-gray-900', labelClassName: 'text-black-1' },
     solid: { chipClassName: 'bg-black-1', labelClassName: 'text-black' },
+  },
+  // 팔레트 색: 다른 tone처럼 subtle은 연한 파스텔 배경에 같은 계열 진한 글자, solid는 진한 색으로 채운다
+  lavender: {
+    subtle: { chipClassName: 'bg-lavender-200/20', labelClassName: 'text-lavender-600' },
+    solid: { chipClassName: 'bg-lavender-600', labelClassName: 'text-black-1' },
+  },
+  cotton: {
+    subtle: { chipClassName: 'bg-cotton-100/25', labelClassName: 'text-cotton-600' },
+    solid: { chipClassName: 'bg-cotton-600', labelClassName: 'text-black-1' },
+  },
+  powder: {
+    subtle: { chipClassName: 'bg-powder-100/25', labelClassName: 'text-powder-600' },
+    solid: { chipClassName: 'bg-powder-600', labelClassName: 'text-black-1' },
+  },
+  sage: {
+    subtle: { chipClassName: 'bg-sage/30', labelClassName: 'text-sage-600' },
+    solid: { chipClassName: 'bg-sage-600', labelClassName: 'text-black-1' },
+  },
+  peach: {
+    subtle: { chipClassName: 'bg-peach-100/40', labelClassName: 'text-peach-600' },
+    solid: { chipClassName: 'bg-peach-600', labelClassName: 'text-black-1' },
+  },
+  blush: {
+    subtle: { chipClassName: 'bg-blush-100/30', labelClassName: 'text-blush-600' },
+    solid: { chipClassName: 'bg-blush-600', labelClassName: 'text-black-1' },
+  },
+  mauve: {
+    subtle: { chipClassName: 'bg-mauve-300/10', labelClassName: 'text-mauve-600' },
+    solid: { chipClassName: 'bg-mauve-600', labelClassName: 'text-black-1' },
+  },
+  dusk: {
+    subtle: { chipClassName: 'bg-dusk-100/30', labelClassName: 'text-dusk-500' },
+    solid: { chipClassName: 'bg-dusk-500', labelClassName: 'text-black-1' },
+  },
+  navy: {
+    subtle: { chipClassName: 'bg-navy-700/5', labelClassName: 'text-navy-700' },
+    solid: { chipClassName: 'bg-navy-700', labelClassName: 'text-black-1' },
+  },
+  gold: {
+    subtle: { chipClassName: 'bg-gold-400/10', labelClassName: 'text-gold-600' },
+    solid: { chipClassName: 'bg-gold-600', labelClassName: 'text-black-1' },
   },
 };
