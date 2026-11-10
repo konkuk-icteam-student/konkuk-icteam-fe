@@ -1,6 +1,6 @@
 import type { TimeString } from '@/app/(student)/_apis/common';
 import { removeDuplicatesBy } from '@/shared/utils/array';
-import type { TimeRange } from '@/shared/utils/timeRange';
+import type { TimeRange } from '@/shared/utils/time';
 import type { AttendanceShift } from '../../_apis/attendances';
 
 // 근무 칸 하나의 근태. 예정 · 근무중 · 근무 완료 · 지각 · 결근

@@ -1,5 +1,9 @@
-import { convertTimeToMinutes, MINUTES_PER_HOUR } from '@/shared/utils/time';
-import { mergeContinuousSlots, type TimeRange } from '@/shared/utils/timeRange';
+import {
+  convertTimeToMinutes,
+  MINUTES_PER_HOUR,
+  mergeContinuousSlots,
+  type TimeRange,
+} from '@/shared/utils/time';
 
 // 한 사람의 하루 안의 이어진 근무 한 구간
 export type WorkerTimeRange = TimeRange & {

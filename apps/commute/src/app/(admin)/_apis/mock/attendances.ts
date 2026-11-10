@@ -1,8 +1,11 @@
 import { formatNumber, parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
 import type { ApiJson } from '@/app/(student)/_apis/common';
 import { removeDuplicatesBy } from '@/shared/utils/array';
-import { convertMinutesToTime, convertTimeToMinutes } from '@/shared/utils/time';
-import { mergeContinuousSlots } from '@/shared/utils/timeRange';
+import {
+  convertMinutesToTime,
+  convertTimeToMinutes,
+  mergeContinuousSlots,
+} from '@/shared/utils/time';
 import type { AttendanceShift } from '../attendances';
 import { getDaySlotsMock } from './workSchedules';
 
