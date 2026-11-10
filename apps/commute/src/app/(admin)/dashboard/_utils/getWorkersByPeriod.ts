@@ -68,10 +68,10 @@ export const getWorkersByPeriod = (
   const dailySlotCounts = countDailySlots(slots);
 
   return Object.fromEntries(
-    PERIODS.map(({ period, checkHour }) => [
+    PERIODS.map(({ period, includesStart }) => [
       period,
       collectWorkers(
-        slots.filter(({ start }) => checkHour(Number(start.split(':')[0]))),
+        slots.filter(({ start }) => includesStart(start)),
         dailySlotCounts,
       ),
     ]),

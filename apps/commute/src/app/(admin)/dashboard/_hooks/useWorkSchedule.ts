@@ -36,10 +36,10 @@ export default function useWorkSchedule(dateKey: string) {
     };
   };
 
-  const scheduleGroups = PERIODS.map(({ label, checkHour }) => ({
+  const scheduleGroups = PERIODS.map(({ label, includesStart }) => ({
     label,
     rows: slots
-      .filter(({ start, users }) => users.length > 0 && checkHour(Number(start.split(':')[0])))
+      .filter(({ start, users }) => users.length > 0 && includesStart(start))
       .toSorted((first, second) => first.start.localeCompare(second.start))
       .map((slot) => ({
         start: slot.start,
