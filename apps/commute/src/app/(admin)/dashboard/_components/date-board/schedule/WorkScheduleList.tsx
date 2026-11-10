@@ -1,69 +1,45 @@
 import { StateChip } from '@konkuk-icteam-fe/design-system/ui';
-import type { AttendanceShift } from '../../../../_apis/attendances';
-import type { WorkScheduleSlot } from '../../../../_apis/workSchedules';
-import { PERIODS } from '../../../../_constants/period';
 import { SLOT_ATTENDANCE_STATUS_THEME } from '@/shared/constants/attendanceStatus';
-import { findSlotShift, getSlotAttendanceStatus } from '../../../_utils/attendanceStatus';
-import { getDailyWorkers, type OnDutyWorker } from '../../../_utils/getWorkersByPeriod';
+import type useWorkSchedule from '../../../_hooks/useWorkSchedule';
 
-type WorkScheduleListProps = {
-  dateKey: string;
-  slots: WorkScheduleSlot[];
-  // 그날 근무 구간과 출근 기록. 칩 색(근태)을 정한다
-  shifts: AttendanceShift[];
-  now: Date;
-};
+type ScheduleGroup = ReturnType<typeof useWorkSchedule>['scheduleGroups'][number];
 
 type ScheduleRowProps = {
-  dateKey: string;
-  slot: WorkScheduleSlot;
-  // 그날 근무자. 이 순서대로 한 사람이 하루 내내 한 열을 차지한다
-  workers: OnDutyWorker[];
-  shifts: AttendanceShift[];
-  now: Date;
+  row: ScheduleGroup['rows'][number];
 };
 
-const ScheduleRow = ({ dateKey, slot, workers, shifts, now }: ScheduleRowProps) => (
+const ScheduleRow = ({ row }: ScheduleRowProps) => (
   <div className='grid grid-cols-[4rem_minmax(0,1fr)_3.2rem] items-center gap-[1.2rem] border-b border-gray-50 px-[0.8rem] py-[0.8rem] last:border-b-0'>
-    <time className='font-16-md text-black'>{slot.start}</time>
+    <time className='font-16-md text-black'>{row.start}</time>
     <div
       className='grid justify-items-start gap-[0.6rem]'
-      style={{ gridTemplateColumns: `repeat(${workers.length}, max-content)` }}
+      style={{ gridTemplateColumns: `repeat(${row.cells.length}, max-content)` }}
     >
-      {workers.map(({ userId, userName }) => {
-        const isWorking = slot.users.some((user) => user.userId === userId);
-        const shift = findSlotShift(shifts, userId, slot.start);
-        // 열 너비를 이름 칩 너비로 맞추므로, 근무하지 않는 칸에도 보이지 않는 칩을 둬 열이 줄지 않게 한다
-        if (!isWorking || !shift) {
-          return (
-            <span key={userId} aria-hidden className='invisible'>
-              <StateChip label={userName} />
-            </span>
-          );
-        }
-
-        const { label, tone } =
-          SLOT_ATTENDANCE_STATUS_THEME[getSlotAttendanceStatus(dateKey, slot, shift, now)];
-
-        return (
-          <StateChip key={userId} label={userName} tone={tone} title={`${userName} · ${label}`} />
-        );
-      })}
+      {row.cells.map(({ userId, userName, attendance }) =>
+        attendance ? (
+          <StateChip
+            key={userId}
+            label={userName}
+            tone={attendance.tone}
+            title={`${userName} · ${attendance.label}`}
+          />
+        ) : (
+          // 근무하지 않는 칸도 자리는 차지해 사람마다 같은 열에 서게 한다
+          <span key={userId} aria-hidden className='invisible'>
+            <StateChip label={userName} />
+          </span>
+        ),
+      )}
     </div>
-    <span className='caption-12-md text-right text-gray-400'>{`${slot.users.length}명`}</span>
+    <span className='caption-12-md text-right text-gray-400'>{`${row.userCount}명`}</span>
   </div>
 );
 
-// 30분 단위 하루 근무 시간표. 한 사람은 하루 내내 같은 열에 놓고, 칩 색으로 근태를 알린다
-export default function WorkScheduleList({ dateKey, slots, shifts, now }: WorkScheduleListProps) {
-  const workers = getDailyWorkers(slots);
-  const groups = PERIODS.map(({ label, checkHour }) => ({
-    label,
-    slots: slots.filter(
-      ({ start, users }) => users.length > 0 && checkHour(Number(start.split(':')[0])),
-    ),
-  })).filter((group) => group.slots.length > 0);
+type WorkScheduleListProps = {
+  groups: ScheduleGroup[];
+};
 
+export default function WorkScheduleList({ groups }: WorkScheduleListProps) {
   return (
     <div className='bg-black-1 rounded-[1.2rem] border border-gray-50 p-[1.6rem] pr-[2.1rem]'>
       <ul aria-label='근태 칩' className='flex flex-wrap justify-end gap-[0.6rem]'>
@@ -78,15 +54,8 @@ export default function WorkScheduleList({ dateKey, slots, shifts, now }: WorkSc
           {groups.map((group) => (
             <div key={group.label}>
               <p className='font-14-bd mb-[0.8rem] px-[0.6rem] text-black'>{group.label}</p>
-              {group.slots.map((slot) => (
-                <ScheduleRow
-                  key={slot.start}
-                  dateKey={dateKey}
-                  slot={slot}
-                  workers={workers}
-                  shifts={shifts}
-                  now={now}
-                />
+              {group.rows.map((row) => (
+                <ScheduleRow key={row.start} row={row} />
               ))}
             </div>
           ))}

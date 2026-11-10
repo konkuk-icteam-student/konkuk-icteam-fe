@@ -2,9 +2,7 @@
 
 import { useId, useState } from 'react';
 import { toISO } from '@konkuk-icteam-fe/design-system/date';
-import useCurrentTime from '../../_hooks/useCurrentTime';
 import useWorkSchedule from '../../_hooks/useWorkSchedule';
-import { getWorkersByPeriod } from '../../_utils/getWorkersByPeriod';
 import AssignTaskList from './task/AssignTaskList';
 import DateSelector from './DateSelector';
 import WorkScheduleList from './schedule/WorkScheduleList';
@@ -28,8 +26,7 @@ type DateBoardProps = {
 // 날짜를 고르면 그날 근무 시간표와 업무 지정이 함께 바뀌는 카드
 export default function DateBoard({ onNotify }: DateBoardProps) {
   const [selectedDateKey, setSelectedDateKey] = useState(() => toISO(new Date()));
-  const { slots, shifts } = useWorkSchedule(selectedDateKey);
-  const currentTime = useCurrentTime();
+  const { scheduleGroups, workersByPeriod } = useWorkSchedule(selectedDateKey);
   const headingId = useId();
 
   return (
@@ -49,17 +46,12 @@ export default function DateBoard({ onNotify }: DateBoardProps) {
 
       <div className='grid grid-cols-2 divide-x divide-gray-50'>
         <BoardColumn title='근무 시간표'>
-          <WorkScheduleList
-            dateKey={selectedDateKey}
-            slots={slots}
-            shifts={shifts}
-            now={currentTime}
-          />
+          <WorkScheduleList groups={scheduleGroups} />
         </BoardColumn>
         <BoardColumn title='업무 지정'>
           <AssignTaskList
             dateKey={selectedDateKey}
-            workersByPeriod={getWorkersByPeriod(slots)}
+            workersByPeriod={workersByPeriod}
             onNotify={onNotify}
           />
         </BoardColumn>
