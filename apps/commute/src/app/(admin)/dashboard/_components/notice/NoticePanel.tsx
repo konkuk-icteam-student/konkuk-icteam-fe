@@ -6,11 +6,10 @@ import NoticeForm from './NoticeForm';
 import NoticeList from './NoticeList';
 
 type NoticePanelProps = {
-  // 공지를 등록·삭제한 뒤 알릴 글자
   onNotify: (message: string) => void;
 };
 
-// 공지사항 관리. 왼쪽에서 게시 기간을 정해 공지를 등록하고, 오른쪽에서 근로학생에게 보이는 공지를 보고 지운다
+// 공지 등록 폼과 근로학생에게 보이는 공지 목록
 export default function NoticePanel({ onNotify }: NoticePanelProps) {
   const { notices } = getNotices();
 

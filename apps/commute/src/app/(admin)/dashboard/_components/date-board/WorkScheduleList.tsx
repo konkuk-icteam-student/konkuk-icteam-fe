@@ -23,7 +23,6 @@ type ScheduleRowProps = {
   now: Date;
 };
 
-// 30분 칸 한 줄. 시각, 사람마다 정해진 열에 근태 색 칩, 인원 수를 보여 준다. 그 칸에 없는 사람의 열은 비운다
 const ScheduleRow = ({ dateKey, slot, workers, shifts, now }: ScheduleRowProps) => (
   <div className='grid grid-cols-[4rem_minmax(0,1fr)_3.2rem] items-center gap-[1.2rem] border-b border-gray-50 px-[0.8rem] py-[0.8rem] last:border-b-0'>
     <time className='font-16-md text-black'>{slot.start}</time>
@@ -55,8 +54,7 @@ const ScheduleRow = ({ dateKey, slot, workers, shifts, now }: ScheduleRowProps) 
   </div>
 );
 
-// 하루치 근무 시간표 목록. 30분 단위로 누가 근무하는지 오전·오후로 나눠 보여 주고, 아무도 없는 칸은 뺀다.
-// 한 사람은 오전·오후 구분 없이 하루 내내 같은 열에 놓여 겹치는 근무도 섞이지 않고, 칩 색으로 근무중·지각·결근 등을 알린다
+// 30분 단위 하루 근무 시간표. 한 사람은 하루 내내 같은 열에 놓고, 칩 색으로 근태를 알린다
 export default function WorkScheduleList({ dateKey, slots, shifts, now }: WorkScheduleListProps) {
   const workers = getDailyWorkers(slots);
   const groups = PERIODS.map(({ label, checkHour }) => ({

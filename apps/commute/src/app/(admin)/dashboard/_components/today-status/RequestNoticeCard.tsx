@@ -10,12 +10,10 @@ import {
 } from '../../../worktime/change-requests/_utils/statusFilter';
 import { usePendingRequestCount } from '../../_hooks/usePendingRequestCount';
 
-// 오늘 근로 현황 줄 오른쪽 끝 카드. 승인 대기 요청 수는 직접 불러온다. 누르면 근로시간 수정요청 화면으로 간다.
-// 처리할 요청이 있으면 파랗게 눈에 띄게 한다
+// 승인 대기 요청 수를 알리고 근로시간 수정요청 화면으로 보내는 카드
 export default function RequestNoticeCard() {
   const count = usePendingRequestCount();
   const hasRequests = count > 0;
-  // 처리할 요청이 있으면 승인 대기 탭을, 없으면 전체 탭을 연다
   const href = createStatusFilterHref(
     hasRequests ? WORK_CHANGE_REQUEST_STATUS.PENDING : STATUS_FILTER_ALL,
   );

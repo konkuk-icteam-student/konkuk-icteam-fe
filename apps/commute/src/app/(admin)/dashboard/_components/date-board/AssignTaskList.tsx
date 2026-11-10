@@ -25,13 +25,11 @@ type TaskHandlers = TaskAssignment['compatibleHandlers'];
 
 type TaskRowProps = {
   todo: Todo;
-  // 업무 시간대에 근무하는 근로학생
   workers: OnDutyWorker[];
   state: TaskState;
   handlers: TaskHandlers;
 };
 
-// 업무 한 줄. 이름, 시작 시각과 맡은 근로학생, 지정 버튼, 마우스를 올리면 보이는 수정·삭제 버튼.
 const TaskRow = ({ todo, workers, state, handlers }: TaskRowProps) => {
   const { todoId: id, title } = todo;
   const assignment = state.assignments[id];
@@ -156,13 +154,11 @@ const TaskRow = ({ todo, workers, state, handlers }: TaskRowProps) => {
 type PeriodSectionProps = {
   period: TodoPeriod;
   label: string;
-  // 그 시간대에 근무하는 근로학생
   workers: OnDutyWorker[];
   state: TaskState;
   handlers: TaskHandlers;
 };
 
-// 시간대 하나의 업무 목록. 머리줄에 + 버튼과 근무자 수를 두고, 업무를 추가하는 중이면 목록 맨 아래에 입력 줄을 연다
 const PeriodSection = ({ period, label, workers, state, handlers }: PeriodSectionProps) => (
   <section aria-label={`${label} 업무`}>
     <div className='flex items-center justify-between border-b border-gray-50 px-[0.4rem] pb-[0.8rem]'>
@@ -211,8 +207,7 @@ const PeriodSection = ({ period, label, workers, state, handlers }: PeriodSectio
   </section>
 );
 
-// 날짜 카드 오른쪽 칸. 반복 업무를 오전·오후로 나눠 보여 주고, 업무마다 근로학생을 여러 명 지정한다.
-// 업무마다 시작 시각을 정하고 그 시각에 근무하는 사람에게 맡긴다. 지정은 날짜별로 따로 저장한다. 시간대 옆 + 로 업무를 추가하고, 업무마다 이름·시간대를 고치거나 지운다
+// 반복 업무를 오전·오후로 나눠 보여 주고, 업무마다 시작 시각과 근로학생을 지정한다. 지정은 날짜별로 저장한다
 export default function AssignTaskList({
   dateKey,
   workersByPeriod,

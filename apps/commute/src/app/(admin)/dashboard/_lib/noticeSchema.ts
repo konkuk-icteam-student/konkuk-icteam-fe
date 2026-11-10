@@ -19,7 +19,6 @@ export const createNoticeSchema = (minStartDate: Date) =>
 
 export type NoticeFormValues = z.infer<ReturnType<typeof createNoticeSchema>>;
 
-// 게시 기간은 고르기 전까지 비워 둔다
 export const defaultNoticeFormValues: DefaultValues<NoticeFormValues> = {
   title: '',
   content: '',

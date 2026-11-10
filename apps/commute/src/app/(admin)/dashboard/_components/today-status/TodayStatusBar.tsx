@@ -17,8 +17,7 @@ import TodayStatusCard from './TodayStatusCard';
 const createUserNames = (users: AttendanceUser[]) =>
   users.length > 0 ? users.map(({ userName }) => userName).join(' · ') : '없음';
 
-// 대시보드 맨 위 줄. 오늘 근무중·출근 예정·지각/결근 인원과 업무 완료 현황을 보여 주고, 끝에 처리할 승인 요청을 알린다.
-// 날짜 카드에서 다른 날을 골라도 이 줄은 늘 오늘이다
+// 오늘 근로 현황 줄. 날짜 카드에서 다른 날을 골라도 늘 오늘을 보여 준다
 export default function TodayStatusBar() {
   const currentTime = useCurrentTime();
   const todayKey = toISO(currentTime);

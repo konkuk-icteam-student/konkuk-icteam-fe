@@ -15,15 +15,12 @@ import {
 import type { OnDutyWorker } from '../_utils/getWorkersByPeriod';
 import { getWorkersAt } from '../_utils/taskTime';
 
-// 고른 날의 반복 업무와 지정. 업무 추가·수정·삭제, 시작 시각·근로학생 지정, 한 번에 하나만 여는 입력 줄 상태를 함께 다룬다
 export default function useTaskAssignment(dateKey: string, onNotify: (message: string) => void) {
   // 근로학생을 고르는 중인 업무. 한 번에 한 업무만 펼친다
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
-  // 이름·시간대를 고치는 중인 업무
   const [renamingTaskId, setRenamingTaskId] = useState<number | null>(null);
   // 업무를 추가하는 중인 시간대. 그 시간대 목록 맨 아래에 입력 줄을 연다
   const [addingPeriod, setAddingPeriod] = useState<TodoPeriod | null>(null);
-  // 지울지 묻는 중인 업무
   const [deletingTodo, setDeletingTodo] = useState<Todo | null>(null);
   // 지정을 저장한 뒤 다시 불러오게 한다
   const [, refresh] = useReducer((count: number) => count + 1, 0);
@@ -69,7 +66,6 @@ export default function useTaskAssignment(dateKey: string, onNotify: (message: s
     );
   };
 
-  // 펼쳐 둔 업무를 다시 누르면 접는다
   const handleEditToggle = (todoId: number) => {
     setEditingTaskId(editingTaskId === todoId ? null : todoId);
   };

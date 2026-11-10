@@ -9,11 +9,9 @@ import { getTaskStartOptions, getWorkersAt } from '../../_utils/taskTime';
 type AssigneePickerProps = {
   // 업무 이름. 묶음을 읽어 줄 때 쓴다
   title: string;
-  // 그 시간대 근무자
   workers: OnDutyWorker[];
   // 고른 업무 시작 시각. 아직 고르지 않았으면 null
   start: TimeString | null;
-  // 맡긴 근로학생 id
   userIds: number[];
   // 근로학생 id → 이 업무를 지금까지 한 횟수
   countByUserId: Record<number, number>;
@@ -21,8 +19,7 @@ type AssigneePickerProps = {
   onToggle: (userId: number) => void;
 };
 
-// 업무 지정 칸에서 지정을 누르면 펼치는 회색 상자. 먼저 업무 시작 시각을 고르고,
-// 그 아래에서 그 시각에 근무하는 사람을 눌러 맡기거나 뺀다. 이름 옆 괄호는 이 업무를 지금까지 한 횟수다
+// 업무 시작 시각을 고르고, 그 시각에 근무하는 사람을 눌러 맡기거나 빼는 상자
 export default function AssigneePicker({
   title,
   workers,

@@ -15,7 +15,7 @@ type DateSelectorProps = {
   onSelect: (dateKey: string) => void;
 };
 
-// 날짜 카드 맨 위 날짜 제목. 누르면 달력이 열리고, 날짜를 고르면 닫는다
+// 누르면 달력이 열리는 날짜 제목
 export default function DateSelector({ selectedDateKey, headingId, onSelect }: DateSelectorProps) {
   const calendarId = useId();
   const { isOpen, areaRef, handleToggle, handleClose } = usePopover<HTMLDivElement>();

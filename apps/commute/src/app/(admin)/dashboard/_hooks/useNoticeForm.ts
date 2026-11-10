@@ -11,10 +11,8 @@ import {
 
 const SET_VALUE_OPTIONS = { shouldDirty: true, shouldValidate: true };
 
-// 공지 등록 폼. 입력값·에러를 다루고, 한 번 더 물은 뒤 등록하면 폼을 비운다
 // TODO: react-query 도입 후 등록 성공 시 공지 목록 쿼리키 무효화
 export default function useNoticeForm(onNotify: (message: string) => void) {
-  // 등록할지 묻는 모달을 열었는지
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const {
     formState: { errors, isValid },
@@ -43,7 +41,6 @@ export default function useNoticeForm(onNotify: (message: string) => void) {
     setValue('content', event.target.value, SET_VALUE_OPTIONS);
   };
 
-  // 입력이 맞으면 바로 등록하지 않고 확인 모달을 연다
   const handleNoticeSubmit = handleSubmit(() => setIsConfirmOpen(true));
 
   const handleConfirmOpenChange = (open: boolean) => setIsConfirmOpen(open);
