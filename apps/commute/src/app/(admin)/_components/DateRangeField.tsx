@@ -31,6 +31,8 @@ export default function DateRangeField({
   const [isOpen, setIsOpen] = useState(false);
   // 시작일만 고른 상태. 마감일까지 골라야 저장한다
   const [draftRange, setDraftRange] = useState<DateRange | null>(null);
+  // 기간을 다 고르기 전엔 placeholder를 다른 입력칸처럼 흐리게 보여 준다
+  const hasRange = startDate !== '' && endDate !== '';
 
   const handleClose = () => {
     setIsOpen(false);
@@ -65,7 +67,9 @@ export default function DateRangeField({
         )}
         onClick={() => (isOpen ? handleClose() : setIsOpen(true))}
       >
-        <span>{startDate && endDate ? formatDateRange(startDate, endDate) : placeholder}</span>
+        <span className={cn(!hasRange && 'text-gray-400')}>
+          {hasRange ? formatDateRange(startDate, endDate) : placeholder}
+        </span>
         <IconArrowDown aria-hidden className='h-[2.4rem] w-[2.4rem] shrink-0 text-gray-500' />
       </button>
 
