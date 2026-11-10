@@ -1,4 +1,5 @@
 import type { TimeString } from '@/app/(student)/_apis/common';
+import { LATE_GRACE_MINUTES } from '@/shared/config/workHours';
 import { convertTimeToMinutes, MINUTES_PER_HOUR } from '@/shared/utils/time';
 import type { DayRange } from '@/shared/utils/week';
 import type { TodoPeriod } from '../_apis/todos';
@@ -58,7 +59,8 @@ const compareShifts = (
   createShiftDateTime(second.date, second.start).getTime();
 
 /**
- * 근무에 늦은 분을 얻습니다. 근무 시작 시각이 지난 뒤 출근했으면 지각이고, 1분이 안 되게 늦어도 1분으로 셉니다.
+ * 근무에 늦은 분을 얻습니다. 시작 시각에서 LATE_GRACE_MINUTES(5분)를 넘겨 출근했으면 지각이고,
+ * 늦은 분은 유예를 빼지 않고 시작 시각부터 세며 1분이 안 되는 나머지는 올립니다.
  * @param shift 근무 구간과 출근 시각
  * @returns 늦은 분. 지각이 아니거나 아직 출근하지 않았으면 0
  * @example getLateMinutes({ date, start: '10:30', end: '11:30', checkedInAt: new Date(2026, 10, 4, 10, 36) }); // 6
@@ -68,7 +70,9 @@ const getLateMinutes = ({ date, start, checkedInAt }: WorkerShift) => {
 
   const lateMilliseconds = checkedInAt.getTime() - createShiftDateTime(date, start).getTime();
 
-  return lateMilliseconds > 0 ? Math.ceil(lateMilliseconds / MILLISECONDS_PER_MINUTE) : 0;
+  return lateMilliseconds > LATE_GRACE_MINUTES * MILLISECONDS_PER_MINUTE
+    ? Math.ceil(lateMilliseconds / MILLISECONDS_PER_MINUTE)
+    : 0;
 };
 
 /**

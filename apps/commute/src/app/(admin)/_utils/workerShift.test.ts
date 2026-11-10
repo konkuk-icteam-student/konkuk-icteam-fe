@@ -21,7 +21,7 @@ const AFTER_ALL_SHIFTS = new Date(2026, 10, 30, 18, 0);
 
 describe('workerShift', () => {
   describe('지각 기록', () => {
-    it('근무 시작 시각이 지난 뒤 출근한 근무만 늦은 분과 함께 담는다', () => {
+    it('근무 시작 시각에서 5분을 넘겨 출근한 근무만, 시작 시각부터 센 늦은 분과 함께 담는다', () => {
       const lateShift = createShift({ checkedInAt: new Date(2026, 10, 4, 10, 36) });
       const onTimeShift = createShift({ date: new Date(2026, 10, 5) });
 
@@ -30,16 +30,19 @@ describe('workerShift', () => {
       ]);
     });
 
-    it('정각에 출근하면 지각이 아니다', () => {
-      const shift = createShift({ checkedInAt: new Date(2026, 10, 4, 10, 30) });
+    it('시작 시각부터 5분까지(10:35:00)는 늦게 와도 지각이 아니다', () => {
+      const shifts = [
+        createShift({ checkedInAt: new Date(2026, 10, 4, 10, 31) }),
+        createShift({ date: new Date(2026, 10, 5), checkedInAt: new Date(2026, 10, 5, 10, 35) }),
+      ];
 
-      expect(createLateRecords([shift])).toEqual([]);
+      expect(createLateRecords(shifts)).toEqual([]);
     });
 
-    it('1분이 안 되게 늦어도 1분 지각으로 센다', () => {
-      const shift = createShift({ checkedInAt: new Date(2026, 10, 4, 10, 30, 20) });
+    it('5분을 1초라도 넘기면 지각이고, 1분이 안 되는 나머지는 1분으로 올려 센다', () => {
+      const shift = createShift({ checkedInAt: new Date(2026, 10, 4, 10, 35, 1) });
 
-      expect(createLateRecords([shift])[0]?.lateMinutes).toBe(1);
+      expect(createLateRecords([shift])[0]?.lateMinutes).toBe(6);
     });
 
     it('아직 출근하지 않은 근무는 지각 기록에 넣지 않는다', () => {
@@ -51,7 +54,7 @@ describe('workerShift', () => {
         date: new Date(2026, 10, 6),
         checkedInAt: new Date(2026, 10, 6, 10, 40),
       });
-      const earlier = createShift({ checkedInAt: new Date(2026, 10, 4, 10, 31) });
+      const earlier = createShift({ checkedInAt: new Date(2026, 10, 4, 10, 37) });
 
       expect(createLateRecords([later, earlier]).map(({ date }) => date.getDate())).toEqual([4, 6]);
     });

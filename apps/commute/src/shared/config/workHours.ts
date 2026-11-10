@@ -12,3 +12,7 @@ export const SCHEDULE_CHANGE_RULES = {
 
 // 누적 지각이 이 시간(분)을 넘으면 장학금 지급에 불이익이 생길 수 있다
 export const LATE_LIMIT_MINUTES = 30;
+
+// 근무 시작 시각에서 이 시간(분)을 넘겨 출근하면 지각이다 (10:30 시작이면 10:35:00까지는 정상).
+// 지각 시간은 이 유예를 빼지 않고 시작 시각부터 센다. 서버는 출근 시각만 기록하고 지각은 화면에서 정한다
+export const LATE_GRACE_MINUTES = 5;
