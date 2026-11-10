@@ -20,7 +20,7 @@ export const useWorkLedger = ({
   userId,
   workStartDate,
 }: Pick<Worker, 'userId' | 'workStartDate'>) => {
-  // 서랍을 연 순간을 기준으로 끝난 근무를 가른다
+  // 상세보기를 연 순간을 기준으로 끝난 근무를 가른다
   const [now] = useState(() => new Date());
   const currentMonthKey = getMonthKeyOfDate(now);
   const { firstMonthKey, lastMonthKey } = getLedgerMonthBounds(workStartDate, currentMonthKey);
@@ -28,26 +28,15 @@ export const useWorkLedger = ({
 
   const ledger = useMemo(() => {
     // 불러올 기간은 그 달보다 넓을 수 있다 (이번 주 월요일이 지난달일 때)
-    const fetchRange = getLedgerShiftRange(monthKey, now);
-    const { shifts } = getWorkerShifts({
-      userId,
-      startDate: fetchRange.startDate,
-      endDate: fetchRange.endDate,
-    });
-    const month = getMonthDateRange(monthKey);
+    const { fetchRange, week } = getLedgerShiftRange(monthKey, now);
+    const { shifts } = getWorkerShifts({ userId, ...fetchRange });
     const rows = createWorkLedgerRows(
-      filterShiftsBetween(shifts, month.startDate, month.endDate),
+      filterShiftsBetween(shifts, getMonthDateRange(monthKey)),
       now,
     );
-    const weeklyWorkedMinutes =
-      fetchRange.weekStartDate && fetchRange.weekEndDate
-        ? getTotalWorkedMinutes(
-            createWorkLedgerRows(
-              filterShiftsBetween(shifts, fetchRange.weekStartDate, fetchRange.weekEndDate),
-              now,
-            ),
-          )
-        : null;
+    const weeklyWorkedMinutes = week
+      ? getTotalWorkedMinutes(createWorkLedgerRows(filterShiftsBetween(shifts, week), now))
+      : null;
     const monthlyRecord = getMonthlyWorkers(parseMonthKey(monthKey)).workers.find(
       (worker) => worker.userId === userId,
     )?.monthlyRecord;

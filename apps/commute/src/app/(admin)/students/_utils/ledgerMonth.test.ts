@@ -25,29 +25,23 @@ describe('ledgerMonth', () => {
   describe('불러올 근무 기간', () => {
     it('지난달은 그 달 1일부터 마지막 날까지다', () => {
       expect(getLedgerShiftRange('2026-10', new Date(2026, 10, 10))).toEqual({
-        startDate: new Date(2026, 9, 1),
-        endDate: new Date(2026, 9, 31),
-        weekStartDate: null,
-        weekEndDate: null,
+        fetchRange: { startDate: new Date(2026, 9, 1), endDate: new Date(2026, 9, 31) },
+        week: null,
       });
     });
 
     it('이번 달은 이번 주 월요일이 지난달이어도 이번 주 누적을 셀 수 있게 그 월요일부터 불러온다', () => {
       // 2026-12-02(수)가 속한 주의 월요일은 11-30
       expect(getLedgerShiftRange('2026-12', new Date(2026, 11, 2))).toEqual({
-        startDate: new Date(2026, 10, 30),
-        endDate: new Date(2026, 11, 31),
-        weekStartDate: new Date(2026, 10, 30),
-        weekEndDate: new Date(2026, 11, 6),
+        fetchRange: { startDate: new Date(2026, 10, 30), endDate: new Date(2026, 11, 31) },
+        week: { startDate: new Date(2026, 10, 30), endDate: new Date(2026, 11, 6) },
       });
     });
 
     it('이번 주가 이번 달 안에 있으면 그 달 1일부터 불러온다', () => {
       expect(getLedgerShiftRange('2026-11', new Date(2026, 10, 10))).toEqual({
-        startDate: new Date(2026, 10, 1),
-        endDate: new Date(2026, 10, 30),
-        weekStartDate: new Date(2026, 10, 9),
-        weekEndDate: new Date(2026, 10, 15),
+        fetchRange: { startDate: new Date(2026, 10, 1), endDate: new Date(2026, 10, 30) },
+        week: { startDate: new Date(2026, 10, 9), endDate: new Date(2026, 10, 15) },
       });
     });
   });

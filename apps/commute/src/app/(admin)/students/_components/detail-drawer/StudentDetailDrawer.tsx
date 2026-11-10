@@ -7,6 +7,7 @@ import type { Worker } from '../../../_apis/workers';
 import { EMPTY_STUDENT_TEXT } from '../../_constants/student';
 import type { StudentRow } from '../../_hooks/useStudents';
 import { formatGrade } from '../../_utils/studentFormat';
+import AccountSection from './AccountSection';
 import BasicInfoTab from './BasicInfoTab';
 import StudentEditForm from './StudentEditForm';
 import WorkLedgerTab from './WorkLedgerTab';
@@ -129,11 +130,14 @@ export default function StudentDetailDrawer({
             </Tabs.List>
 
             {activeTab === 'BASIC' ? (
-              <BasicInfoTab
-                student={student}
-                onPasswordReset={() => onPasswordReset(student)}
-                onDelete={() => onDelete(student)}
-              />
+              <>
+                <BasicInfoTab student={student} />
+                <AccountSection
+                  email={student.email}
+                  onPasswordReset={() => onPasswordReset(student)}
+                  onDelete={() => onDelete(student)}
+                />
+              </>
             ) : (
               <WorkLedgerTab student={student} />
             )}

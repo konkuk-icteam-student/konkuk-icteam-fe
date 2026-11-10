@@ -2,7 +2,13 @@
 
 export const DAYS_PER_WEEK = 7;
 const WORKDAYS_PER_WEEK = 5;
-const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+export const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+
+// 첫날부터 마지막 날까지의 날짜 기간 (둘 다 포함, 0시)
+export type DayRange = {
+  startDate: Date;
+  endDate: Date;
+};
 const THURSDAY = 4;
 const DAYS_FROM_MONDAY_TO_THURSDAY = 3;
 

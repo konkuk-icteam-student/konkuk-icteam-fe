@@ -1,4 +1,4 @@
-import { addDays, DAYS_PER_WEEK, getMondayOfWeek } from '@/shared/utils/week';
+import { addDays, DAYS_PER_WEEK, getMondayOfWeek, type DayRange } from '@/shared/utils/week';
 import { getMonthDateRange, getMonthKeyOfDate } from '../../_utils/monthKey';
 
 /**
@@ -23,21 +23,23 @@ export const getLedgerMonthBounds = (workStartDate: Date, currentMonthKey: strin
  * 이번 주 월요일이 지난달이어도 그 월요일부터 불러옵니다.
  * @param monthKey 보는 달 (YYYY-MM)
  * @param today 오늘
- * @returns 불러올 첫날·마지막 날과 이번 주(월~일). 이번 달이 아니면 이번 주는 null
- * @example getLedgerShiftRange('2026-12', new Date(2026, 11, 2)).startDate; // 2026-11-30
+ * @returns 불러올 기간(fetchRange)과 이번 주 월~일(week). 이번 달이 아니면 week는 null
+ * @example getLedgerShiftRange('2026-12', new Date(2026, 11, 2)).fetchRange.startDate; // 2026-11-30
  */
-export const getLedgerShiftRange = (monthKey: string, today: Date) => {
-  const { startDate, endDate } = getMonthDateRange(monthKey);
-  if (monthKey !== getMonthKeyOfDate(today)) {
-    return { startDate, endDate, weekStartDate: null, weekEndDate: null };
-  }
+export const getLedgerShiftRange = (
+  monthKey: string,
+  today: Date,
+): { fetchRange: DayRange; week: DayRange | null } => {
+  const month = getMonthDateRange(monthKey);
+  if (monthKey !== getMonthKeyOfDate(today)) return { fetchRange: month, week: null };
 
-  const weekStartDate = getMondayOfWeek(today);
+  const monday = getMondayOfWeek(today);
 
   return {
-    startDate: weekStartDate < startDate ? weekStartDate : startDate,
-    endDate,
-    weekStartDate,
-    weekEndDate: addDays(weekStartDate, DAYS_PER_WEEK - 1),
+    fetchRange: {
+      startDate: monday < month.startDate ? monday : month.startDate,
+      endDate: month.endDate,
+    },
+    week: { startDate: monday, endDate: addDays(monday, DAYS_PER_WEEK - 1) },
   };
 };

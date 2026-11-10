@@ -1,5 +1,6 @@
 import type { TimeString } from '@/app/(student)/_apis/common';
 import { convertTimeToMinutes, MINUTES_PER_HOUR } from '@/shared/utils/time';
+import type { DayRange } from '@/shared/utils/week';
 import type { TodoPeriod } from '../_apis/todos';
 import type { WorkerShift } from '../_apis/workers';
 import { PERIODS } from '../_constants/period';
@@ -156,12 +157,13 @@ export const getTotalWorkedMinutes = (rows: WorkLedgerRow[]) =>
 /**
  * 시작일부터 마지막 날까지(둘 다 포함)의 근무만 고릅니다.
  * @param shifts 근무 구간
- * @param startDate 시작일
- * @param endDate 마지막 날
+ * @param range 기간
+ * @param range.startDate 시작일
+ * @param range.endDate 마지막 날
  * @returns 그 기간의 근무
- * @example filterShiftsBetween(shifts, monday, sunday);
+ * @example filterShiftsBetween(shifts, { startDate: monday, endDate: sunday });
  */
-export const filterShiftsBetween = (shifts: WorkerShift[], startDate: Date, endDate: Date) => {
+export const filterShiftsBetween = (shifts: WorkerShift[], { startDate, endDate }: DayRange) => {
   const startTime = new Date(
     startDate.getFullYear(),
     startDate.getMonth(),

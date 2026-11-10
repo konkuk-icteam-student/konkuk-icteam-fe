@@ -140,9 +140,10 @@ describe('workerShift', () => {
     const shifts = [3, 4, 8, 9].map((day) => createShift({ date: new Date(2026, 10, day) }));
 
     expect(
-      filterShiftsBetween(shifts, new Date(2026, 10, 4), new Date(2026, 10, 8)).map(({ date }) =>
-        date.getDate(),
-      ),
+      filterShiftsBetween(shifts, {
+        startDate: new Date(2026, 10, 4),
+        endDate: new Date(2026, 10, 8),
+      }).map(({ date }) => date.getDate()),
     ).toEqual([4, 8]);
   });
 });

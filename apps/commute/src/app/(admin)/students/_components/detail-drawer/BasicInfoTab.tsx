@@ -3,7 +3,6 @@ import { formatMonthDayWithWeekday, formatTime, formatYearMonth } from '@/shared
 import { EMPTY_STUDENT_TEXT } from '../../_constants/student';
 import type { StudentRow } from '../../_hooks/useStudents';
 import { useMonthlyAttendance } from '../../_hooks/useMonthlyAttendance';
-import AccountSection from './AccountSection';
 import StatCard from './StatCard';
 
 type InfoItemProps = {
@@ -20,12 +19,10 @@ const InfoItem = ({ label, value }: InfoItemProps) => (
 
 type BasicInfoTabProps = {
   student: StudentRow;
-  onPasswordReset: () => void;
-  onDelete: () => void;
 };
 
-// 상세보기 기본 정보 탭. 연락처, 이번 달 근태 요약과 지각 기록, 계정
-export default function BasicInfoTab({ student, onPasswordReset, onDelete }: BasicInfoTabProps) {
+// 상세보기 기본 정보 탭. 연락처, 이번 달 근태 요약과 지각 기록 (계정은 상세보기가 이 아래에 붙인다)
+export default function BasicInfoTab({ student }: BasicInfoTabProps) {
   const { summary, lateRecords } = useMonthlyAttendance(student.userId);
   // 수정 요청 횟수는 이번 달 근무 기록에서 온다. 이번 달 근로학생이 아니면 0회다
   const totalChangeRequestCount = student.monthlyRecord?.totalChangeRequestCount ?? 0;
@@ -85,8 +82,6 @@ export default function BasicInfoTab({ student, onPasswordReset, onDelete }: Bas
           </ul>
         )}
       </section>
-
-      <AccountSection email={student.email} onPasswordReset={onPasswordReset} onDelete={onDelete} />
     </>
   );
 }

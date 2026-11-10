@@ -1,4 +1,5 @@
 import { formatNumber } from '@konkuk-icteam-fe/design-system/date';
+import type { DayRange } from '@/shared/utils/week';
 
 /**
  * 년·월 키를 만듭니다.
@@ -45,7 +46,7 @@ export const parseMonthKey = (monthKey: string) => {
  * @returns 첫날과 마지막 날 (0시)
  * @example getMonthDateRange('2026-02'); // { startDate: 2026-02-01, endDate: 2026-02-28 }
  */
-export const getMonthDateRange = (monthKey: string) => {
+export const getMonthDateRange = (monthKey: string): DayRange => {
   const { year, month } = parseMonthKey(monthKey);
 
   return { startDate: new Date(year, month - 1, 1), endDate: new Date(year, month, 0) };

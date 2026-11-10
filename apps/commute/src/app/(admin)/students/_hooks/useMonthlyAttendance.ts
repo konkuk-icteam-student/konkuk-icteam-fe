@@ -5,7 +5,7 @@ import { createAttendanceSummary, createLateRecords } from '../../_utils/workerS
 
 // 기본 정보 탭의 근태 요약과 지각 기록. 언제나 이번 달 기준이다
 export const useMonthlyAttendance = (userId: number) => {
-  // 서랍을 연 순간을 기준으로 끝난 근무·결근을 가른다
+  // 상세보기를 연 순간을 기준으로 끝난 근무·결근을 가른다
   const [now] = useState(() => new Date());
 
   return useMemo(() => {
