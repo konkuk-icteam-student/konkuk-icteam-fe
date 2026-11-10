@@ -33,7 +33,12 @@ export default function DateBoard({ onNotify }: DateBoardProps) {
   const headingId = useId();
 
   return (
-    <section aria-labelledby={headingId} className='rounded-[1.2rem] border border-gray-50'>
+    <section
+      aria-labelledby={headingId}
+      // 업무 줄의 팝업이 카드 아래로 넘치면 위로 띄운다
+      data-popover-boundary
+      className='rounded-[1.2rem] border border-gray-50'
+    >
       <div className='flex items-center justify-center border-b border-gray-50 px-[2.1rem] py-[1.6rem]'>
         <DateSelector
           selectedDateKey={selectedDateKey}

@@ -18,7 +18,8 @@ type DateSelectorProps = {
 // 누르면 달력이 열리는 날짜 제목
 export default function DateSelector({ selectedDateKey, headingId, onSelect }: DateSelectorProps) {
   const calendarId = useId();
-  const { isOpen, areaRef, handleToggle, handleClose } = usePopover<HTMLDivElement>();
+  const { isOpen, areaRef, triggerRef, panelRef, handleToggle, handleClose } =
+    usePopover<HTMLDivElement>();
 
   const handleDateSelect = (dateKey: string) => {
     onSelect(dateKey);
@@ -28,6 +29,7 @@ export default function DateSelector({ selectedDateKey, headingId, onSelect }: D
   return (
     <div ref={areaRef} className='relative'>
       <button
+        ref={triggerRef}
         type='button'
         aria-expanded={isOpen}
         aria-controls={calendarId}
@@ -48,6 +50,7 @@ export default function DateSelector({ selectedDateKey, headingId, onSelect }: D
       </button>
       {isOpen && (
         <div
+          ref={panelRef}
           id={calendarId}
           role='dialog'
           aria-label='날짜 고르기'

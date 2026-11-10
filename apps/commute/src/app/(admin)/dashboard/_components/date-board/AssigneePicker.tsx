@@ -33,7 +33,7 @@ export default function AssigneePicker({
   onToggle,
 }: AssigneePickerProps) {
   const panelId = useId();
-  const { isOpen, areaRef, handleToggle } = usePopover<HTMLDivElement>();
+  const { isOpen, areaRef, triggerRef, panelRef, handleToggle } = usePopover<HTMLDivElement>();
   const availableWorkers = start ? getWorkersAt(workers, start) : [];
   // 근로학생 id → 이 업무를 지금까지 한 횟수. 팝오버를 열 때만 읽는다
   const countByUserId: Record<number, number> = isOpen
@@ -45,6 +45,7 @@ export default function AssigneePicker({
   return (
     <div ref={areaRef} className='relative shrink-0'>
       <button
+        ref={triggerRef}
         type='button'
         aria-label={`${title} 지정`}
         aria-haspopup='dialog'
@@ -52,7 +53,7 @@ export default function AssigneePicker({
         aria-controls={panelId}
         disabled={workers.length === 0}
         className={cn(
-          'caption-12-md text-blue flex cursor-pointer items-center gap-[0.2rem] rounded-[0.6rem] px-[0.8rem] py-[0.4rem] transition-colors focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40',
+          'caption-12-md text-blue focus-visible:outline-blue flex cursor-pointer items-center gap-[0.2rem] rounded-[0.6rem] px-[0.8rem] py-[0.4rem] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40',
           isOpen ? 'bg-blue/15' : 'hover:bg-blue/10 bg-gray-50',
         )}
         onClick={handleToggle}
@@ -63,10 +64,11 @@ export default function AssigneePicker({
 
       {isOpen && (
         <div
+          ref={panelRef}
           id={panelId}
           role='dialog'
           aria-label={`${title} 근로학생 지정`}
-          className='bg-black-1 absolute top-[calc(100%+0.4rem)] right-0 z-30 flex w-[30rem] flex-col gap-[1.2rem] rounded-[1rem] p-[1.4rem] shadow-[0_0_12px_0_rgba(69,66,90,0.14)]'
+          className='bg-black-1 absolute top-[calc(100%+0.4rem)] right-0 z-30 flex w-[30rem] flex-col gap-[1.2rem] rounded-[1rem] p-[1.4rem] shadow-[0_0_12px_0_rgba(69,66,90,0.14)] data-[side=top]:top-auto data-[side=top]:bottom-[calc(100%+0.4rem)]'
         >
           <div className='flex items-center gap-[1rem]'>
             <span className='caption-14-md shrink-0 text-gray-700'>시작 시각</span>
