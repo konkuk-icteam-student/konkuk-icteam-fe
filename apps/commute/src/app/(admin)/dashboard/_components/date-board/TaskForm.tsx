@@ -6,33 +6,27 @@ import type { TodoPeriod } from '../../../_apis/todos';
 import { PERIODS } from '../../../_constants/period';
 
 type TaskFormProps = {
-  // 폼 묶음을 읽어 줄 이름 (예: '오전 업무 추가', '비품 재고 확인 수정')
-  label: string;
+  // add: 누른 시간대에 새 업무를 더한다 (시간대 고정). rename: 기존 업무의 이름과 시간대를 고친다
+  mode: 'add' | 'rename';
   initialTitle?: string;
   initialPeriod: TodoPeriod;
-  // 시간대를 바꿀 수 있는지. 추가는 누른 시간대로 정해져 있어 고칠 때만 연다
-  canChangePeriod?: boolean;
-  // 시간대를 바꿀 수 없을 때 가운데 칸에 보여 줄 안내
-  hint?: string;
-  submitLabel: string;
   onSubmit: (title: string, period: TodoPeriod) => void;
   onCancel: () => void;
 };
 
 // 업무 줄과 같은 높이·칸 그대로 업무를 추가하거나 고치는 입력 줄. Enter로 저장한다
 export default function TaskForm({
-  label,
+  mode,
   initialTitle = '',
   initialPeriod,
-  canChangePeriod = false,
-  hint,
-  submitLabel,
   onSubmit,
   onCancel,
 }: TaskFormProps) {
   const [title, setTitle] = useState(initialTitle);
   const [period, setPeriod] = useState(initialPeriod);
   const trimmedTitle = title.trim();
+  const isRename = mode === 'rename';
+  const periodLabel = PERIODS.find((option) => option.period === initialPeriod)?.label;
 
   const handleSubmit = () => {
     if (trimmedTitle.length === 0) return;
@@ -42,7 +36,7 @@ export default function TaskForm({
   return (
     <div
       role='group'
-      aria-label={label}
+      aria-label={isRename ? `${initialTitle} 수정` : `${periodLabel} 업무 추가`}
       className='-mx-[0.8rem] flex items-center gap-[1rem] rounded-[0.6rem] bg-gray-50 px-[0.8rem] py-[0.3rem]'
     >
       <Input
@@ -53,12 +47,13 @@ export default function TaskForm({
         value={title}
         onChange={(event) => setTitle(event.target.value)}
         onKeyDown={(event) => {
+          // 한글 조합 중 Enter는 글자 확정이라 저장으로 보지 않는다
           if (event.nativeEvent.isComposing) return;
           if (event.key === 'Enter') handleSubmit();
         }}
       />
       <div className='flex min-w-0 flex-1 items-center'>
-        {canChangePeriod ? (
+        {isRename && (
           <div role='group' aria-label='시간대' className='flex gap-[0.4rem]'>
             {PERIODS.map((option) => (
               <TagChip
@@ -70,8 +65,6 @@ export default function TaskForm({
               />
             ))}
           </div>
-        ) : (
-          <span className='caption-12-md truncate text-gray-500'>{hint}</span>
         )}
       </div>
       <div className='flex shrink-0 gap-[0.4rem]'>
@@ -93,7 +86,7 @@ export default function TaskForm({
           disabled={trimmedTitle.length === 0}
           onClick={handleSubmit}
         >
-          {submitLabel}
+          {isRename ? '저장' : '추가'}
         </Button>
       </div>
     </div>

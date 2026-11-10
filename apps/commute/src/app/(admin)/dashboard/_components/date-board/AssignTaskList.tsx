@@ -39,11 +39,9 @@ const TaskRow = ({ todo, workers, state, handlers }: TaskRowProps) => {
     return (
       <li className='border-b border-gray-50 py-[0.5rem] last:border-b-0'>
         <TaskForm
-          label={`${title} 수정`}
+          mode='rename'
           initialTitle={title}
           initialPeriod={todo.period}
-          canChangePeriod
-          submitLabel='저장'
           onSubmit={(nextTitle, nextPeriod) => handlers.handleTodoUpdate(id, nextTitle, nextPeriod)}
           onCancel={handlers.handleRenameCancel}
         />
@@ -123,10 +121,8 @@ const PeriodSection = ({ period, label, workers, state, handlers }: PeriodSectio
       <li className='py-[0.5rem]'>
         {state.addingPeriod === period ? (
           <TaskForm
-            label={`${label} 업무 추가`}
+            mode='add'
             initialPeriod={period}
-            hint={`${label} 업무로 추가돼요`}
-            submitLabel='추가'
             onSubmit={handlers.handleTodoAdd}
             onCancel={handlers.handleAddCancel}
           />
