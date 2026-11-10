@@ -43,11 +43,10 @@ export default function TaskForm({
         aria-label='업무 명'
         placeholder='업무 이름'
         autoFocus
-        className='caption-14-md bg-black-1 w-[18rem] shrink-0 px-[0.8rem] py-[0.5rem]'
+        className='caption-14-md w-[18rem] shrink-0 border-none px-[0.8rem] py-[0.5rem]'
         value={title}
         onChange={(event) => setTitle(event.target.value)}
         onKeyDown={(event) => {
-          // 한글 조합 중 Enter는 글자 확정이라 저장으로 보지 않는다
           if (event.nativeEvent.isComposing) return;
           if (event.key === 'Enter') handleSubmit();
         }}
