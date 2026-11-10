@@ -7,7 +7,7 @@ import {
   SLOT_ATTENDANCE_STATUS_THEME,
 } from '../../_constants/attendanceStatus';
 import { findSlotShift, getSlotAttendanceStatus } from '../../_utils/attendanceStatus';
-import { getWorkersByPeriod, type OnDutyWorker } from '../../_utils/getWorkersByPeriod';
+import { getDailyWorkers, type OnDutyWorker } from '../../_utils/getWorkersByPeriod';
 
 type WorkScheduleListProps = {
   dateKey: string;
@@ -20,7 +20,7 @@ type WorkScheduleListProps = {
 type ScheduleRowProps = {
   dateKey: string;
   slot: WorkScheduleSlot;
-  // 그 시간대 근무자. 이 순서대로 한 사람이 한 열을 차지한다
+  // 그날 근무자. 이 순서대로 한 사람이 하루 내내 한 열을 차지한다
   workers: OnDutyWorker[];
   shifts: AttendanceShift[];
   now: Date;
@@ -73,12 +73,11 @@ const AttendanceLegend = () => (
 );
 
 // 하루치 근무 시간표 목록. 30분 단위로 누가 근무하는지 오전·오후로 나눠 보여 주고, 아무도 없는 칸은 뺀다.
-// 시간대 안에서 한 사람은 늘 같은 열에 놓여 겹치는 근무도 섞이지 않고, 칩 색으로 근무중·지각·결근 등을 알린다
+// 한 사람은 오전·오후 구분 없이 하루 내내 같은 열에 놓여 겹치는 근무도 섞이지 않고, 칩 색으로 근무중·지각·결근 등을 알린다
 export default function WorkScheduleList({ dateKey, slots, shifts, now }: WorkScheduleListProps) {
-  const workersByPeriod = getWorkersByPeriod(slots);
-  const groups = PERIODS.map(({ period, label, checkHour }) => ({
+  const workers = getDailyWorkers(slots);
+  const groups = PERIODS.map(({ label, checkHour }) => ({
     label,
-    workers: workersByPeriod[period],
     slots: slots.filter(
       ({ start, users }) => users.length > 0 && checkHour(Number(start.split(':')[0])),
     ),
@@ -97,7 +96,7 @@ export default function WorkScheduleList({ dateKey, slots, shifts, now }: WorkSc
                   key={slot.start}
                   dateKey={dateKey}
                   slot={slot}
-                  workers={group.workers}
+                  workers={workers}
                   shifts={shifts}
                   now={now}
                 />
