@@ -5,10 +5,10 @@ import { IconAdd } from '@konkuk-icteam-fe/design-system/assets';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { Dropdown } from '@konkuk-icteam-fe/design-system/ui';
 import type { TimeString } from '@/app/(student)/_apis/common';
-import { getTodoAssigneeCounts } from '../../../_apis/todos';
-import usePopover from '../../_hooks/usePopover';
-import type { OnDutyWorker } from '../../_utils/getWorkersByPeriod';
-import { getTaskStartOptions, getWorkersAt } from '../../_utils/taskTime';
+import { getTodoAssigneeCounts } from '../../../../_apis/todos';
+import usePopover from '../../../_hooks/usePopover';
+import type { OnDutyWorker } from '../../../_utils/getWorkersByPeriod';
+import { getTaskStartOptions, getWorkersAt } from '../../../_utils/taskTime';
 
 type AssigneePickerProps = {
   todoId: number;

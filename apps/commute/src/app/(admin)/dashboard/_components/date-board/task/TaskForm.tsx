@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { Button, Input, TagChip } from '@konkuk-icteam-fe/design-system/ui';
-import type { TodoPeriod } from '../../../_apis/todos';
-import { PERIODS } from '../../../_constants/period';
+import type { TodoPeriod } from '../../../../_apis/todos';
+import { PERIODS } from '../../../../_constants/period';
 
 type TaskFormProps = {
   // add: 누른 시간대에 새 업무를 더한다 (시간대 고정). rename: 기존 업무의 이름과 시간대를 고친다

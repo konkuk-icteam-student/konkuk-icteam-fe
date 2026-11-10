@@ -1,10 +1,10 @@
 import { StateChip } from '@konkuk-icteam-fe/design-system/ui';
-import type { AttendanceShift } from '../../../_apis/attendances';
-import type { WorkScheduleSlot } from '../../../_apis/workSchedules';
-import { PERIODS } from '../../../_constants/period';
+import type { AttendanceShift } from '../../../../_apis/attendances';
+import type { WorkScheduleSlot } from '../../../../_apis/workSchedules';
+import { PERIODS } from '../../../../_constants/period';
 import { SLOT_ATTENDANCE_STATUS_THEME } from '@/shared/constants/attendanceStatus';
-import { findSlotShift, getSlotAttendanceStatus } from '../../_utils/attendanceStatus';
-import { getDailyWorkers, type OnDutyWorker } from '../../_utils/getWorkersByPeriod';
+import { findSlotShift, getSlotAttendanceStatus } from '../../../_utils/attendanceStatus';
+import { getDailyWorkers, type OnDutyWorker } from '../../../_utils/getWorkersByPeriod';
 
 type WorkScheduleListProps = {
   dateKey: string;

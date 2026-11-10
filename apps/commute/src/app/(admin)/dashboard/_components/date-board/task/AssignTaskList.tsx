@@ -3,12 +3,12 @@
 import { IconAdd } from '@konkuk-icteam-fe/design-system/assets';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { ConfirmModal, TagChip } from '@konkuk-icteam-fe/design-system/ui';
-import type { Todo, TodoPeriod } from '../../../_apis/todos';
+import type { Todo, TodoPeriod } from '../../../../_apis/todos';
 import { getWorkerChipTone } from '@/shared/utils/getWorkerChipTone';
-import { PERIODS } from '../../../_constants/period';
-import useTaskAssignment from '../../_hooks/useTaskAssignment';
-import type { OnDutyWorker } from '../../_utils/getWorkersByPeriod';
-import { getTaskStartOptions, getWorkersAt } from '../../_utils/taskTime';
+import { PERIODS } from '../../../../_constants/period';
+import useTaskAssignment from '../../../_hooks/useTaskAssignment';
+import type { OnDutyWorker } from '../../../_utils/getWorkersByPeriod';
+import { getTaskStartOptions, getWorkersAt } from '../../../_utils/taskTime';
 import AssigneePicker from './AssigneePicker';
 import TaskForm from './TaskForm';
 import TaskMoreMenu from './TaskMoreMenu';

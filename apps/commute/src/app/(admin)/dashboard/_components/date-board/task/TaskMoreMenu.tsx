@@ -4,7 +4,7 @@ import { useId, type KeyboardEvent } from 'react';
 import { IconMore } from '@konkuk-icteam-fe/design-system/assets';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { IconButton } from '@konkuk-icteam-fe/design-system/ui';
-import usePopover from '../../_hooks/usePopover';
+import usePopover from '../../../_hooks/usePopover';
 
 type TaskMoreMenuProps = {
   title: string;

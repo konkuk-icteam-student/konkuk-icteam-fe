@@ -5,9 +5,9 @@ import { toISO } from '@konkuk-icteam-fe/design-system/date';
 import useCurrentTime from '../../_hooks/useCurrentTime';
 import useWorkSchedule from '../../_hooks/useWorkSchedule';
 import { getWorkersByPeriod } from '../../_utils/getWorkersByPeriod';
-import AssignTaskList from './AssignTaskList';
+import AssignTaskList from './task/AssignTaskList';
 import DateSelector from './DateSelector';
-import WorkScheduleList from './WorkScheduleList';
+import WorkScheduleList from './schedule/WorkScheduleList';
 
 type BoardColumnProps = {
   title: string;
