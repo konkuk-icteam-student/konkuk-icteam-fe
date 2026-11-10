@@ -1,7 +1,13 @@
-import { parseApiDate, type ApiJson } from '@/app/(student)/_apis/common';
+import {
+  parseApiDate,
+  parseApiDateTime,
+  toApiDate,
+  type ApiJson,
+  type WorkTimeRange,
+} from '@/app/(student)/_apis/common';
+import { getMonthlyRecordMock, getWorkerShiftsMock } from './mock/workerShifts';
 import { WORKERS_MOCK } from './mock/workers';
 import { getMonthlyUserIdsMock } from './mock/workApplications';
-import { getMonthlyRecordMock } from './mock/workSchedules';
 
 // 근로장학생 기본 정보. 아직 채우지 않은 정보는 null로 온다
 export type Worker = {
@@ -60,14 +66,61 @@ export type UpdateWorkerRequest = {
 
 export type UpdateWorkerResponse = Worker;
 
+// 한 근로장학생의 근무 한 구간과 출근 기록. 점심시간으로 끊기면 두 구간이 된다
+export type WorkerShift = WorkTimeRange & {
+  // 출근 체크한 시각. 아직 출근하지 않았거나 결근했으면 null
+  checkedInAt: Date | null;
+};
+
+export type GetWorkerShiftsRequest = {
+  userId: number;
+  startDate: Date;
+  // 이 날까지 포함한다
+  endDate: Date;
+};
+
+export type GetWorkerShiftsResponse = {
+  userId: number;
+  // 날짜·시작 시각 순. 예정·근무중·결근 근무도 모두 온다 (근태는 화면에서 정한다)
+  shifts: WorkerShift[];
+};
+
+export type ResetWorkerPasswordRequest = {
+  userId: number;
+};
+
+export type DeleteWorkerRequest = {
+  userId: number;
+};
+
 const toWorker = (json: ApiJson<Worker>): Worker => ({
   ...json,
   workStartDate: parseApiDate(json.workStartDate),
 });
 
+const toWorkerShift = (json: ApiJson<WorkerShift>): WorkerShift => ({
+  ...json,
+  date: parseApiDate(json.date),
+  checkedInAt: json.checkedInAt ? parseApiDateTime(json.checkedInAt) : null,
+});
+
+/**
+ * 근로장학생 목업과 그 자리를 찾습니다. 없으면 오류를 냅니다.
+ * @param userId 근로장학생 id
+ * @returns WORKERS_MOCK 안의 순서와 그 근로장학생 JSON
+ * @example findWorkerMock(1).index; // 0
+ */
+const findWorkerMock = (userId: number) => {
+  const index = WORKERS_MOCK.findIndex((worker) => worker.userId === userId);
+  const worker = WORKERS_MOCK[index];
+  if (!worker) throw new Error(`근로장학생(${userId})을 찾을 수 없습니다.`);
+
+  return { index, worker };
+};
+
 /**
  * GET /admin/workers
- * 같은 조직의 모든 근로장학생. 검색·선택 목록과 근로장학생 전체 탭에 쓴다 (이름 검색은 화면에서 한다)
+ * 같은 조직의 모든 근로장학생. 근로장학생 목록, 검색·선택 목록에 쓴다 (이름 검색은 화면에서 한다)
  */
 export const getWorkers = (): GetWorkersResponse => ({
   workers: WORKERS_MOCK.map(toWorker),
@@ -98,12 +151,38 @@ export const getMonthlyWorkers = ({
  * body: userId를 뺀 나머지 (바꾼 항목만)
  */
 export const updateWorker = ({ userId, ...changes }: UpdateWorkerRequest): UpdateWorkerResponse => {
-  const index = WORKERS_MOCK.findIndex((worker) => worker.userId === userId);
-  const current = WORKERS_MOCK[index];
-  if (!current) throw new Error(`근로장학생(${userId})을 찾을 수 없습니다.`);
-
-  const updated = { ...current, ...changes };
+  const { index, worker } = findWorkerMock(userId);
+  const updated = { ...worker, ...changes };
   WORKERS_MOCK[index] = updated;
 
   return toWorker(updated);
+};
+
+/**
+ * GET /admin/workers/{userId}/work-shifts?startDate=&endDate=
+ * 한 근로장학생의 기간 근무 구간과 출근 기록. 근태 요약·지각 기록·근로대장에 쓴다
+ */
+export const getWorkerShifts = ({
+  userId,
+  startDate,
+  endDate,
+}: GetWorkerShiftsRequest): GetWorkerShiftsResponse => ({
+  userId,
+  shifts: getWorkerShiftsMock(userId, toApiDate(startDate), toApiDate(endDate)).map(toWorkerShift),
+});
+
+/**
+ * POST /admin/workers/{userId}/password-reset
+ * 기존 비밀번호를 지우고 새 비밀번호를 발급한다. 새 비밀번호를 어떻게 전달할지는 아직 정하지 않았다 (응답 본문 없음)
+ */
+export const resetWorkerPassword = ({ userId }: ResetWorkerPasswordRequest) => {
+  findWorkerMock(userId);
+};
+
+/**
+ * DELETE /admin/workers/{userId}
+ * 계정과 시간표·근로대장·개인정보 등 관련 정보를 모두 지운다 (응답 본문 없음, ADR 0001)
+ */
+export const deleteWorker = ({ userId }: DeleteWorkerRequest) => {
+  WORKERS_MOCK.splice(findWorkerMock(userId).index, 1);
 };

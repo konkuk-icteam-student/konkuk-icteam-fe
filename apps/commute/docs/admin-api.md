@@ -23,31 +23,34 @@
 
 ## 한눈에 보기
 
-| 메서드 | 경로                                        | 하는 일                                   | 쓰는 화면                                                                 |
-| ------ | ------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------- |
-| GET    | `/admin/workers`                            | 모든 근로장학생                           | 근로장학생(전체 탭), 근로시간 관리(사람 찾기), 근로신청 관리(학생 고르기) |
-| GET    | `/admin/workers/monthly?year=&month=`       | 그 달 근로학생과 근무 기록                | 근로장학생(월별 탭)                                                       |
-| PATCH  | `/admin/workers/{userId}`                   | 근로장학생 정보 수정                      | 근로장학생                                                                |
-| GET    | `/admin/work-schedules?startDate=&endDate=` | 기간의 근무 시간표                        | 대시보드(하루), 근로시간 관리(월~금)                                      |
-| GET    | `/admin/attendances?date=`                  | 그날 근무 구간별 출근 기록                | 대시보드(오늘 근로 현황, 시간표 근태 색)                                  |
-| POST   | `/admin/work-schedules`                     | 근무 칸에 근로학생 넣기                   | 근로시간 관리                                                             |
-| DELETE | `/admin/work-schedules/{scheduleId}`        | 근무 칸에서 근로학생 빼기                 | 근로시간 관리                                                             |
-| GET    | `/admin/work-change-requests?year=&month=`  | 한 달 근무 변경 요청과 상태별 건수        | 대시보드(승인 대기 건수), 근로시간 관리, 수정요청                         |
-| PATCH  | `/admin/work-change-requests/{requestId}`   | 근무 변경 요청 승인·반려                  | 수정요청                                                                  |
-| GET    | `/admin/work-applications?year=&month=`     | 그 달 근로신청 기준과 신청할 수 있는 학생 | 근로신청 관리                                                             |
-| PUT    | `/admin/work-applications`                  | 그 달 근로신청 열기·수정                  | 근로신청 관리                                                             |
-| GET    | `/admin/todos`                              | 반복 업무 목록                            | 대시보드                                                                  |
-| POST   | `/admin/todos`                              | 반복 업무 추가                            | 대시보드                                                                  |
-| PUT    | `/admin/todos/{todoId}`                     | 반복 업무 수정                            | 대시보드                                                                  |
-| DELETE | `/admin/todos/{todoId}`                     | 반복 업무 삭제                            | 대시보드                                                                  |
-| GET    | `/admin/todos/{todoId}/assignee-counts`     | 근로학생별 그 업무 누적 횟수              | 대시보드(업무 지정)                                                       |
-| GET    | `/admin/todo-progress?date=`                | 그날 업무 수와 완료한 업무                | 대시보드(업무 현황, 완료 업무 취소선)                                     |
-| GET    | `/admin/todo-assignments?date=`             | 그날 업무별 시작 시각과 담당 근로학생     | 대시보드                                                                  |
-| PUT    | `/admin/todo-assignments`                   | 그날 업무 지정 통째로 저장                | 대시보드                                                                  |
-| GET    | `/admin/notices`                            | 게시 중·게시 예정 공지                    | 대시보드                                                                  |
-| POST   | `/admin/notices`                            | 공지 등록                                 | 대시보드                                                                  |
-| PUT    | `/admin/notices/{noticeId}`                 | 공지 수정                                 | 대시보드                                                                  |
-| DELETE | `/admin/notices/{noticeId}`                 | 공지 삭제                                 | 대시보드                                                                  |
+| 메서드 | 경로                                                      | 하는 일                                    | 쓰는 화면                                                              |
+| ------ | --------------------------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------- |
+| GET    | `/admin/workers`                                          | 모든 근로장학생                            | 근로장학생(목록), 근로시간 관리(사람 찾기), 근로신청 관리(학생 고르기) |
+| GET    | `/admin/workers/monthly?year=&month=`                     | 그 달 근로학생과 근무 기록                 | 근로장학생(목록의 이번 달 기록, 근로대장 월 최대 근로시간)             |
+| PATCH  | `/admin/workers/{userId}`                                 | 근로장학생 정보 수정                       | 근로장학생                                                             |
+| GET    | `/admin/workers/{userId}/work-shifts?startDate=&endDate=` | 한 근로장학생의 기간 근무 구간과 출근 기록 | 근로장학생(근태 요약·지각 기록·근로대장)                               |
+| POST   | `/admin/workers/{userId}/password-reset`                  | 비밀번호 초기화                            | 근로장학생                                                             |
+| DELETE | `/admin/workers/{userId}`                                 | 계정 삭제                                  | 근로장학생                                                             |
+| GET    | `/admin/work-schedules?startDate=&endDate=`               | 기간의 근무 시간표                         | 대시보드(하루), 근로시간 관리(월~금)                                   |
+| GET    | `/admin/attendances?date=`                                | 그날 근무 구간별 출근 기록                 | 대시보드(오늘 근로 현황, 시간표 근태 색)                               |
+| POST   | `/admin/work-schedules`                                   | 근무 칸에 근로학생 넣기                    | 근로시간 관리                                                          |
+| DELETE | `/admin/work-schedules/{scheduleId}`                      | 근무 칸에서 근로학생 빼기                  | 근로시간 관리                                                          |
+| GET    | `/admin/work-change-requests?year=&month=`                | 한 달 근무 변경 요청과 상태별 건수         | 대시보드(승인 대기 건수), 근로시간 관리, 수정요청                      |
+| PATCH  | `/admin/work-change-requests/{requestId}`                 | 근무 변경 요청 승인·반려                   | 수정요청                                                               |
+| GET    | `/admin/work-applications?year=&month=`                   | 그 달 근로신청 기준과 신청할 수 있는 학생  | 근로신청 관리                                                          |
+| PUT    | `/admin/work-applications`                                | 그 달 근로신청 열기·수정                   | 근로신청 관리                                                          |
+| GET    | `/admin/todos`                                            | 반복 업무 목록                             | 대시보드                                                               |
+| POST   | `/admin/todos`                                            | 반복 업무 추가                             | 대시보드                                                               |
+| PUT    | `/admin/todos/{todoId}`                                   | 반복 업무 수정                             | 대시보드                                                               |
+| DELETE | `/admin/todos/{todoId}`                                   | 반복 업무 삭제                             | 대시보드                                                               |
+| GET    | `/admin/todos/{todoId}/assignee-counts`                   | 근로학생별 그 업무 누적 횟수               | 대시보드(업무 지정)                                                    |
+| GET    | `/admin/todo-progress?date=`                              | 그날 업무 수와 완료한 업무                 | 대시보드(업무 현황, 완료 업무 취소선)                                  |
+| GET    | `/admin/todo-assignments?date=`                           | 그날 업무별 시작 시각과 담당 근로학생      | 대시보드                                                               |
+| PUT    | `/admin/todo-assignments`                                 | 그날 업무 지정 통째로 저장                 | 대시보드                                                               |
+| GET    | `/admin/notices`                                          | 게시 중·게시 예정 공지                     | 대시보드                                                               |
+| POST   | `/admin/notices`                                          | 공지 등록                                  | 대시보드                                                               |
+| PUT    | `/admin/notices/{noticeId}`                               | 공지 수정                                  | 대시보드                                                               |
+| DELETE | `/admin/notices/{noticeId}`                               | 공지 삭제                                  | 대시보드                                                               |
 
 ---
 
@@ -122,6 +125,41 @@
 ```
 
 응답은 바뀐 근로장학생 한 명(`GET /admin/workers`의 항목 모양)입니다.
+
+### GET `/admin/workers/{userId}/work-shifts?startDate=2026-11-01&endDate=2026-11-30`
+
+한 근로장학생의 기간(`endDate` 포함) 근무 구간과 출근 기록입니다. 한 사람의 이어진 30분 칸을 한 구간으로 묶고, 점심시간으로 끊기면 두 구간이 됩니다(`GET /admin/attendances`와 같은 묶음). 날짜·시작 시각 순으로 옵니다.
+
+```json
+{
+  "userId": 2,
+  "shifts": [
+    {
+      "date": "2026-11-04",
+      "start": "10:30",
+      "end": "11:30",
+      "checkedInAt": "2026-11-04T10:36:00"
+    },
+    { "date": "2026-11-05", "start": "13:00", "end": "16:30", "checkedInAt": null }
+  ]
+}
+```
+
+- 예정·근무중·결근 근무도 모두 보냅니다. 근태는 `GET /admin/attendances`처럼 화면에서 `checkedInAt`과 지금 시각으로 정합니다
+- 근로장학생 상세보기에서 이렇게 씁니다 (용어는 `apps/commute/CONTEXT.md`의 근무 절)
+
+| 화면                | 쓰는 근무                                                                                                                     |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| 근태 요약·지각 기록 | 이번 달 근무. 시작 시각보다 늦게 출근했으면 지각(늦은 분을 셈), 끝났는데 출근하지 않았으면 결근                               |
+| 근로대장            | 고른 달의 근무 완료(출근했고 끝난) 건만, 배정된 시작·종료 시각으로 적습니다. 이번 달이면 이번 주 누적을 위해 그 주 월요일부터 |
+
+### POST `/admin/workers/{userId}/password-reset`
+
+기존 비밀번호를 지우고 새 비밀번호를 발급합니다. 요청·응답 본문은 없습니다. 새 비밀번호를 누구에게 어떻게 전달할지는 아직 정하지 않았습니다(아래 "백엔드와 정해야 할 것").
+
+### DELETE `/admin/workers/{userId}`
+
+계정과 시간표·근로대장·개인정보 등 그 근로장학생과 관련한 정보를 모두 지웁니다. 되돌릴 수 없습니다([ADR 0001](adr/0001-account-deletion-removes-all-records.md)). 요청·응답 본문은 없습니다.
 
 ---
 
@@ -507,4 +545,6 @@
 - **업무 누적 횟수 기준**: `assignee-counts`의 "한 번"을 지정된 날로 셀지, 근로학생이 완료 체크한 날로 셀지. 지금 목업은 업무·사람마다 정해 둔 임의의 기본 횟수에, 오늘 전 날짜에 지정한 횟수를 더해서 셉니다
 - **지각 기준**: 지금은 칸 시작 시각보다 1분이라도 늦게 출근하면 지각으로 봅니다. 몇 분까지 봐줄지 정해야 합니다
 - **근로신청 재저장**: 이미 열린 달을 다시 저장할 때 들어온 신청을 초기화하는 처리를 서버에서 할지
+- **비밀번호 초기화 전달**: 새 비밀번호를 근로장학생 학교 메일로 보낼지, 응답으로 돌려줘 관리자 화면에 보여 줄지. 지금 화면은 확인 창 뒤에 "초기화했어요" 토스트만 띄웁니다
+- **계정 삭제 범위**: 화면은 디자인 문구대로 근로대장까지 모두 지운다고 안내합니다([ADR 0001](adr/0001-account-deletion-removes-all-records.md)). 서버가 지난 근무 기록을 남기기로 하면 확인 창 문구와 ADR을 함께 고칩니다
 - **근로학생 화면 API**: 이 문서는 관리자 화면만 다룹니다. 근로학생 화면(홈·시간표)이 쓰는 API는 [`student-api.md`](student-api.md)에 정리했습니다

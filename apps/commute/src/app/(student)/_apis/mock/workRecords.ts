@@ -1,12 +1,12 @@
 import { parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
-import { getMonthlyRecordMock } from '@/app/(admin)/_apis/mock/workSchedules';
+import { getMonthlyRecordMock } from '@/app/(admin)/_apis/mock/workerShifts';
 import { addDays, getMondayOfWeek } from '@/shared/utils/week';
 import { SLOT_MINUTES } from '@/shared/config/slot';
 import { MY_USER_ID } from './me';
 import { getMyDaySlotsMock } from './workSchedules';
 
 /**
- * 내 근무 기록 목업을 얻습니다. 이번 달은 관리자 근무 기록(근로장학생 월별 탭)과 같은 값을 쓰고,
+ * 내 근무 기록 목업을 얻습니다. 이번 달은 관리자 근무 기록(근로장학생 목록)과 같은 값을 쓰고,
  * 이번 주는 월요일부터 그날까지 내가 배치된 칸을 셉니다.
  * @param dateKey 기준일 (YYYY-MM-DD)
  * @returns 이번 주·이번 달 근무 시간 (분)
