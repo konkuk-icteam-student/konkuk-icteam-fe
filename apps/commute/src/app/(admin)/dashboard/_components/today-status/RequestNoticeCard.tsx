@@ -8,11 +8,11 @@ import {
   createStatusFilterHref,
   STATUS_FILTER_ALL,
 } from '../../../worktime/change-requests/_utils/statusFilter';
-import usePendingRequestCount from '../../_hooks/usePendingRequestCount';
 
 // 승인 대기 요청 수를 알리고 근로시간 수정요청 화면으로 보내는 카드
 export default function RequestNoticeCard() {
-  const count = usePendingRequestCount();
+  // TODO: 근로시간 수정요청 API에서 승인 대기 요청 수를 가져와서 넣어야 함
+  const count = 0;
   const hasRequests = count > 0;
   const href = createStatusFilterHref(
     hasRequests ? WORK_CHANGE_REQUEST_STATUS.PENDING : STATUS_FILTER_ALL,
@@ -51,7 +51,7 @@ export default function RequestNoticeCard() {
             hasRequests ? 'text-blue' : 'text-gray-500',
           )}
         >
-          {hasRequests ? '바로 처리하기' : '요청 내역 보기'}
+          요청 내역 보기
           <IconArrowRight
             aria-hidden
             className='h-[1.6rem] w-[1.6rem] transition-transform group-hover:translate-x-[0.2rem]'
