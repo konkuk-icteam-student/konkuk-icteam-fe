@@ -1,4 +1,5 @@
 import { useReducer } from 'react';
+import { WORK_CHANGE_REQUEST_STATUS } from '@/shared/constants/workChangeRequestStatus';
 import { getWorkChangeRequests, updateWorkChangeRequest } from '../../../_apis/workChangeRequests';
 
 // 한 달치 근무 변경 요청과 승인·반려 처리. 처리하면 바로 저장하고 다시 불러온다
@@ -7,12 +8,16 @@ export const useWorkChangeRequests = (year: number, month: number) => {
   const { summary, requests } = getWorkChangeRequests({ year, month });
 
   const handleApprove = (requestId: number) => {
-    updateWorkChangeRequest({ requestId, statusCode: 'CS02' });
+    updateWorkChangeRequest({ requestId, statusCode: WORK_CHANGE_REQUEST_STATUS.APPROVED });
     refresh();
   };
 
   const handleReject = (requestId: number, rejectReason: string) => {
-    updateWorkChangeRequest({ requestId, statusCode: 'CS03', rejectReason });
+    updateWorkChangeRequest({
+      requestId,
+      statusCode: WORK_CHANGE_REQUEST_STATUS.REJECTED,
+      rejectReason,
+    });
     refresh();
   };
 

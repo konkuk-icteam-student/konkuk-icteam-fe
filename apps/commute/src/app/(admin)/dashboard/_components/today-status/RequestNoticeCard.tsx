@@ -3,7 +3,11 @@
 import Link from 'next/link';
 import { IconArrowRight, IconInfo } from '@konkuk-icteam-fe/design-system/assets';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
-import { ROUTES } from '@/shared/config/routes';
+import { WORK_CHANGE_REQUEST_STATUS } from '@/shared/constants/workChangeRequestStatus';
+import {
+  createStatusFilterHref,
+  STATUS_FILTER_ALL,
+} from '../../../worktime/change-requests/_utils/statusFilter';
 import { usePendingRequestCount } from '../../_hooks/usePendingRequestCount';
 
 // 오늘 근로 현황 줄 오른쪽 끝 카드. 승인 대기 요청 수는 직접 불러온다. 누르면 근로시간 수정요청 화면으로 간다.
@@ -11,15 +15,14 @@ import { usePendingRequestCount } from '../../_hooks/usePendingRequestCount';
 export default function RequestNoticeCard() {
   const count = usePendingRequestCount();
   const hasRequests = count > 0;
+  // 처리할 요청이 있으면 승인 대기 탭을, 없으면 전체 탭을 연다
+  const href = createStatusFilterHref(
+    hasRequests ? WORK_CHANGE_REQUEST_STATUS.PENDING : STATUS_FILTER_ALL,
+  );
 
   return (
     <Link
-      // 처리할 요청이 있으면 승인 대기 탭을 바로 연다
-      href={
-        hasRequests
-          ? `${ROUTES.ADMIN_WORKTIME_CHANGE_REQUESTS}?status=CS01`
-          : ROUTES.ADMIN_WORKTIME_CHANGE_REQUESTS
-      }
+      href={href}
       className={cn(
         'group flex items-center gap-[1.2rem] rounded-[1.2rem] px-[2rem] py-[1.4rem] transition-colors',
         hasRequests ? 'bg-blue/10 hover:bg-blue/15' : 'bg-gray-50 hover:bg-gray-50/70',

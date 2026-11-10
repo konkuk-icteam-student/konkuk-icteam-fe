@@ -6,13 +6,13 @@ import {
   type ApiJson,
   type WorkTimeRange,
 } from './common';
+import type { WorkChangeRequestStatusCode } from '@/shared/constants/workChangeRequestStatus';
 import { getMyNameMock, MY_USER_ID } from './mock/me';
 import { addWorkChangeRequestMock, getWorkChangeRequestsMock } from './mock/workChangeRequests';
 
 // 관리자 근무 변경 요청(GET /admin/work-change-requests)과 같은 모양이다
 
-// CS01 승인 대기 · CS02 승인 · CS03 반려
-export type WorkChangeRequestStatusCode = 'CS01' | 'CS02' | 'CS03';
+export type { WorkChangeRequestStatusCode } from '@/shared/constants/workChangeRequestStatus';
 
 // 내가 보낸 근무 변경 요청 한 건. 뺄 근무와 더할 근무 중 한쪽만 있을 수도 있다
 export type WorkChangeRequest = {
