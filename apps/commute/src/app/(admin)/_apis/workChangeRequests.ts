@@ -1,8 +1,11 @@
 import {
   toWorkChangeRequest,
   type WorkChangeRequest,
-  type WorkChangeRequestStatusCode,
 } from '@/app/(student)/_apis/workChangeRequests';
+import {
+  WORK_CHANGE_REQUEST_STATUS,
+  type WorkChangeRequestStatusCode,
+} from '@/shared/constants/workChangeRequestStatus';
 import { getWorkChangeRequestsMock, updateWorkChangeRequestMock } from './mock/workChangeRequests';
 
 // 근무 변경 요청 한 건의 모양은 근로학생 API(shared/apis/workChangeRequests)와 같다
@@ -34,8 +37,12 @@ export type GetWorkChangeRequestsResponse = {
 
 // 승인하면 서버가 삭제·추가 근무를 시간표에 반영한다. 반려할 때는 사유가 꼭 있어야 한다
 export type UpdateWorkChangeRequestRequest =
-  | { requestId: number; statusCode: 'CS02' }
-  | { requestId: number; statusCode: 'CS03'; rejectReason: string };
+  | { requestId: number; statusCode: typeof WORK_CHANGE_REQUEST_STATUS.APPROVED }
+  | {
+      requestId: number;
+      statusCode: typeof WORK_CHANGE_REQUEST_STATUS.REJECTED;
+      rejectReason: string;
+    };
 
 export type UpdateWorkChangeRequestResponse = WorkChangeRequest;
 
@@ -56,9 +63,9 @@ export const getWorkChangeRequests = ({
     month,
     summary: {
       totalCount: requests.length,
-      pendingCount: countByStatus('CS01'),
-      approvedCount: countByStatus('CS02'),
-      rejectedCount: countByStatus('CS03'),
+      pendingCount: countByStatus(WORK_CHANGE_REQUEST_STATUS.PENDING),
+      approvedCount: countByStatus(WORK_CHANGE_REQUEST_STATUS.APPROVED),
+      rejectedCount: countByStatus(WORK_CHANGE_REQUEST_STATUS.REJECTED),
     },
     requests,
   };
@@ -66,7 +73,7 @@ export const getWorkChangeRequests = ({
 
 /**
  * PATCH /admin/work-change-requests/{requestId}
- * body: { statusCode, rejectReason? }. 승인 대기(CS01)인 요청만 처리할 수 있다
+ * body: { statusCode, rejectReason? }. 승인 대기인 요청만 처리할 수 있다
  */
 export const updateWorkChangeRequest = (
   request: UpdateWorkChangeRequestRequest,
@@ -74,6 +81,7 @@ export const updateWorkChangeRequest = (
   toWorkChangeRequest(
     updateWorkChangeRequestMock(request.requestId, {
       statusCode: request.statusCode,
-      rejectReason: request.statusCode === 'CS03' ? request.rejectReason : null,
+      rejectReason:
+        request.statusCode === WORK_CHANGE_REQUEST_STATUS.REJECTED ? request.rejectReason : null,
     }),
   );

@@ -7,7 +7,7 @@ import type { WorkChangeRequest } from '../../_apis/workChangeRequests';
 import { getCurrentMonthKey, parseMonthKey, shiftMonthKey } from '../../_utils/monthKey';
 import RejectModal from './_components/RejectModal';
 import StatusFilterTabs from './_components/StatusFilterTabs';
-import type { StatusFilter } from './_utils/statusFilter';
+import { STATUS_FILTER_ALL, type StatusFilter } from './_utils/statusFilter';
 import WorkChangeRequestCard from './_components/WorkChangeRequestCard';
 import { useWorkChangeRequests } from './_hooks/useWorkChangeRequests';
 
@@ -29,7 +29,7 @@ export default function PageClient({ statusFilter }: PageClientProps) {
   const maxMonthKey = shiftMonthKey(currentMonthKey, MAX_MONTH_OFFSET);
   const { summary, requests, handleApprove, handleReject } = useWorkChangeRequests(year, month);
   const visibleRequests = requests.filter(
-    ({ statusCode }) => statusFilter === 'ALL' || statusCode === statusFilter,
+    ({ statusCode }) => statusFilter === STATUS_FILTER_ALL || statusCode === statusFilter,
   );
 
   const handleApproveClick = ({ requestId, userName }: WorkChangeRequest) => {

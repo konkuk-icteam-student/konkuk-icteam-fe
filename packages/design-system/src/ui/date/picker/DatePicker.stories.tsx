@@ -26,7 +26,7 @@ const meta: Meta<typeof DatePicker> = {
     docs: {
       description: {
         component:
-          "하루 선택(기본)과 기간 선택(mode='range')을 지원하는 달력입니다. 기간 선택은 첫 클릭이 시작일, 다음 클릭이 종료일이며, 시작일보다 이전을 누르거나 사이에 disabledDates가 있으면 그 날짜부터 다시 시작합니다.",
+          "하루 선택(기본)과 기간 선택(mode='range')을 지원하는 달력입니다. 기간 선택은 첫 클릭이 시작일, 다음 클릭이 종료일이며, 시작일보다 이전을 누르면 두 날짜를 바꿔 기간으로 잡고, 사이에 disabledDates가 있으면 그 날짜부터 다시 시작합니다.",
       },
     },
   },

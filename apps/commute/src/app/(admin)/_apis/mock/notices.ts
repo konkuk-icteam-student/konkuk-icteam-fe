@@ -97,17 +97,6 @@ export const createNoticeMock = (input: ApiJson<NoticeInput>): NoticeJson => {
   return notice;
 };
 
-export const updateNoticeMock = (noticeId: number, input: ApiJson<NoticeInput>) => {
-  const index = NOTICES.findIndex((notice) => notice.noticeId === noticeId);
-  const saved = NOTICES[index];
-  if (!saved) return undefined;
-
-  const notice = { ...saved, ...input };
-  NOTICES[index] = notice;
-
-  return notice;
-};
-
 export const deleteNoticeMock = (noticeId: number) => {
   const index = NOTICES.findIndex((notice) => notice.noticeId === noticeId);
   if (index >= 0) NOTICES.splice(index, 1);
