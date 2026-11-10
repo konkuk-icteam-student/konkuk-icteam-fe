@@ -2,10 +2,7 @@ import { StateChip } from '@konkuk-icteam-fe/design-system/ui';
 import type { AttendanceShift } from '../../../_apis/attendances';
 import type { WorkScheduleSlot } from '../../../_apis/workSchedules';
 import { PERIODS } from '../../../_constants/period';
-import {
-  SLOT_ATTENDANCE_STATUS_ORDER,
-  SLOT_ATTENDANCE_STATUS_THEME,
-} from '../../_constants/attendanceStatus';
+import { SLOT_ATTENDANCE_STATUS_THEME } from '@/shared/constants/attendanceStatus';
 import { findSlotShift, getSlotAttendanceStatus } from '../../_utils/attendanceStatus';
 import { getDailyWorkers, type OnDutyWorker } from '../../_utils/getWorkersByPeriod';
 
@@ -58,20 +55,6 @@ const ScheduleRow = ({ dateKey, slot, workers, shifts, now }: ScheduleRowProps) 
   </div>
 );
 
-// 근태 색 범례
-const AttendanceLegend = () => (
-  <ul aria-label='근태 색' className='flex flex-wrap justify-end gap-[0.6rem]'>
-    {SLOT_ATTENDANCE_STATUS_ORDER.map((status) => (
-      <li key={status}>
-        <StateChip
-          label={SLOT_ATTENDANCE_STATUS_THEME[status].label}
-          tone={SLOT_ATTENDANCE_STATUS_THEME[status].tone}
-        />
-      </li>
-    ))}
-  </ul>
-);
-
 // 하루치 근무 시간표 목록. 30분 단위로 누가 근무하는지 오전·오후로 나눠 보여 주고, 아무도 없는 칸은 뺀다.
 // 한 사람은 오전·오후 구분 없이 하루 내내 같은 열에 놓여 겹치는 근무도 섞이지 않고, 칩 색으로 근무중·지각·결근 등을 알린다
 export default function WorkScheduleList({ dateKey, slots, shifts, now }: WorkScheduleListProps) {
@@ -85,9 +68,15 @@ export default function WorkScheduleList({ dateKey, slots, shifts, now }: WorkSc
 
   return (
     <div className='bg-black-1 rounded-[1.2rem] border border-gray-50 p-[1.6rem] pr-[2.1rem]'>
+      <ul aria-label='근태 칩' className='flex flex-wrap justify-end gap-[0.6rem]'>
+        {Object.values(SLOT_ATTENDANCE_STATUS_THEME).map(({ label, tone }) => (
+          <li key={label}>
+            <StateChip label={label} tone={tone} />
+          </li>
+        ))}
+      </ul>
       {groups.length > 0 ? (
         <div className='flex flex-col gap-[2.4rem]'>
-          <AttendanceLegend />
           {groups.map((group) => (
             <div key={group.label}>
               <p className='font-14-bd mb-[0.8rem] px-[0.6rem] text-black'>{group.label}</p>
