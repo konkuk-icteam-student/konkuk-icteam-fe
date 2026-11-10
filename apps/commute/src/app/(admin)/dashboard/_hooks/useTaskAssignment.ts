@@ -16,8 +16,6 @@ import type { OnDutyWorker } from '../_utils/getWorkersByPeriod';
 import { getWorkersAt } from '../_utils/taskTime';
 
 export default function useTaskAssignment(dateKey: string, onNotify: (message: string) => void) {
-  // 근로학생을 고르는 중인 업무. 한 번에 한 업무만 펼친다
-  const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
   const [renamingTaskId, setRenamingTaskId] = useState<number | null>(null);
   // 업무를 추가하는 중인 시간대. 그 시간대 목록 맨 아래에 입력 줄을 연다
   const [addingPeriod, setAddingPeriod] = useState<TodoPeriod | null>(null);
@@ -66,13 +64,8 @@ export default function useTaskAssignment(dateKey: string, onNotify: (message: s
     );
   };
 
-  const handleEditToggle = (todoId: number) => {
-    setEditingTaskId(editingTaskId === todoId ? null : todoId);
-  };
-
   // 한 번에 입력 줄 하나만 연다
   const handleAddStart = (period: TodoPeriod) => {
-    setEditingTaskId(null);
     setRenamingTaskId(null);
     setAddingPeriod(period);
   };
@@ -86,7 +79,6 @@ export default function useTaskAssignment(dateKey: string, onNotify: (message: s
   };
 
   const handleRenameStart = (todoId: number) => {
-    setEditingTaskId(null);
     setAddingPeriod(null);
     setRenamingTaskId(todoId);
   };
@@ -106,7 +98,6 @@ export default function useTaskAssignment(dateKey: string, onNotify: (message: s
   const handleDeleteConfirm = () => {
     if (!deletingTodo) return;
     deleteTodo({ todoId: deletingTodo.todoId });
-    if (editingTaskId === deletingTodo.todoId) setEditingTaskId(null);
     setDeletingTodo(null);
     onNotify('업무를 삭제했어요.');
   };
@@ -115,7 +106,6 @@ export default function useTaskAssignment(dateKey: string, onNotify: (message: s
     todos,
     completedTodoIds,
     assignments,
-    editingTaskId,
     renamingTaskId,
     addingPeriod,
     deletingTodo,
@@ -130,7 +120,6 @@ export default function useTaskAssignment(dateKey: string, onNotify: (message: s
     handleDeleteStart,
     handleDeleteCancel,
     handleDeleteConfirm,
-    handleEditToggle,
     handleStartChange,
     handleWorkerToggle,
     handleAddStart,

@@ -10,19 +10,22 @@ type TaskFormProps = {
   label: string;
   initialTitle?: string;
   initialPeriod: TodoPeriod;
-  // 시간대를 바꿀 수 있는지. 추가는 누른 시간대(+)로 정해져 있어 고칠 때만 연다
+  // 시간대를 바꿀 수 있는지. 추가는 누른 시간대로 정해져 있어 고칠 때만 연다
   canChangePeriod?: boolean;
+  // 시간대를 바꿀 수 없을 때 가운데 칸에 보여 줄 안내
+  hint?: string;
   submitLabel: string;
   onSubmit: (title: string, period: TodoPeriod) => void;
   onCancel: () => void;
 };
 
-// 업무 지정 목록 안에서 업무를 추가하거나 고치는 줄. 이름을 정하고, 고칠 때는 시간대도 바꾼다. Enter로 저장, Escape로 취소한다
+// 업무 줄과 같은 높이·칸 그대로 업무를 추가하거나 고치는 입력 줄. Enter로 저장한다
 export default function TaskForm({
   label,
   initialTitle = '',
   initialPeriod,
   canChangePeriod = false,
+  hint,
   submitLabel,
   onSubmit,
   onCancel,
@@ -40,12 +43,13 @@ export default function TaskForm({
     <div
       role='group'
       aria-label={label}
-      className='flex flex-col gap-[0.8rem] rounded-[0.8rem] bg-gray-50 p-[1rem]'
+      className='-mx-[0.8rem] flex items-center gap-[1rem] rounded-[0.6rem] bg-gray-50 px-[0.8rem] py-[0.3rem]'
     >
       <Input
         aria-label='업무 명'
-        placeholder='업무 이름을 입력하세요'
+        placeholder='업무 이름'
         autoFocus
+        className='caption-14-md bg-black-1 w-[18rem] shrink-0 px-[0.8rem] py-[0.5rem]'
         value={title}
         onChange={(event) => setTitle(event.target.value)}
         onKeyDown={(event) => {
@@ -53,9 +57,9 @@ export default function TaskForm({
           if (event.key === 'Enter') handleSubmit();
         }}
       />
-      <div className='flex items-center justify-between gap-[0.8rem]'>
-        {canChangePeriod && (
-          <div role='group' aria-label='시간대' className='flex gap-[0.6rem]'>
+      <div className='flex min-w-0 flex-1 items-center'>
+        {canChangePeriod ? (
+          <div role='group' aria-label='시간대' className='flex gap-[0.4rem]'>
             {PERIODS.map((option) => (
               <TagChip
                 key={option.period}
@@ -66,29 +70,31 @@ export default function TaskForm({
               />
             ))}
           </div>
+        ) : (
+          <span className='caption-12-md truncate text-gray-500'>{hint}</span>
         )}
-        <div className='flex gap-[0.6rem]'>
-          <Button
-            display='inline'
-            size='small'
-            tone='subtle_2'
-            color='gray'
-            className='w-[6rem]'
-            onClick={onCancel}
-          >
-            취소
-          </Button>
-          <Button
-            display='inline'
-            size='small'
-            color='blue'
-            className='w-[6rem]'
-            disabled={trimmedTitle.length === 0}
-            onClick={handleSubmit}
-          >
-            {submitLabel}
-          </Button>
-        </div>
+      </div>
+      <div className='flex shrink-0 gap-[0.4rem]'>
+        <Button
+          display='inline'
+          size='small'
+          tone='subtle_2'
+          color='gray'
+          className='w-[5.2rem]'
+          onClick={onCancel}
+        >
+          취소
+        </Button>
+        <Button
+          display='inline'
+          size='small'
+          color='blue'
+          className='w-[5.2rem]'
+          disabled={trimmedTitle.length === 0}
+          onClick={handleSubmit}
+        >
+          {submitLabel}
+        </Button>
       </div>
     </div>
   );
