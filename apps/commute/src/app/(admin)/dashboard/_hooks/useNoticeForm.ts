@@ -43,8 +43,6 @@ export default function useNoticeForm(onNotify: (message: string) => void) {
 
   const handleNoticeSubmit = handleSubmit(() => setIsConfirmOpen(true));
 
-  const handleConfirmOpenChange = (open: boolean) => setIsConfirmOpen(open);
-
   const handleRegisterConfirm = handleSubmit((values) => {
     createNotice(values);
     setIsConfirmOpen(false);
@@ -73,7 +71,7 @@ export default function useNoticeForm(onNotify: (message: string) => void) {
     handlePeriodChange,
     handleContentChange,
     handleNoticeSubmit,
-    handleConfirmOpenChange,
+    handleConfirmOpenChange: setIsConfirmOpen,
     handleRegisterConfirm,
   };
 
