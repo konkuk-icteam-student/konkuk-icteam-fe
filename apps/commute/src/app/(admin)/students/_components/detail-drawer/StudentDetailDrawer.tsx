@@ -19,6 +19,11 @@ const DETAIL_TABS: { value: DetailTab; label: string }[] = [
   { value: 'LEDGER', label: '근로대장' },
 ];
 
+// 탭 아래 내용 영역. 내용 길이와 상관없이 서랍 끝까지 같은 높이를 차지하고 그 안에서만 스크롤한다.
+// 스크롤바는 서랍 오른쪽 끝에 붙이고, 스크롤바가 생겼다 없어져도 폭이 흔들리지 않게 자리를 늘 비워 둔다
+const PANEL_CLASS_NAME =
+  'flex min-h-0 flex-1 flex-col gap-[2.4rem] overflow-y-auto [scrollbar-gutter:stable] -mr-[3.2rem] pr-[3.2rem] pb-[4rem]';
+
 type StudentDetailDrawerProps = {
   // 열린 학생. 없으면 닫혀 있다
   student: StudentRow | null;
@@ -68,12 +73,12 @@ export default function StudentDetailDrawer({
         className='absolute inset-0 cursor-default bg-gray-900/30'
         onClick={onClose}
       />
-      {/* 탭마다 내용 길이가 달라 스크롤바가 생겼다 없어지면 폭이 흔들린다. 스크롤바 자리를 늘 비워 둔다 */}
+      {/* 머리글·프로필·탭은 고정하고, 그 아래 내용만 PANEL_CLASS_NAME 영역 안에서 스크롤한다 */}
       <section
         role='dialog'
         aria-modal='true'
         aria-label='근로장학생 상세보기'
-        className='bg-black-1 relative flex h-full w-[48rem] [scrollbar-gutter:stable] flex-col gap-[2.4rem] overflow-y-auto px-[3.2rem] py-[4rem]'
+        className='bg-black-1 relative flex h-full w-[48rem] flex-col gap-[2.4rem] px-[3.2rem] pt-[4rem]'
       >
         <div className='flex items-center justify-between'>
           <h2 className='title-23-eb text-black'>근로장학생 상세보기</h2>
@@ -105,11 +110,13 @@ export default function StudentDetailDrawer({
         </div>
 
         {isEditing ? (
-          <StudentEditForm
-            profile={student}
-            onCancel={() => setIsEditing(false)}
-            onSubmit={handleSubmit}
-          />
+          <div className={PANEL_CLASS_NAME}>
+            <StudentEditForm
+              profile={student}
+              onCancel={() => setIsEditing(false)}
+              onSubmit={handleSubmit}
+            />
+          </div>
         ) : (
           <>
             <Tabs.List activeValue={activeTab} tabs={DETAIL_TABS} aria-label='상세보기'>
@@ -130,18 +137,21 @@ export default function StudentDetailDrawer({
               ))}
             </Tabs.List>
 
-            {activeTab === 'BASIC' ? (
-              <>
-                <BasicInfoTab student={student} />
-                <AccountSection
-                  email={student.email}
-                  onPasswordReset={() => onPasswordReset(student)}
-                  onDelete={() => onDelete(student)}
-                />
-              </>
-            ) : (
-              <WorkLedgerTab student={student} />
-            )}
+            {/* 탭을 바꾸면 영역을 새로 그려 스크롤을 맨 위로 되돌린다 */}
+            <div key={activeTab} role='tabpanel' className={PANEL_CLASS_NAME}>
+              {activeTab === 'BASIC' ? (
+                <>
+                  <BasicInfoTab student={student} />
+                  <AccountSection
+                    email={student.email}
+                    onPasswordReset={() => onPasswordReset(student)}
+                    onDelete={() => onDelete(student)}
+                  />
+                </>
+              ) : (
+                <WorkLedgerTab student={student} />
+              )}
+            </div>
           </>
         )}
       </section>
