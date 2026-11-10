@@ -68,11 +68,12 @@ export default function StudentDetailDrawer({
         className='absolute inset-0 cursor-default bg-gray-900/30'
         onClick={onClose}
       />
+      {/* 탭마다 내용 길이가 달라 스크롤바가 생겼다 없어지면 폭이 흔들린다. 스크롤바 자리를 늘 비워 둔다 */}
       <section
         role='dialog'
         aria-modal='true'
         aria-label='근로장학생 상세보기'
-        className='bg-black-1 relative flex h-full w-[48rem] flex-col gap-[2.4rem] overflow-y-auto px-[3.2rem] py-[4rem]'
+        className='bg-black-1 relative flex h-full w-[48rem] [scrollbar-gutter:stable] flex-col gap-[2.4rem] overflow-y-auto px-[3.2rem] py-[4rem]'
       >
         <div className='flex items-center justify-between'>
           <h2 className='title-23-eb text-black'>근로장학생 상세보기</h2>
