@@ -177,7 +177,7 @@ export default function AssignTaskList({
         title='업무를 삭제하시겠습니까?'
         description={
           compatibleState.deletingTodo
-            ? `'${compatibleState.deletingTodo.title}'을(를) 지우면 모든 날짜의 지정도 함께 사라집니다.`
+            ? `'${compatibleState.deletingTodo.title}'을(를) 지우면 앞으로의 지정도 함께 사라집니다.`
             : undefined
         }
         buttons={[

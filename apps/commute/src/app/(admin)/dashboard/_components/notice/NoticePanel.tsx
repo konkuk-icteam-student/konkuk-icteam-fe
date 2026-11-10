@@ -9,7 +9,6 @@ type NoticePanelProps = {
   onNotify: (message: string) => void;
 };
 
-// 공지 등록 폼과 근로학생에게 보이는 공지 목록
 export default function NoticePanel({ onNotify }: NoticePanelProps) {
   const { notices } = getNotices();
 

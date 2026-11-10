@@ -11,7 +11,6 @@ type NoticeListProps = {
   onNotify: (message: string) => void;
 };
 
-// 게시 중·게시 예정인 공지 목록. 휴지통을 누르면 한 번 더 묻고 지운다
 // TODO: react-query 도입 후 삭제 성공 시 공지 목록 쿼리키 무효화
 export default function NoticeList({ notices, onNotify }: NoticeListProps) {
   const [deletingNotice, setDeletingNotice] = useState<Notice | null>(null);

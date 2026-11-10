@@ -58,7 +58,7 @@ export default function NoticeForm({ onNotify }: NoticeFormProps) {
         <span className='font-14-bd text-black'>내용</span>
         <Textarea
           rows={5}
-          placeholder='근무자에게 알릴 내용을 입력하세요'
+          placeholder='공지 내용을 입력하세요'
           className='resize-none'
           hasError={errors.content !== undefined}
           aria-invalid={errors.content !== undefined}
@@ -78,7 +78,7 @@ export default function NoticeForm({ onNotify }: NoticeFormProps) {
         open={isConfirmOpen}
         handleOpenChange={handleConfirmOpenChange}
         title='공지사항을 등록하시겠습니까?'
-        description='등록한 공지는 게시 기간 동안 근로학생에게 보입니다.'
+        description='등록한 공지는 수정할 수 없습니다.'
         buttons={[
           { label: '이전', tone: 'subtle_2', color: 'gray', size: 'medium' },
           {
