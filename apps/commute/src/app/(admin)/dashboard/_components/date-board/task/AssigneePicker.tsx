@@ -3,7 +3,7 @@
 import { useId } from 'react';
 import { IconAdd } from '@konkuk-icteam-fe/design-system/assets';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
-import { Dropdown } from '@konkuk-icteam-fe/design-system/ui';
+import { Button, Dropdown, TagChip } from '@konkuk-icteam-fe/design-system/ui';
 import type { TimeString } from '@/app/(student)/_apis/common';
 import { getTodoAssigneeCounts } from '../../../../_apis/todos';
 import usePopover from '../../../_hooks/usePopover';
@@ -12,10 +12,9 @@ import { getTaskStartOptions, getWorkersAt } from '../../../_utils/taskTime';
 
 type AssigneePickerProps = {
   todoId: number;
-  // 업무 이름. 버튼과 팝오버를 읽어 줄 때 쓴다
   title: string;
   workers: OnDutyWorker[];
-  // 고른 업무 시작 시각. 아직 고르지 않았으면 null
+  // 고른 업무 시작 시각
   start: TimeString | null;
   userIds: number[];
   onStartChange: (start: TimeString) => void;
@@ -35,7 +34,7 @@ export default function AssigneePicker({
   const panelId = useId();
   const { isOpen, areaRef, triggerRef, panelRef, handleToggle } = usePopover<HTMLDivElement>();
   const availableWorkers = start ? getWorkersAt(workers, start) : [];
-  // 근로학생 id → 이 업무를 지금까지 한 횟수. 팝오버를 열 때만 읽는다
+  // 근로학생 id → 이 업무를 지금까지 한 횟수
   const countByUserId: Record<number, number> = isOpen
     ? Object.fromEntries(
         getTodoAssigneeCounts({ todoId }).counts.map(({ userId, count }) => [userId, count]),
@@ -44,23 +43,26 @@ export default function AssigneePicker({
 
   return (
     <div ref={areaRef} className='relative shrink-0'>
-      <button
+      <Button
         ref={triggerRef}
-        type='button'
+        display='inline'
+        size='small'
+        tone='subtle_2'
+        color='blue'
         aria-label={`${title} 지정`}
         aria-haspopup='dialog'
         aria-expanded={isOpen}
         aria-controls={panelId}
         disabled={workers.length === 0}
         className={cn(
-          'caption-12-md text-blue focus-visible:outline-blue flex cursor-pointer items-center gap-[0.2rem] rounded-[0.6rem] px-[0.8rem] py-[0.4rem] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40',
-          isOpen ? 'bg-blue/15' : 'hover:bg-blue/10 bg-gray-50',
+          'focus-visible:outline-blue cursor-pointer gap-[0.2rem] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2',
+          isOpen ? 'bg-blue/15' : 'hover:bg-blue/10',
         )}
         onClick={handleToggle}
       >
         {userIds.length === 0 && <IconAdd aria-hidden className='h-[1.4rem] w-[1.4rem]' />}
         지정
-      </button>
+      </Button>
 
       {isOpen && (
         <div
@@ -90,26 +92,15 @@ export default function AssigneePicker({
                 이름 옆 숫자는 지금까지 이 업무를 맡은 횟수예요.
               </p>
               <div className='flex flex-wrap gap-[0.6rem]'>
-                {availableWorkers.map(({ userId, userName }) => {
-                  const isAssigned = userIds.includes(userId);
-
-                  return (
-                    <button
-                      key={userId}
-                      type='button'
-                      aria-pressed={isAssigned}
-                      className={cn(
-                        'caption-12-md cursor-pointer rounded-full border px-[1rem] py-[0.4rem] transition-colors',
-                        isAssigned
-                          ? 'border-blue bg-blue text-black-1'
-                          : 'bg-black-1 hover:border-blue border-gray-400 text-gray-700',
-                      )}
-                      onClick={() => onToggle(userId)}
-                    >
-                      {`${userName} · ${countByUserId[userId] ?? 0}회`}
-                    </button>
-                  );
-                })}
+                {availableWorkers.map(({ userId, userName }) => (
+                  <TagChip
+                    key={userId}
+                    label={`${userName} · ${countByUserId[userId] ?? 0}회`}
+                    tone='blue'
+                    isSelected={userIds.includes(userId)}
+                    onClick={() => onToggle(userId)}
+                  />
+                ))}
               </div>
             </div>
           ) : (
