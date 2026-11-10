@@ -49,14 +49,12 @@ export default function TaskForm({
         value={title}
         onChange={(event) => setTitle(event.target.value)}
         onKeyDown={(event) => {
-          // 한글 조합 중 Enter는 글자 확정이라 저장으로 보지 않는다
           if (event.nativeEvent.isComposing) return;
           if (event.key === 'Enter') handleSubmit();
-          if (event.key === 'Escape') onCancel();
         }}
       />
       <div className='flex items-center justify-between gap-[0.8rem]'>
-        {canChangePeriod ? (
+        {canChangePeriod && (
           <div role='group' aria-label='시간대' className='flex gap-[0.6rem]'>
             {PERIODS.map((option) => (
               <TagChip
@@ -68,8 +66,6 @@ export default function TaskForm({
               />
             ))}
           </div>
-        ) : (
-          <span />
         )}
         <div className='flex gap-[0.6rem]'>
           <Button
