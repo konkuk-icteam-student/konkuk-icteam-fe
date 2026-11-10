@@ -58,6 +58,12 @@ export default function Dropdown({
           onBlur?.();
         }
       }}
+      // 목록이 열려 있으면 Escape는 목록만 닫는다. preventDefault로 바깥 팝업에 이미 쓴 키임을 알린다
+      onKeyDown={(e) => {
+        if (e.key !== 'Escape' || !isOpen) return;
+        e.preventDefault();
+        setIsOpen(false);
+      }}
     >
       <Command className='h-[4.2rem] w-full'>
         <button
