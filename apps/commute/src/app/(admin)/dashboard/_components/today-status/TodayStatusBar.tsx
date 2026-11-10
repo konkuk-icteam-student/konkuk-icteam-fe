@@ -3,7 +3,7 @@
 import { toISO } from '@konkuk-icteam-fe/design-system/date';
 import { getAttendances } from '../../../_apis/attendances';
 import { getTodoProgress } from '../../../_apis/todos';
-import { useCurrentTime } from '../../_hooks/useCurrentTime';
+import useCurrentTime from '../../_hooks/useCurrentTime';
 import { getTodayAttendanceSummary, type AttendanceUser } from '../../_utils/attendanceStatus';
 import RequestNoticeCard from './RequestNoticeCard';
 import TodayStatusCard from './TodayStatusCard';

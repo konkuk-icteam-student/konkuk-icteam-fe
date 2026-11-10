@@ -53,7 +53,11 @@ export default function NoticeList({ notices, onNotify }: NoticeListProps) {
                 />
                 <p className='font-14-bd min-w-0 flex-1 truncate text-black'>{title}</p>
 
-                <IconButton aria-label={`${title} 삭제`} onClick={() => setDeletingNotice(notice)}>
+                <IconButton
+                  aria-label={`${title} 삭제`}
+                  className='group'
+                  onClick={() => setDeletingNotice(notice)}
+                >
                   <IconTrash
                     aria-hidden
                     className='group-hover:text-red h-[1.6rem] w-[1.6rem] text-gray-400'

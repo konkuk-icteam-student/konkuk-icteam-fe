@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 // 버튼으로 여닫는 팝업. 영역 바깥을 누르거나 Escape를 누르면 닫는다
-export const usePopover = <T extends HTMLElement>() => {
+export default function usePopover<T extends HTMLElement>() {
   const [isOpen, setIsOpen] = useState(false);
   const areaRef = useRef<T>(null);
 
@@ -29,4 +29,4 @@ export const usePopover = <T extends HTMLElement>() => {
   const handleClose = () => setIsOpen(false);
 
   return { isOpen, areaRef, handleToggle, handleClose };
-};
+}

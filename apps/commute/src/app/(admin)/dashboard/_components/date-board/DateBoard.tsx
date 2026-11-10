@@ -2,16 +2,12 @@
 
 import { useId, useState } from 'react';
 import { toISO } from '@konkuk-icteam-fe/design-system/date';
-import { useCurrentTime } from '../../_hooks/useCurrentTime';
-import { useWorkSchedule } from '../../_hooks/useWorkSchedule';
+import useCurrentTime from '../../_hooks/useCurrentTime';
+import useWorkSchedule from '../../_hooks/useWorkSchedule';
 import { getWorkersByPeriod } from '../../_utils/getWorkersByPeriod';
 import AssignTaskList from './AssignTaskList';
 import DateSelector from './DateSelector';
 import WorkScheduleList from './WorkScheduleList';
-
-type DateBoardProps = {
-  onNotify: (message: string) => void;
-};
 
 type BoardColumnProps = {
   title: string;
@@ -24,6 +20,10 @@ const BoardColumn = ({ title, children }: BoardColumnProps) => (
     {children}
   </div>
 );
+
+type DateBoardProps = {
+  onNotify: (message: string) => void;
+};
 
 // 날짜를 고르면 그날 근무 시간표와 업무 지정이 함께 바뀌는 카드
 export default function DateBoard({ onNotify }: DateBoardProps) {

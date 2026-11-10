@@ -6,7 +6,7 @@ import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { parseISO } from '@konkuk-icteam-fe/design-system/date';
 import { DatePicker } from '@konkuk-icteam-fe/design-system/ui';
 import { formatMonthDayWithWeekday } from '@/shared/utils/formatDate';
-import { usePopover } from '../../_hooks/usePopover';
+import usePopover from '../../_hooks/usePopover';
 
 type DateSelectorProps = {
   selectedDateKey: string;

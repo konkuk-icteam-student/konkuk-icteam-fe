@@ -12,7 +12,12 @@ export type OnDutyWorker = {
   workSlots: TimeRange[];
 };
 
-// 오전·오후를 합친 사람별 그날 근무 칸 수
+/**
+ * 오전·오후를 합쳐 사람마다 그날 근무하는 칸 수를 셉니다.
+ * @param slots 하루치 근무 칸
+ * @returns 근로학생 id → 그날 근무 칸 수
+ * @example countDailySlots(slots).get(1); // 4
+ */
 const countDailySlots = (slots: WorkScheduleSlot[]) => {
   const dailySlotCounts = new Map<number, number>();
   slots.forEach(({ users }) =>
@@ -23,7 +28,13 @@ const countDailySlots = (slots: WorkScheduleSlot[]) => {
   return dailySlotCounts;
 };
 
-// 주어진 칸에서 근무자를 한 번씩만 모아, 그날 근무 칸이 많은 순(같으면 먼저 근무를 시작하는 순)으로 놓는다
+/**
+ * 주어진 칸에서 근무자를 한 번씩만 모읍니다. 그날 근무 칸이 많은 순이고, 같으면 먼저 근무를 시작하는 순입니다.
+ * @param targetSlots 근무자를 모을 칸
+ * @param dailySlotCounts 근로학생 id → 그날 근무 칸 수 (countDailySlots 결과)
+ * @returns 근무자 목록과 사람마다 targetSlots 안에서 근무하는 칸
+ * @example collectWorkers(morningSlots, countDailySlots(slots))[0].userName; // '김민지'
+ */
 const collectWorkers = (
   targetSlots: WorkScheduleSlot[],
   dailySlotCounts: Map<number, number>,

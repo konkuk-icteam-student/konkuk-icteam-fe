@@ -12,13 +12,6 @@ import { getTaskStartOptions, getWorkersAt } from '../../_utils/taskTime';
 import AssigneePicker from './AssigneePicker';
 import TaskForm from './TaskForm';
 
-type AssignTaskListProps = {
-  dateKey: string;
-  // 시간대별로 그날 근무하는 근로학생. 업무는 그 시간대에 근무하는 사람에게만 맡길 수 있다
-  workersByPeriod: Record<TodoPeriod, OnDutyWorker[]>;
-  onNotify: (message: string) => void;
-};
-
 type TaskAssignment = ReturnType<typeof useTaskAssignment>;
 type TaskState = TaskAssignment['compatibleState'];
 type TaskHandlers = TaskAssignment['compatibleHandlers'];
@@ -206,6 +199,13 @@ const PeriodSection = ({ period, label, workers, state, handlers }: PeriodSectio
     </ul>
   </section>
 );
+
+type AssignTaskListProps = {
+  dateKey: string;
+  // 시간대별로 그날 근무하는 근로학생. 업무는 그 시간대에 근무하는 사람에게만 맡길 수 있다
+  workersByPeriod: Record<TodoPeriod, OnDutyWorker[]>;
+  onNotify: (message: string) => void;
+};
 
 // 반복 업무를 오전·오후로 나눠 보여 주고, 업무마다 시작 시각과 근로학생을 지정한다. 지정은 날짜별로 저장한다
 export default function AssignTaskList({

@@ -8,7 +8,7 @@ import {
   createStatusFilterHref,
   STATUS_FILTER_ALL,
 } from '../../../worktime/change-requests/_utils/statusFilter';
-import { usePendingRequestCount } from '../../_hooks/usePendingRequestCount';
+import usePendingRequestCount from '../../_hooks/usePendingRequestCount';
 
 // 승인 대기 요청 수를 알리고 근로시간 수정요청 화면으로 보내는 카드
 export default function RequestNoticeCard() {
