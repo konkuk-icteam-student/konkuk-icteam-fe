@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
-import { Button, Dropdown, StateChip } from '@konkuk-icteam-fe/design-system/ui';
+import { Dropdown, StateChip } from '@konkuk-icteam-fe/design-system/ui';
 import { ROUTES } from '@/shared/config/routes';
 import { formatMonthDay, formatMonthDayTime } from '@/shared/utils/formatDate';
 import AdminPanel from '../../_layouts/AdminPanel';
@@ -41,7 +41,6 @@ export default function ApplicationSummaryPanel({
   savedSettings,
   unavailableDates,
 }: ApplicationSummaryPanelProps) {
-  const router = useRouter();
   const [sortKey, setSortKey] = useState<SubmissionSortKey>('STATUS');
 
   return (
@@ -50,15 +49,14 @@ export default function ApplicationSummaryPanel({
       title={`${monthLabel} 근로신청 요약`}
       className='flex h-full flex-col'
       action={
+        // 화면 이동이라 링크로 두고, 모양만 디자인 시스템 Button(small·solid·blue)에 맞춘다
         // TODO: 근로신청 시간표 화면을 근로신청 관리 아래로 옮기면 그 주소로 바꾼다
-        <Button
-          display='inline'
-          size='small'
-          color='blue'
-          onClick={() => router.push(ROUTES.ADMIN_WORKTIME)}
+        <Link
+          href={ROUTES.ADMIN_WORKTIME}
+          className='bg-blue text-black-1 caption-12-md inline-flex items-center justify-center rounded-[0.4rem] px-[1.2rem] py-[0.6rem]'
         >
           시간표 자세히보기
-        </Button>
+        </Link>
       }
     >
       <div className='mx-[2.1rem] mb-[2rem] flex min-h-0 flex-1 flex-col gap-[1.2rem]'>
