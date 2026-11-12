@@ -7,7 +7,7 @@ import { Button, StateChip } from '@konkuk-icteam-fe/design-system/ui';
 import { useToast } from '@/shared/hooks/useToast';
 import { getWorkApplication, saveWorkApplication } from '../_apis/workApplications';
 import { getCurrentMonthKey, parseMonthKey, shiftMonthKey } from '../_utils/monthKey';
-import ApplicationSummaryModal from './_components/ApplicationSummaryModal';
+import ApplicationConfirmModal from './_components/ApplicationConfirmModal';
 import SettingsPanel from './_components/SettingsPanel';
 import ApplicationSummaryPanel from './_components/ApplicationSummaryPanel';
 import { createDefaultSettings } from './_utils/createDefaultSettings';
@@ -157,7 +157,7 @@ export default function PageClient() {
         )}
       </div>
 
-      <ApplicationSummaryModal
+      <ApplicationConfirmModal
         application={summary}
         monthLabel={monthLabel}
         isOpened={isOpened}

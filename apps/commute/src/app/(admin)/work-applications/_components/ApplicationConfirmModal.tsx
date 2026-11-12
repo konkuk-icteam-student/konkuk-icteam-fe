@@ -3,7 +3,7 @@ import { ConfirmModal } from '@konkuk-icteam-fe/design-system/ui';
 import { formatMonthDay, formatMonthDayTime } from '@/shared/utils/formatDate';
 import type { WorkApplication } from '../_lib/workApplicationSchema';
 
-type ApplicationSummaryModalProps = {
+type ApplicationConfirmModalProps = {
   // 확인받을 근로신청. 없으면 닫혀 있다
   application: WorkApplication | null;
   monthLabel: string;
@@ -15,13 +15,13 @@ type ApplicationSummaryModalProps = {
 
 // 근로신청을 열기 전에는 정한 기준을 한눈에 요약해서 확인받고,
 // 이미 연 신청을 고칠 때는 들어온 신청이 초기화된다는 것만 확인받는다
-export default function ApplicationSummaryModal({
+export default function ApplicationConfirmModal({
   application,
   monthLabel,
   isOpened,
   onClose,
   onConfirm,
-}: ApplicationSummaryModalProps) {
+}: ApplicationConfirmModalProps) {
   if (!application) return null;
 
   const { settings } = application;
