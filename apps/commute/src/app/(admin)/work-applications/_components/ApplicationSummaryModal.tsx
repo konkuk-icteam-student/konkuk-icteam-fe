@@ -13,7 +13,8 @@ type ApplicationSummaryModalProps = {
   onConfirm: () => void;
 };
 
-// 근로신청을 열거나 고치기 전에, 정한 기준을 한눈에 요약해서 확인받는다
+// 근로신청을 열기 전에는 정한 기준을 한눈에 요약해서 확인받고,
+// 이미 연 신청을 고칠 때는 들어온 신청이 초기화된다는 것만 확인받는다
 export default function ApplicationSummaryModal({
   application,
   monthLabel,
@@ -23,7 +24,7 @@ export default function ApplicationSummaryModal({
 }: ApplicationSummaryModalProps) {
   if (!application) return null;
 
-  const { settings, userIds } = application;
+  const { settings } = application;
   const summaryRows = [
     {
       label: '신청 기간',
@@ -47,7 +48,6 @@ export default function ApplicationSummaryModal({
           ? settings.unavailableDates.map(formatMonthDay).join(', ')
           : '없음',
     },
-    { label: '근로학생', value: `${userIds.length}명` },
   ];
 
   return (
@@ -64,10 +64,9 @@ export default function ApplicationSummaryModal({
       description={
         isOpened
           ? '설정이 바뀌면 지금까지 들어온 근로신청은 모두 초기화됩니다.'
-          : '고른 근로학생만 아래 기준으로 신청할 수 있습니다.'
+          : '아래 기준으로 근로신청을 받습니다.'
       }
-      // 기간·날짜 목록이 한 줄에 들어가도록 기본 확인 창보다 넓게 연다
-      layoutClassName='w-[40rem]'
+      layoutClassName='w-[32rem]'
       buttons={[
         { label: '이전', tone: 'subtle_2', color: 'gray', size: 'medium' },
         {
@@ -78,21 +77,23 @@ export default function ApplicationSummaryModal({
         },
       ]}
     >
-      <dl className='grid grid-cols-[auto_1fr] gap-x-[1.6rem] gap-y-[1rem] rounded-[0.8rem] bg-gray-50 p-[1.6rem]'>
-        {summaryRows.map(({ label, value, canWrap }) => (
-          <div key={label} className='contents'>
-            <dt className='caption-14-md whitespace-nowrap text-gray-500'>{label}</dt>
-            <dd
-              className={cn(
-                'caption-14-md text-right text-black',
-                canWrap ? 'break-keep' : 'whitespace-nowrap',
-              )}
-            >
-              {value}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      {isOpened ? null : (
+        <dl className='flex flex-col gap-[1rem] rounded-[0.8rem] bg-gray-50 p-[1.6rem]'>
+          {summaryRows.map(({ label, value, canWrap }) => (
+            <div key={label} className='flex items-start justify-between gap-[1.6rem]'>
+              <dt className='caption-14-md whitespace-nowrap text-gray-500'>{label}</dt>
+              <dd
+                className={cn(
+                  'caption-14-md text-right text-black',
+                  canWrap ? 'break-keep' : 'whitespace-nowrap',
+                )}
+              >
+                {value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
     </ConfirmModal>
   );
 }

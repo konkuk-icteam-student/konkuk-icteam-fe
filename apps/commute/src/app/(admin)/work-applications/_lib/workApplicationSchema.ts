@@ -29,10 +29,9 @@ const workApplicationSettingsSchema = z
     path: ['monthlyMaxHours'],
   });
 
-// 한 달치 근로신청. 고른 학생만 그 달 근무를 신청할 수 있다
+// 한 달치 근로신청. 승인된 모든 근로장학생이 이 기준으로 신청할 수 있다
 export const workApplicationSchema = z.object({
   settings: workApplicationSettingsSchema,
-  userIds: z.array(z.number()).min(1, '근로학생을 한 명 이상 골라 주세요.'),
 });
 
 export type WorkApplication = z.infer<typeof workApplicationSchema>;

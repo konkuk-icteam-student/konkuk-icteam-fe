@@ -5,7 +5,11 @@ import {
   toApiDateTime,
   type ApiJson,
 } from '@/app/(student)/_apis/common';
-import { getWorkApplicationMock, saveWorkApplicationMock } from './mock/workApplications';
+import {
+  getWorkApplicationMock,
+  getWorkApplicationSubmissionsMock,
+  saveWorkApplicationMock,
+} from './mock/workApplications';
 
 // 한 달 근로신청 기준. 시간은 모두 시간 단위다
 export type WorkApplicationSettings = {
@@ -32,22 +36,42 @@ export type GetWorkApplicationRequest = {
 export type GetWorkApplicationResponse = {
   year: number;
   month: number;
-  // 관리자가 그 달 신청을 열었는지. 열지 않은 달은 settings가 null이고 userIds가 빈 배열이다
+  // 관리자가 그 달 신청을 열었는지. 열지 않은 달은 settings가 null이다
   isOpened: boolean;
   settings: WorkApplicationSettings | null;
-  // 그 달 근무를 신청할 수 있는 근로학생 (= 그 달 근로학생 명단)
-  userIds: number[];
 };
 
-// 처음 저장하면 그 달 신청이 열린다. 이미 연 달을 다시 저장하면 지금까지 들어온 근로신청은 모두 초기화된다
+// 처음 저장하면 그 달 신청이 열린다. 모든 근로장학생이 신청할 수 있다.
+// 이미 연 달을 다시 저장하면 지금까지 들어온 근로신청은 모두 초기화된다
 export type SaveWorkApplicationRequest = {
   year: number;
   month: number;
   settings: WorkApplicationSettings;
-  userIds: number[];
 };
 
 export type SaveWorkApplicationResponse = GetWorkApplicationResponse;
+
+// 근로장학생 한 명의 그 달 제출. 신청 기간 안에 여러 번 고칠 수 있고, 마지막으로 낸 신청 기준이다
+export type WorkApplicationSubmission = {
+  userId: number;
+  name: string;
+  studentId: string | null;
+  department: string | null;
+  grade: number | null;
+  // 마지막 제출에 담긴 근무 시간의 합 (분). 미제출이면 0
+  submittedMinutes: number;
+  // 마지막으로 제출한 시각. 미제출이면 null
+  lastSubmittedAt: Date | null;
+};
+
+export type GetWorkApplicationSubmissionsRequest = GetWorkApplicationRequest;
+
+export type GetWorkApplicationSubmissionsResponse = {
+  year: number;
+  month: number;
+  // 신청할 수 있는 모든 근로장학생. 열지 않은 달은 빈 배열
+  submissions: WorkApplicationSubmission[];
+};
 
 const toSettings = (json: ApiJson<WorkApplicationSettings>): WorkApplicationSettings => ({
   ...json,
@@ -65,7 +89,7 @@ const toSettingsJson = (settings: WorkApplicationSettings): ApiJson<WorkApplicat
 
 /**
  * GET /admin/work-applications?year=&month=
- * 그 달 근로신청 기준과 신청할 수 있는 근로학생
+ * 그 달 근로신청 기준
  */
 export const getWorkApplication = ({
   year,
@@ -74,8 +98,8 @@ export const getWorkApplication = ({
   const saved = getWorkApplicationMock(year, month);
 
   return saved
-    ? { year, month, isOpened: true, settings: toSettings(saved.settings), userIds: saved.userIds }
-    : { year, month, isOpened: false, settings: null, userIds: [] };
+    ? { year, month, isOpened: true, settings: toSettings(saved.settings) }
+    : { year, month, isOpened: false, settings: null };
 };
 
 /**
@@ -86,9 +110,24 @@ export const saveWorkApplication = ({
   year,
   month,
   settings,
-  userIds,
 }: SaveWorkApplicationRequest): SaveWorkApplicationResponse => {
-  saveWorkApplicationMock(year, month, { settings: toSettingsJson(settings), userIds });
+  saveWorkApplicationMock(year, month, { settings: toSettingsJson(settings) });
 
   return getWorkApplication({ year, month });
 };
+
+/**
+ * GET /admin/work-applications/submissions?year=&month=
+ * 그 달 근로장학생별 제출 현황 (근로신청 요약)
+ */
+export const getWorkApplicationSubmissions = ({
+  year,
+  month,
+}: GetWorkApplicationSubmissionsRequest): GetWorkApplicationSubmissionsResponse => ({
+  year,
+  month,
+  submissions: getWorkApplicationSubmissionsMock(year, month).map((json) => ({
+    ...json,
+    lastSubmittedAt: json.lastSubmittedAt ? parseApiDateTime(json.lastSubmittedAt) : null,
+  })),
+});

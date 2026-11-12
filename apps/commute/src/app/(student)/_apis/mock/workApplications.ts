@@ -3,7 +3,6 @@ import { getWorkApplicationMock } from '@/app/(admin)/_apis/mock/workApplication
 import { getMonthDates } from '@/shared/utils/calendar';
 import type { ApiJson, WorkTimeRange } from '../common';
 import type { WorkApplicationSettings } from '../workApplications';
-import { MY_USER_ID } from './me';
 
 const createMonthKey = (year: number, month: number) => `${year}-${formatNumber(month)}`;
 
@@ -39,7 +38,8 @@ const createDemoSettings = (today: Date): ApiJson<WorkApplicationSettings> => {
  */
 export const getWorkApplicationSettingsMock = (year: number, month: number) => {
   const saved = getWorkApplicationMock(year, month);
-  if (saved) return { settings: saved.settings, canApply: saved.userIds.includes(MY_USER_ID) };
+  // 승인된 근로장학생은 모두 신청할 수 있다
+  if (saved) return { settings: saved.settings, canApply: true };
 
   const today = new Date();
   const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);

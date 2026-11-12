@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, StateChip } from '@konkuk-icteam-fe/design-system/ui';
 import { useToast } from '@/shared/hooks/useToast';
@@ -9,7 +9,7 @@ import { getWorkApplication, saveWorkApplication } from '../_apis/workApplicatio
 import { getCurrentMonthKey, parseMonthKey, shiftMonthKey } from '../_utils/monthKey';
 import ApplicationSummaryModal from './_components/ApplicationSummaryModal';
 import SettingsPanel from './_components/SettingsPanel';
-import StudentSelectPanel from './_components/StudentSelectPanel';
+import ApplicationSummaryPanel from './_components/ApplicationSummaryPanel';
 import { createDefaultSettings } from './_utils/createDefaultSettings';
 import {
   workApplicationSchema,
@@ -18,24 +18,17 @@ import {
 } from './_lib/workApplicationSchema';
 
 /**
- * 그 달 근로신청 폼의 처음 값을 만듭니다. 연 달은 저장된 값, 처음 여는 달은 기본 설정에 이번 달 근로학생을 미리 골라 둡니다.
+ * 그 달 근로신청 폼의 처음 값을 만듭니다. 연 달은 저장된 값, 처음 여는 달은 기본 설정입니다.
  * @param monthKey 근로신청 달 (YYYY-MM)
- * @param currentMonthKey 이번 달 (YYYY-MM)
  * @returns 폼에 채울 근로신청
- * @example createInitialApplication('2026-11', '2026-10').userIds; // 10월 근로학생
+ * @example createInitialApplication('2026-11').settings.maxConcurrentWorkers; // 4
  */
-const createInitialApplication = (monthKey: string, currentMonthKey: string): WorkApplication => {
-  const saved = getWorkApplication(parseMonthKey(monthKey));
-  if (saved.settings) return { settings: saved.settings, userIds: saved.userIds };
-
-  return {
-    settings: createDefaultSettings(monthKey),
-    userIds: getWorkApplication(parseMonthKey(currentMonthKey)).userIds,
-  };
-};
+const createInitialApplication = (monthKey: string): WorkApplication => ({
+  settings: getWorkApplication(parseMonthKey(monthKey)).settings ?? createDefaultSettings(monthKey),
+});
 
 // 근로신청 관리. 신청은 다음 달만 열 수 있어서 다음 달 하나만 다룬다.
-// 신청을 열 때 기준을 정하고, 신청할 수 있는 근로학생을 고른다
+// 왼쪽에서 신청 기준을 정하고, 오른쪽에서 들어온 신청을 요약해 본다
 export default function PageClient() {
   const [currentMonthKey] = useState(getCurrentMonthKey);
   // 이미 연 신청을 고치는 중인지. 열기 전에는 늘 고칠 수 있다
@@ -47,12 +40,15 @@ export default function PageClient() {
   const monthKey = shiftMonthKey(currentMonthKey, 1);
   const { control, formState, getValues, handleSubmit, reset, trigger } = useForm<WorkApplication>({
     resolver: zodResolver(workApplicationSchema),
-    defaultValues: createInitialApplication(monthKey, currentMonthKey),
+    defaultValues: createInitialApplication(monthKey),
   });
+
+  // 요약 패널에 왼쪽에서 고르고 있는 근무 불가 날짜를 바로 보여 준다
+  const unavailableDates = useWatch({ control, name: 'settings.unavailableDates' });
 
   const [, month] = monthKey.split('-').map(Number);
   const monthLabel = `${month}월`;
-  const isOpened = getWorkApplication(parseMonthKey(monthKey)).isOpened;
+  const { isOpened, settings: savedSettings } = getWorkApplication(parseMonthKey(monthKey));
   const isEditable = !isOpened || isEditing;
   // 고칠 수 있을 때만 칸 아래에 오류를 보여 준다
   const settingsErrors: SettingsErrors = isEditable
@@ -63,12 +59,11 @@ export default function PageClient() {
         ]),
       )
     : {};
-  const userIdsError = isEditable ? formState.errors.userIds?.message : undefined;
 
   // 저장된 값으로 되돌린다
   const handleEditCancel = () => {
     setIsEditing(false);
-    reset(createInitialApplication(monthKey, currentMonthKey));
+    reset(createInitialApplication(monthKey));
   };
 
   const handleSaveConfirm = (application: WorkApplication) => {
@@ -76,9 +71,7 @@ export default function PageClient() {
     setIsEditing(false);
     reset(application);
     showToast(
-      isOpened
-        ? `${monthLabel} 근로신청을 수정했어요.`
-        : `${monthLabel} 근로신청을 열었어요. 고른 ${application.userIds.length}명만 신청할 수 있어요.`,
+      isOpened ? `${monthLabel} 근로신청을 수정했어요.` : `${monthLabel} 근로신청을 열었어요.`,
     );
   };
 
@@ -110,24 +103,14 @@ export default function PageClient() {
             />
           )}
         />
-        {/* 높이를 왼쪽 설정 패널에만 맞추도록 학생 패널은 칸 안에 띄워 둔다 */}
+        {/* 높이를 왼쪽 설정 패널에만 맞추도록 요약 패널은 칸 안에 띄워 둔다 */}
         <div className='relative'>
           <div className='absolute inset-0'>
-            <Controller
-              control={control}
-              name='userIds'
-              render={({ field }) => (
-                <StudentSelectPanel
-                  monthLabel={monthLabel}
-                  selectedUserIds={field.value}
-                  isEditable={isEditable}
-                  error={userIdsError}
-                  onChange={(userIds) => {
-                    field.onChange(userIds);
-                    void trigger();
-                  }}
-                />
-              )}
+            <ApplicationSummaryPanel
+              monthKey={monthKey}
+              monthLabel={monthLabel}
+              savedSettings={savedSettings}
+              unavailableDates={unavailableDates}
             />
           </div>
         </div>

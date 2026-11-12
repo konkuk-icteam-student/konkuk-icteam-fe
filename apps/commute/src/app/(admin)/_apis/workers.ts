@@ -44,7 +44,7 @@ export type GetMonthlyWorkersRequest = {
 export type GetMonthlyWorkersResponse = {
   year: number;
   month: number;
-  // 그 달 근로학생 (근로신청 때 고른 학생). 아직 정하지 않은 달은 빈 배열
+  // 그 달 근로학생 (그 달 근무를 신청한 학생). 아직 아무도 신청하지 않은 달은 빈 배열
   workers: MonthlyWorker[];
 };
 
