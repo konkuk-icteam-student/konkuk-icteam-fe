@@ -33,19 +33,18 @@ const createDemoSettings = (today: Date): ApiJson<WorkApplicationSettings> => {
  * 관리자가 아직 열지 않은 다음 달은 신청 흐름을 볼 수 있게 데모 기준으로 연 것으로 둡니다.
  * @param year 연도
  * @param month 월 (1~12)
- * @returns 기준 JSON과 내가 신청할 수 있는지. 열지 않은 달이면 undefined
+ * @returns 기준 JSON. 열지 않은 달이면 undefined
  * @example getWorkApplicationSettingsMock(2026, 11)?.settings.weeklyMaxHours; // 15
  */
 export const getWorkApplicationSettingsMock = (year: number, month: number) => {
   const saved = getWorkApplicationMock(year, month);
-  // 승인된 근로장학생은 모두 신청할 수 있다
-  if (saved) return { settings: saved.settings, canApply: true };
+  if (saved) return { settings: saved.settings };
 
   const today = new Date();
   const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
   const isNextMonth = nextMonth.getFullYear() === year && nextMonth.getMonth() + 1 === month;
 
-  return isNextMonth ? { settings: createDemoSettings(today), canApply: true } : undefined;
+  return isNextMonth ? { settings: createDemoSettings(today) } : undefined;
 };
 
 /**
