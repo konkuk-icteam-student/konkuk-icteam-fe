@@ -73,8 +73,9 @@ export const createSortedSubmissions = (
 ) => {
   const getStatusOrder = ({ submittedMinutes }: WorkApplicationSubmission) =>
     checkMonthlyHoursMet(submittedMinutes, range) ? 1 : 0;
+  // 미제출은 0으로 두어 최근 신청순에서 맨 뒤로 간다
   const getRecentTime = ({ lastSubmittedAt }: WorkApplicationSubmission) =>
-    lastSubmittedAt?.getTime() ?? Number.NEGATIVE_INFINITY;
+    lastSubmittedAt?.getTime() ?? 0;
 
   return [...submissions].sort((a, b) => {
     const order =
@@ -84,7 +85,7 @@ export const createSortedSubmissions = (
           ? getRecentTime(b) - getRecentTime(a)
           : 0;
 
-    return order !== 0 && !Number.isNaN(order) ? order : compareName(a, b);
+    return order !== 0 ? order : compareName(a, b);
   });
 };
 
