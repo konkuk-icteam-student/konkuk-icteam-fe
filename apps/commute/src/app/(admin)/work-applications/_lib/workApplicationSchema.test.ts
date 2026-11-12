@@ -3,7 +3,6 @@ import { workApplicationSchema, type WorkApplication } from './workApplicationSc
 
 const createApplication = (
   settings: Partial<WorkApplication['settings']> = {},
-  userIds = [1],
 ): WorkApplication => ({
   settings: {
     applyStartDate: new Date(2026, 9, 20, 9),
@@ -16,7 +15,6 @@ const createApplication = (
     unavailableDates: [],
     ...settings,
   },
-  userIds,
 });
 
 const getErrorPaths = (application: WorkApplication) =>
@@ -49,9 +47,5 @@ describe('workApplicationSchema', () => {
     expect(getErrorPaths(createApplication({ monthlyMinHours: 70 }))).toEqual([
       'settings.monthlyMaxHours',
     ]);
-  });
-
-  it('근로학생을 한 명도 고르지 않으면 안 된다', () => {
-    expect(getErrorPaths(createApplication({}, []))).toEqual(['userIds']);
   });
 });

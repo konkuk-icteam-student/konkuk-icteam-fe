@@ -19,23 +19,23 @@
 
 ## 한눈에 보기
 
-| 메서드 | 경로                                          | 하는 일                                     | 쓰는 화면                  |
-| ------ | --------------------------------------------- | ------------------------------------------- | -------------------------- |
-| GET    | `/me`                                         | 로그인한 근로학생 본인 정보                 | 홈 헤더, 시간표            |
-| GET    | `/me/work-shifts?date=`                       | 그날 내 근무와 출근 상태                    | 홈(출근 카드)              |
-| GET    | `/me/work-dates?year=&month=`                 | 그 달 내 근무가 있는 날                     | 홈(근무 달력)              |
-| POST   | `/me/attendances`                             | 출근 체크                                   | 홈(출근 카드)              |
-| GET    | `/me/work-schedules?startDate=&endDate=`      | 기간의 팀 근무 시간표                       | 시간표('자세히')           |
-| GET    | `/me/work-schedules/mine?startDate=&endDate=` | 기간 안에서 내가 배치된 칸                  | 아직 쓰는 화면 없음        |
-| GET    | `/me/work-records?date=`                      | 그 주·그 달 근무한 시간                     | 홈(근무 요약)              |
-| GET    | `/me/work-applications/settings?year=&month=` | 그 달 근로신청 기준과 내가 신청할 수 있는지 | 홈, 시간표(조회·신청·수정) |
-| GET    | `/me/work-applications?year=&month=`          | 그 달 내가 신청한 근무                      | 시간표                     |
-| PUT    | `/me/work-applications`                       | 그 달 근무 신청 저장                        | 시간표 신청                |
-| GET    | `/me/work-change-requests?year=&month=`       | 그 달 내가 보낸 근무 변경 요청              | 시간표 수정                |
-| POST   | `/me/work-change-requests`                    | 근무 변경 요청 보내기                       | 시간표 수정                |
-| GET    | `/me/todos?date=`                             | 그날 업무와 담당자, 완료 여부               | 홈(오늘 업무)              |
-| PATCH  | `/me/todos/{todoId}`                          | 그날 업무 완료·완료 취소                    | 홈(오늘 업무)              |
-| GET    | `/me/notices`                                 | 오늘 게시 중인 공지                         | 홈(공지)                   |
+| 메서드 | 경로                                          | 하는 일                        | 쓰는 화면                  |
+| ------ | --------------------------------------------- | ------------------------------ | -------------------------- |
+| GET    | `/me`                                         | 로그인한 근로학생 본인 정보    | 홈 헤더, 시간표            |
+| GET    | `/me/work-shifts?date=`                       | 그날 내 근무와 출근 상태       | 홈(출근 카드)              |
+| GET    | `/me/work-dates?year=&month=`                 | 그 달 내 근무가 있는 날        | 홈(근무 달력)              |
+| POST   | `/me/attendances`                             | 출근 체크                      | 홈(출근 카드)              |
+| GET    | `/me/work-schedules?startDate=&endDate=`      | 기간의 팀 근무 시간표          | 시간표('자세히')           |
+| GET    | `/me/work-schedules/mine?startDate=&endDate=` | 기간 안에서 내가 배치된 칸     | 아직 쓰는 화면 없음        |
+| GET    | `/me/work-records?date=`                      | 그 주·그 달 근무한 시간        | 홈(근무 요약)              |
+| GET    | `/me/work-applications/settings?year=&month=` | 그 달 근로신청 기준            | 홈, 시간표(조회·신청·수정) |
+| GET    | `/me/work-applications?year=&month=`          | 그 달 내가 신청한 근무         | 시간표                     |
+| PUT    | `/me/work-applications`                       | 그 달 근무 신청 저장           | 시간표 신청                |
+| GET    | `/me/work-change-requests?year=&month=`       | 그 달 내가 보낸 근무 변경 요청 | 시간표 수정                |
+| POST   | `/me/work-change-requests`                    | 근무 변경 요청 보내기          | 시간표 수정                |
+| GET    | `/me/todos?date=`                             | 그날 업무와 담당자, 완료 여부  | 홈(오늘 업무)              |
+| PATCH  | `/me/todos/{todoId}`                          | 그날 업무 완료·완료 취소       | 홈(오늘 업무)              |
+| GET    | `/me/notices`                                 | 오늘 게시 중인 공지            | 홈(공지)                   |
 
 ---
 
@@ -179,7 +179,7 @@
 
 ### GET `/me/work-applications/settings?year=2026&month=11`
 
-관리자가 정한 그 달 근로신청 기준과, 내가 신청할 수 있는지입니다. `settings`는 **관리자 `GET /admin/work-applications`의 `settings`와 같은 모양**입니다.
+관리자가 정한 그 달 근로신청 기준입니다. 신청이 열려 있으면 승인된 근로장학생은 누구나 신청 기간 안에 신청할 수 있습니다. `settings`는 **관리자 `GET /admin/work-applications`의 `settings`와 같은 모양**입니다.
 
 ```json
 {
@@ -195,16 +195,14 @@
     "monthlyMinHours": 30,
     "monthlyMaxHours": 60,
     "unavailableDates": ["2026-11-11"]
-  },
-  "canApply": true
+  }
 }
 ```
 
-| 필드                   | 설명                                                                               |
-| ---------------------- | ---------------------------------------------------------------------------------- |
-| `isOpened`             | 관리자가 그 달 신청을 열었는지. 열지 않은 달은 `settings: null`, `canApply: false` |
-| `canApply`             | 내가 그 달 근로학생 명단(관리자가 고른 학생)에 들어 있어 신청할 수 있는지          |
-| `maxConcurrentWorkers` | 한 칸(30분)에 함께 근무할 수 있는 최대 인원                                        |
+| 필드                   | 설명                                                            |
+| ---------------------- | --------------------------------------------------------------- |
+| `isOpened`             | 관리자가 그 달 신청을 열었는지. 열지 않은 달은 `settings: null` |
+| `maxConcurrentWorkers` | 한 칸(30분)에 함께 근무할 수 있는 최대 인원                     |
 
 ### GET `/me/work-applications?year=2026&month=11`
 
