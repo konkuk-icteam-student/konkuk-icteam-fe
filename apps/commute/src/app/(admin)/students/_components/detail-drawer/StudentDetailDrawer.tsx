@@ -3,9 +3,8 @@
 import { useEffect, useState } from 'react';
 import { IconClose } from '@konkuk-icteam-fe/design-system/assets';
 import { Button, IconButton, Tabs } from '@konkuk-icteam-fe/design-system/ui';
-import type { Worker } from '../../../_apis/workers';
+import type { Worker, WorkerDetail } from '../../../_apis/workers';
 import { EMPTY_STUDENT_TEXT } from '../../_constants/student';
-import type { StudentRow } from '../../_hooks/useStudents';
 import { formatGrade } from '../../_utils/studentFormat';
 import AccountSection from './AccountSection';
 import BasicInfoTab from './BasicInfoTab';
@@ -25,8 +24,8 @@ const PANEL_CLASS_NAME =
   'flex min-h-0 flex-1 flex-col gap-[2.4rem] overflow-y-auto [scrollbar-gutter:stable] -mr-[3.2rem] pr-[3.2rem] pb-[4rem]';
 
 type StudentDetailDrawerProps = {
-  // 열린 학생. 없으면 닫혀 있다
-  student: StudentRow | null;
+  // 열린 학생의 상세 정보 (오늘 기준). 없으면 닫혀 있다
+  student: WorkerDetail | null;
   onClose: () => void;
   onUpdate: (profile: Worker) => void;
   onPasswordReset: (student: Worker) => void;

@@ -25,13 +25,13 @@ const LEDGER_COLUMNS: LedgerColumn[] = [
 const BODY_CELL_CLASS_NAME = 'py-[1rem] text-center';
 
 /**
- * 최대 근로시간 글자를 만듭니다. 최대치가 없으면 -입니다.
+ * 최대 근로시간 글자를 만듭니다. 최대치가 0이면 그 기간 근로학생이 아니라서 -입니다.
  * @param limitMinutes 최대 근로시간 (분)
  * @returns '/ 최대 N시간' 또는 '-'
  * @example createLimitCaption(900); // '/ 최대 15시간'
  */
-const createLimitCaption = (limitMinutes: number | null) =>
-  limitMinutes === null ? EMPTY_STUDENT_TEXT : `/ 최대 ${formatMinutesToHours(limitMinutes)}시간`;
+const createLimitCaption = (limitMinutes: number) =>
+  limitMinutes > 0 ? `/ 최대 ${formatMinutesToHours(limitMinutes)}시간` : EMPTY_STUDENT_TEXT;
 
 type WorkLedgerTabProps = {
   student: Pick<Worker, 'userId' | 'name' | 'workStartDate'>;
@@ -67,13 +67,13 @@ export default function WorkLedgerTab({ student }: WorkLedgerTabProps) {
       </div>
 
       <dl className='flex gap-[1.2rem]'>
-        {ledger.weeklyWorkedMinutes === null ? null : (
+        {ledger.isCurrentMonth ? (
           <StatCard
             label='이번주 누적 근무시간'
             value={`${formatMinutesToHours(ledger.weeklyWorkedMinutes)}시간`}
             caption={createLimitCaption(ledger.weeklyLimitMinutes)}
           />
-        )}
+        ) : null}
         <StatCard
           label={ledger.isCurrentMonth ? '이번달 누적 근무시간' : `${ledger.month}월 누적 근무시간`}
           value={`${formatMinutesToHours(ledger.monthlyWorkedMinutes)}시간`}
@@ -128,7 +128,7 @@ export default function WorkLedgerTab({ student }: WorkLedgerTabProps) {
         </table>
         <dl className='caption-14-bd flex items-center justify-end gap-[2.4rem] pt-[0.4rem] pr-[0.4rem] text-black'>
           <dt>월 총 근로시간</dt>
-          <dd>{`${formatMinutesToHours(ledger.monthlyWorkedMinutes)}시간`}</dd>
+          <dd>{`${formatMinutesToHours(ledger.totalWorkedMinutes)}시간`}</dd>
         </dl>
       </section>
     </>

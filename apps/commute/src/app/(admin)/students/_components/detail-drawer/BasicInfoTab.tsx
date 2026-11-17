@@ -1,7 +1,7 @@
 import { StateChip } from '@konkuk-icteam-fe/design-system/ui';
 import { formatMonthDayWithWeekday, formatTime, formatYearMonth } from '@/shared/utils/formatDate';
+import type { WorkerDetail } from '../../../_apis/workers';
 import { EMPTY_STUDENT_TEXT } from '../../_constants/student';
-import type { StudentRow } from '../../_hooks/useStudents';
 import { useMonthlyAttendance } from '../../_hooks/useMonthlyAttendance';
 import StatCard from './StatCard';
 
@@ -18,15 +18,15 @@ const InfoItem = ({ label, value }: InfoItemProps) => (
 );
 
 type BasicInfoTabProps = {
-  student: StudentRow;
+  // 오늘 기준으로 받은 상세 정보. 수정 요청 횟수는 이번 달 값이다
+  student: WorkerDetail;
 };
 
-// 상세보기 기본 정보 탭. 연락처, 이번 달 근태 요약과 지각 기록 (계정은 상세보기가 이 아래에 붙인다)
+// 상세보기 기본 정보 탭. 연락처, 이번 달 근태 요약과 지각 기록 (계정은 상세보기가 이 아래에 붙인다).
+// 지각·결근과 지각 기록은 상세 API에 없어서 근무 구간으로 계산한다
 export default function BasicInfoTab({ student }: BasicInfoTabProps) {
   const { summary, lateRecords } = useMonthlyAttendance(student.userId);
-  // 수정 요청 횟수는 이번 달 근무 기록에서 온다. 이번 달 근로학생이 아니면 0회다
-  const totalChangeRequestCount = student.monthlyRecord?.totalChangeRequestCount ?? 0;
-  const approvedChangeRequestCount = student.monthlyRecord?.approvedChangeRequestCount ?? 0;
+  const { totalChangeRequestCount, approvedChangeRequestCount } = student;
 
   return (
     <>

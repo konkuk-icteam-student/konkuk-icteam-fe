@@ -1,5 +1,5 @@
 import { parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
-import { getMonthlyRecordMock } from '@/app/(admin)/_apis/mock/workerShifts';
+import { getWorkerRecordMock } from '@/app/(admin)/_apis/mock/workerRecords';
 import { addDays, getMondayOfWeek } from '@/shared/utils/week';
 import { SLOT_MINUTES } from '@/shared/config/slot';
 import { MY_USER_ID } from './me';
@@ -19,11 +19,7 @@ export const getMyWorkRecordMock = (dateKey: string) => {
   const weeklyWorkedMinutes = Array.from({ length: passedDays }, (_, index) =>
     toISO(addDays(monday, index)),
   ).reduce((sum, weekDateKey) => sum + getMyDaySlotsMock(weekDateKey).length * SLOT_MINUTES, 0);
-  const { monthlyWorkedMinutes } = getMonthlyRecordMock(
-    MY_USER_ID,
-    date.getFullYear(),
-    date.getMonth() + 1,
-  );
+  const { monthlyWorkedMinutes } = getWorkerRecordMock(MY_USER_ID, dateKey).record;
 
   return {
     weeklyWorkedMinutes,

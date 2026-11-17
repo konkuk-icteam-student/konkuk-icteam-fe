@@ -1,21 +1,16 @@
 import { useMemo, useState } from 'react';
-import { MINUTES_PER_HOUR } from '@/shared/utils/time';
-import { getWorkApplication } from '../../_apis/workApplications';
-import { getMonthlyWorkers, getWorkerShifts, type Worker } from '../../_apis/workers';
+import { getWorkerDetail, getWorkerShifts, type Worker } from '../../_apis/workers';
 import {
   getMonthDateRange,
   getMonthKeyOfDate,
   parseMonthKey,
   shiftMonthKey,
 } from '../../_utils/monthKey';
-import {
-  createWorkLedgerRows,
-  filterShiftsBetween,
-  getTotalWorkedMinutes,
-} from '../../_utils/workerShift';
-import { getLedgerMonthBounds, getLedgerShiftRange } from '../_utils/ledgerMonth';
+import { createWorkLedgerRows, getTotalWorkedMinutes } from '../../_utils/workerShift';
+import { getLedgerDate, getLedgerMonthBounds } from '../_utils/ledgerMonth';
 
-// 근로대장 탭. 근로 시작 달부터 이번 달까지 넘겨 보고, 카드는 고른 달 기준이다 (주 카드는 이번 달만)
+// 근로대장 탭. 근로 시작 달부터 이번 달까지 넘겨 보고, 카드는 고른 달 기준이다 (주 카드는 이번 달만).
+// 카드 숫자는 상세 API에서, 근로대장 표는 상세 API에 없어서 근무 구간에서 만든다
 export const useWorkLedger = ({
   userId,
   workStartDate,
@@ -25,39 +20,23 @@ export const useWorkLedger = ({
   const currentMonthKey = getMonthKeyOfDate(now);
   const { firstMonthKey, lastMonthKey } = getLedgerMonthBounds(workStartDate, currentMonthKey);
   const [monthKey, setMonthKey] = useState(currentMonthKey);
+  const isCurrentMonth = monthKey === currentMonthKey;
 
   const ledger = useMemo(() => {
-    // 불러올 기간은 그 달보다 넓을 수 있다 (이번 주 월요일이 지난달일 때)
-    const { fetchRange, week } = getLedgerShiftRange(monthKey, now);
-    const { shifts } = getWorkerShifts({ userId, ...fetchRange });
-    const rows = createWorkLedgerRows(
-      filterShiftsBetween(shifts, getMonthDateRange(monthKey)),
-      now,
-    );
-    const weeklyWorkedMinutes = week
-      ? getTotalWorkedMinutes(createWorkLedgerRows(filterShiftsBetween(shifts, week), now))
-      : null;
-    const monthlyRecord = getMonthlyWorkers(parseMonthKey(monthKey)).workers.find(
-      (worker) => worker.userId === userId,
-    )?.monthlyRecord;
+    const record = getWorkerDetail({ userId, date: getLedgerDate(monthKey, now) });
+    const { shifts } = getWorkerShifts({ userId, ...getMonthDateRange(monthKey) });
+    const rows = createWorkLedgerRows(shifts, now);
 
     return {
       rows,
-      // 근무 완료 건만 싣기 때문에 월 총 근로시간이 곧 그 달 누적 근무시간이다
-      monthlyWorkedMinutes: getTotalWorkedMinutes(rows),
-      weeklyWorkedMinutes,
-      // 그 달 근로학생이 아니었으면 최대 근로시간이 없다
-      monthlyLimitMinutes: monthlyRecord?.monthlyLimitMinutes ?? null,
+      // 근무 완료 건만 싣기 때문에 표의 월 총 근로시간은 그 달 누적 근무시간과 같아야 한다
+      totalWorkedMinutes: getTotalWorkedMinutes(rows),
+      monthlyWorkedMinutes: record.monthlyWorkedMinutes,
+      monthlyLimitMinutes: record.monthlyLimitMinutes,
+      weeklyWorkedMinutes: record.weeklyWorkedMinutes,
+      weeklyLimitMinutes: record.weeklyLimitMinutes,
     };
   }, [userId, monthKey, now]);
-
-  // 주 최대 근로시간은 이번 달 근로신청 기준이다
-  const weeklyLimitMinutes = useMemo(() => {
-    const weeklyMaxHours = getWorkApplication(parseMonthKey(currentMonthKey)).settings
-      ?.weeklyMaxHours;
-
-    return weeklyMaxHours === undefined ? null : weeklyMaxHours * MINUTES_PER_HOUR;
-  }, [currentMonthKey]);
 
   const handleMonthMove = (delta: number) => {
     setMonthKey((previous) => {
@@ -70,11 +49,10 @@ export const useWorkLedger = ({
 
   return {
     ...parseMonthKey(monthKey),
-    isCurrentMonth: monthKey === currentMonthKey,
+    isCurrentMonth,
     isPrevMonthDisabled: monthKey <= firstMonthKey,
     isNextMonthDisabled: monthKey >= lastMonthKey,
     ...ledger,
-    weeklyLimitMinutes,
     handleMonthMove,
   };
 };

@@ -29,3 +29,15 @@ export const formatMinutesToHours = (minutes: number) => {
 
   return Number.isInteger(hours) ? String(hours) : hours.toFixed(1);
 };
+
+/**
+ * 누적 근무시간을 최대 근로시간과 함께 보여 줍니다. 최대 근로시간이 0이면 그 기간 근로학생이 아니라서 -입니다.
+ * @param workedMinutes 누적 근무시간 (분)
+ * @param limitMinutes 최대 근로시간 (분)
+ * @returns 'N시간 / M시간' 또는 '-'
+ * @example formatWorkedOverLimit(750, 3600); // '12.5시간 / 60시간'
+ */
+export const formatWorkedOverLimit = (workedMinutes: number, limitMinutes: number) =>
+  limitMinutes > 0
+    ? `${formatMinutesToHours(workedMinutes)}시간 / ${formatMinutesToHours(limitMinutes)}시간`
+    : EMPTY_STUDENT_TEXT;

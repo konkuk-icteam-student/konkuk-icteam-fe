@@ -8,7 +8,7 @@ import StudentDetailDrawer from './_components/detail-drawer/StudentDetailDrawer
 import StudentsTable from './_components/student-list/StudentsTable';
 import { useStudents } from './_hooks/useStudents';
 
-// 근로장학생. 모든 근로장학생을 한 목록으로 보고, 줄을 누르면 오른쪽에서 상세 정보가 열린다
+// 근로장학생. 근무 인원 목록을 이름으로 찾고 페이지로 넘겨 보며, 줄을 누르면 오른쪽에서 상세 정보가 열린다
 export default function PageClient() {
   const students = useStudents();
   const { showToast, toast } = useToast();
@@ -54,7 +54,7 @@ export default function PageClient() {
             direction='left'
             size='medium'
             aria-label='이전 페이지'
-            disabled={students.page === 0}
+            disabled={students.isFirstPage}
             onClick={() => students.handlePageChange(students.page - 1)}
           />
           <span className='font-16-rg text-black'>
@@ -65,7 +65,7 @@ export default function PageClient() {
             direction='right'
             size='medium'
             aria-label='다음 페이지'
-            disabled={students.page >= students.totalPages - 1}
+            disabled={students.isLastPage}
             onClick={() => students.handlePageChange(students.page + 1)}
           />
         </div>

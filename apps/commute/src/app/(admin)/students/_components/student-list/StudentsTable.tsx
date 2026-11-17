@@ -1,82 +1,79 @@
 import { IconArrowRight } from '@konkuk-icteam-fe/design-system/assets';
-import { formatYearMonth } from '@/shared/utils/formatDate';
+import type { WorkerListItem } from '../../../_apis/workers';
 import { EMPTY_STUDENT_TEXT } from '../../_constants/student';
-import { formatGrade, formatMinutesToHours } from '../../_utils/studentFormat';
-import type { StudentRow } from '../../_hooks/useStudents';
-
-type StudentsTableProps = {
-  students: StudentRow[];
-  // 현재 페이지의 첫 줄 앞까지 센 인원 수. 여기에 이어서 순번을 매긴다
-  startNumber: number;
-  onDetailOpen: (userId: number) => void;
-};
+import { formatGrade, formatWorkedOverLimit } from '../../_utils/studentFormat';
+import { checkMonthWorker } from '../../_utils/workRecord';
 
 type Column = {
   label: string;
   className: string;
-  render: (student: StudentRow, index: number) => React.ReactNode;
+  render: (student: WorkerListItem) => React.ReactNode;
 };
 
-const COMMON_COLUMNS: Column[] = [
-  { label: '성명', className: 'w-[8.6rem]', render: ({ name }) => name },
+const PROFILE_COLUMNS: Column[] = [
+  { label: '성명', className: 'w-[8rem]', render: ({ name }) => name },
   {
     label: '학번',
-    className: 'w-[11.1rem]',
+    className: 'w-[10.4rem]',
     render: ({ studentId }) => studentId ?? EMPTY_STUDENT_TEXT,
   },
   {
     label: '학과',
-    className: 'w-[14.7rem]',
+    className: 'w-[14rem]',
     render: ({ department }) => department ?? EMPTY_STUDENT_TEXT,
   },
-  { label: '학년', className: 'w-[6.4rem]', render: ({ grade }) => formatGrade(grade) },
+  { label: '학년', className: 'w-[6rem]', render: ({ grade }) => formatGrade(grade) },
   {
     label: '연락처',
     className: 'w-[12.4rem]',
     render: ({ phoneNumber }) => phoneNumber ?? EMPTY_STUDENT_TEXT,
   },
+];
+
+// 이번 주·이번 달 근무 기록 열. 이번 달 근로학생이 아니면 기록이 없어 -로 채운다
+const RECORD_COLUMNS: Column[] = [
   {
-    label: '근로 시작',
-    className: 'w-[9rem]',
-    render: ({ workStartDate }) => formatYearMonth(workStartDate),
+    label: '주간 누적 근무시간',
+    className: 'w-[13rem]',
+    render: ({ weeklyWorkedMinutes, weeklyLimitMinutes }) =>
+      formatWorkedOverLimit(weeklyWorkedMinutes, weeklyLimitMinutes),
+  },
+  {
+    label: '월간 누적 근무시간',
+    className: 'w-[13rem]',
+    render: ({ monthlyWorkedMinutes, monthlyLimitMinutes }) =>
+      formatWorkedOverLimit(monthlyWorkedMinutes, monthlyLimitMinutes),
+  },
+  {
+    label: '수정요청 횟수 (이번달)',
+    className: 'w-[14rem]',
+    render: (student) =>
+      checkMonthWorker(student)
+        ? `총 ${student.totalChangeRequestCount}건 (승인 ${student.approvedChangeRequestCount}건)`
+        : EMPTY_STUDENT_TEXT,
+  },
+  {
+    label: '근태 이상 횟수 (이번달)',
+    className: 'w-[13rem]',
+    render: (student) =>
+      checkMonthWorker(student) ? `${student.totalAttendanceIssueCount}회` : EMPTY_STUDENT_TEXT,
   },
 ];
 
-// 이번 달 근무 기록 열. 이번 달 근로학생이 아니면 기록이 없어 -로 채운다
-const MONTHLY_RECORD_COLUMNS: Column[] = [
-  {
-    label: '이번달 누적 근로시간',
-    className: 'w-[15rem]',
-    render: ({ monthlyRecord }) =>
-      monthlyRecord
-        ? `${formatMinutesToHours(monthlyRecord.monthlyWorkedMinutes)}시간 / ${formatMinutesToHours(monthlyRecord.monthlyLimitMinutes)}시간`
-        : EMPTY_STUDENT_TEXT,
-  },
-  {
-    label: '지각 횟수 (시간)',
-    className: 'w-[11.8rem]',
-    render: ({ monthlyRecord }) =>
-      monthlyRecord
-        ? `${monthlyRecord.lateCount}회 (${monthlyRecord.lateMinutes}분)`
-        : EMPTY_STUDENT_TEXT,
-  },
-  {
-    label: '수정요청',
-    className: 'w-[14.5rem]',
-    render: ({ monthlyRecord }) =>
-      monthlyRecord
-        ? `총 ${monthlyRecord.totalChangeRequestCount}건 (승인 ${monthlyRecord.approvedChangeRequestCount}건)`
-        : EMPTY_STUDENT_TEXT,
-  },
-];
-
-const COLUMNS = [...COMMON_COLUMNS, ...MONTHLY_RECORD_COLUMNS];
+const COLUMNS = [...PROFILE_COLUMNS, ...RECORD_COLUMNS];
 // 번호·상세보기 열까지 더한 수
 const COLUMN_COUNT = COLUMNS.length + 2;
 
 const CELL_CLASS_NAME = 'h-[4.8rem] px-[1.2rem] whitespace-nowrap';
 
-// 근로장학생 목록 표. 모든 근로장학생을 보여 주고, 이번 달 근로학생에게만 근무 기록이 채워진다
+type StudentsTableProps = {
+  students: WorkerListItem[];
+  // 현재 페이지의 첫 줄 앞까지 센 인원 수. 여기에 이어서 순번을 매긴다
+  startNumber: number;
+  onDetailOpen: (userId: number) => void;
+};
+
+// 근무 인원 목록 표. 이번 달 근로학생에게만 근무 기록이 채워진다
 export default function StudentsTable({ students, startNumber, onDetailOpen }: StudentsTableProps) {
   return (
     <div className='w-full overflow-x-auto'>
@@ -90,12 +87,12 @@ export default function StudentsTable({ students, startNumber, onDetailOpen }: S
               <th
                 key={label}
                 scope='col'
-                className={`caption-12-md h-[4rem] px-[1.2rem] ${className}`}
+                className={`caption-12-md h-[4rem] px-[1.2rem] whitespace-nowrap ${className}`}
               >
                 {label}
               </th>
             ))}
-            <th scope='col' className='caption-12-md h-[4rem] w-[7.7rem] px-[1.2rem]'>
+            <th scope='col' className='caption-12-md h-[4rem] w-[7.6rem] px-[1.2rem]'>
               상세보기
             </th>
           </tr>
@@ -116,7 +113,7 @@ export default function StudentsTable({ students, startNumber, onDetailOpen }: S
                 <td className={`${CELL_CLASS_NAME} text-center`}>{startNumber + index + 1}</td>
                 {COLUMNS.map(({ label, render }) => (
                   <td key={label} className={`${CELL_CLASS_NAME} truncate`}>
-                    {render(student, index)}
+                    {render(student)}
                   </td>
                 ))}
                 <td className={CELL_CLASS_NAME}>
