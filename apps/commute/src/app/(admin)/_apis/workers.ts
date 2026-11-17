@@ -81,7 +81,7 @@ export type GetWorkerShiftsRequest = {
 
 export type GetWorkerShiftsResponse = {
   userId: number;
-  // 날짜·시작 시각 순. 예정·근무중·결근 근무도 모두 온다 (근태는 화면에서 정한다)
+  // 날짜·시작 시각 순. 예정·근무중·결근 근무도 모두 온다 (서버 근태 API가 정해지기 전까지 근태는 화면에서 계산한다)
   shifts: WorkerShift[];
 };
 

@@ -6,7 +6,8 @@ import type { TodoPeriod } from '../_apis/todos';
 import type { WorkerShift } from '../_apis/workers';
 import { PERIODS } from '../_constants/period';
 
-// 근무 구간과 출근 기록으로 지각·결근·근로대장을 정한다. 근태는 서버가 주지 않고 화면에서 정한다
+// 근무 구간과 출근 기록으로 지각·결근·근로대장을 정한다. 지각·결근 판정은 서버가 해 주는 값이지만,
+// 상세보기에 쓸 서버 근태 API가 정해지기 전까지 서버와 같은 기준으로 화면에서 계산한다
 
 const MILLISECONDS_PER_MINUTE = 60 * 1000;
 
