@@ -1,4 +1,5 @@
 import { IconArrowRight } from '@konkuk-icteam-fe/design-system/assets';
+import { formatYearMonth } from '@/shared/utils/formatDate';
 import type { WorkerListItem } from '../../../_apis/workers';
 import { EMPTY_STUDENT_TEXT } from '../../_constants/student';
 import { formatGrade, formatWorkedOverLimit } from '../../_utils/studentFormat';
@@ -11,52 +12,53 @@ type Column = {
 };
 
 const PROFILE_COLUMNS: Column[] = [
-  { label: '성명', className: 'w-[8rem]', render: ({ name }) => name },
+  { label: '성명', className: 'w-[8.6rem]', render: ({ name }) => name },
   {
     label: '학번',
-    className: 'w-[10.4rem]',
+    className: 'w-[11.1rem]',
     render: ({ studentId }) => studentId ?? EMPTY_STUDENT_TEXT,
   },
   {
     label: '학과',
-    className: 'w-[14rem]',
+    className: 'w-[14.7rem]',
     render: ({ department }) => department ?? EMPTY_STUDENT_TEXT,
   },
-  { label: '학년', className: 'w-[6rem]', render: ({ grade }) => formatGrade(grade) },
+  { label: '학년', className: 'w-[6.4rem]', render: ({ grade }) => formatGrade(grade) },
   {
     label: '연락처',
     className: 'w-[12.4rem]',
     render: ({ phoneNumber }) => phoneNumber ?? EMPTY_STUDENT_TEXT,
   },
+  {
+    label: '근로 시작',
+    className: 'w-[9rem]',
+    render: ({ workStartDate }) => formatYearMonth(workStartDate),
+  },
 ];
 
-// 이번 주·이번 달 근무 기록 열. 이번 달 근로학생이 아니면 기록이 없어 -로 채운다
+// 이번 달 근무 기록 열. 이번 달 근로학생이 아니면 기록이 없어 -로 채운다
 const RECORD_COLUMNS: Column[] = [
   {
-    label: '주간 누적 근무시간',
-    className: 'w-[13rem]',
-    render: ({ weeklyWorkedMinutes, weeklyLimitMinutes }) =>
-      formatWorkedOverLimit(weeklyWorkedMinutes, weeklyLimitMinutes),
-  },
-  {
-    label: '월간 누적 근무시간',
-    className: 'w-[13rem]',
+    label: '이번달 누적 근로시간',
+    className: 'w-[15rem]',
     render: ({ monthlyWorkedMinutes, monthlyLimitMinutes }) =>
       formatWorkedOverLimit(monthlyWorkedMinutes, monthlyLimitMinutes),
   },
   {
-    label: '수정요청 횟수 (이번달)',
-    className: 'w-[14rem]',
+    label: '지각 횟수 (시간)',
+    className: 'w-[11.8rem]',
+    render: (student) =>
+      checkMonthWorker(student)
+        ? `${student.lateCount}회 (${student.lateMinutes}분)`
+        : EMPTY_STUDENT_TEXT,
+  },
+  {
+    label: '수정요청',
+    className: 'w-[14.5rem]',
     render: (student) =>
       checkMonthWorker(student)
         ? `총 ${student.totalChangeRequestCount}건 (승인 ${student.approvedChangeRequestCount}건)`
         : EMPTY_STUDENT_TEXT,
-  },
-  {
-    label: '근태 이상 횟수 (이번달)',
-    className: 'w-[13rem]',
-    render: (student) =>
-      checkMonthWorker(student) ? `${student.totalAttendanceIssueCount}회` : EMPTY_STUDENT_TEXT,
   },
 ];
 
@@ -92,7 +94,7 @@ export default function StudentsTable({ students, startNumber, onDetailOpen }: S
                 {label}
               </th>
             ))}
-            <th scope='col' className='caption-12-md h-[4rem] w-[7.6rem] px-[1.2rem]'>
+            <th scope='col' className='caption-12-md h-[4rem] w-[7.7rem] px-[1.2rem]'>
               상세보기
             </th>
           </tr>

@@ -27,10 +27,10 @@ import { WORKERS_MOCK } from './workers';
 const DEFAULT_WEEKLY_MAX_HOURS = 15;
 const DEFAULT_MONTHLY_MAX_HOURS = 60;
 
-// 목록·상세에 함께 붙는 근무 기록(record)과, 목록에만 붙는 지각·근태 이상 횟수
+// 목록·상세에 함께 붙는 근무 기록(record)과, 목록에만 붙는 지각·근태 이상
 type WorkerRecordMock = {
   record: WorkerWorkRecord;
-  attendanceIssues: Pick<WorkerListItem, 'lateCount' | 'totalAttendanceIssueCount'>;
+  attendanceIssues: Pick<WorkerListItem, 'lateCount' | 'lateMinutes' | 'totalAttendanceIssueCount'>;
 };
 
 // 그 달 근로학생이 아니면 근무 기록이 모두 0이다 (최대 근로시간도 0)
@@ -43,7 +43,7 @@ const EMPTY_RECORD: WorkerRecordMock = {
     totalChangeRequestCount: 0,
     approvedChangeRequestCount: 0,
   },
-  attendanceIssues: { lateCount: 0, totalAttendanceIssueCount: 0 },
+  attendanceIssues: { lateCount: 0, lateMinutes: 0, totalAttendanceIssueCount: 0 },
 };
 
 // 근태를 계산하려고 JSON을 Date로 바꾼다. _apis/workers.ts의 같은 변환을 가져오면 서로를 불러오게 되어 여기 따로 둔다
@@ -78,7 +78,7 @@ export const getWorkerRecordMock = (userId: number, dateKey: string): WorkerReco
     toISO(week.endDate > monthRange.endDate ? week.endDate : monthRange.endDate),
   ).map(toWorkerShift);
   const monthShifts = filterShiftsBetween(shifts, monthRange);
-  const { lateCount, absentCount } = createAttendanceSummary(monthShifts, now);
+  const { lateCount, lateMinutes, absentCount } = createAttendanceSummary(monthShifts, now);
   const settings = getWorkApplicationMock(year, month)?.settings;
   const changeRequests = getWorkChangeRequestsMock(year, month).filter(
     (request) => request.userId === userId,
@@ -100,6 +100,7 @@ export const getWorkerRecordMock = (userId: number, dateKey: string): WorkerReco
     },
     attendanceIssues: {
       lateCount,
+      lateMinutes,
       // 근태 이상은 지각과 결근을 합친 수로 본다 (서버 정의 확인 필요)
       totalAttendanceIssueCount: lateCount + absentCount,
     },
@@ -136,7 +137,7 @@ export const getWorkerListMock = ({
     date: dateKey,
     workers: matched
       .slice(page * size, (page + 1) * size)
-      .map(({ userId, name, studentId, department, grade, phoneNumber }) => {
+      .map(({ userId, name, studentId, department, grade, phoneNumber, workStartDate }) => {
         const { record, attendanceIssues } = getWorkerRecordMock(userId, dateKey);
 
         return {
@@ -146,6 +147,7 @@ export const getWorkerListMock = ({
           department,
           grade,
           phoneNumber,
+          workStartDate,
           ...record,
           ...attendanceIssues,
         };

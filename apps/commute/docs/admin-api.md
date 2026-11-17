@@ -61,6 +61,8 @@
 
 근무 인원 목록입니다. 기준일(`date`)이 속한 주(월~일)·달의 근무 기록이 붙습니다. 이름 검색(`keyword`, 비우면 모두)과 페이지 나누기(`page`는 0부터)는 서버가 합니다.
 
+목록 화면 열은 번호 / 성명 / 학번 / 학과 / 학년 / 연락처 / 근로 시작 / 이번달 누적 근로시간 / 지각 횟수 (시간) / 수정요청 / 상세보기입니다. 이 중 **근로 시작(`workStartDate`)과 지각 시간(`lateMinutes`)은 지금 응답에 없어 백엔드에 추가를 요청**했고, 아래 예시에 `// 추가 요청`으로 표시했습니다. 프론트 목업은 두 필드를 채워서 보냅니다.
+
 ```json
 {
   "date": "2026-07-15",
@@ -72,6 +74,7 @@
       "department": "컴퓨터공학과",
       "grade": 3,
       "phoneNumber": "010-1234-5678",
+      "workStartDate": "2025-03-01", // 추가 요청
       "weeklyWorkedMinutes": 240,
       "weeklyLimitMinutes": 780,
       "monthlyWorkedMinutes": 960,
@@ -79,7 +82,8 @@
       "totalChangeRequestCount": 9,
       "approvedChangeRequestCount": 3,
       "totalAttendanceIssueCount": 9,
-      "lateCount": 3
+      "lateCount": 3,
+      "lateMinutes": 41 // 추가 요청
     }
   ],
   "page": 0,
@@ -96,7 +100,10 @@
 | `weeklyWorkedMinutes`, `monthlyWorkedMinutes`           | 기준일이 속한 주·달에 근무 완료한 시간 (분)                                                                                                         |
 | `weeklyLimitMinutes`, `monthlyLimitMinutes`             | 주·달 최대 근로시간 (분). 사람마다 다를 수 있습니다. 프론트는 **0이면 그 달 근로학생이 아닌 것**으로 보고 기록 칸을 `-`로 채웁니다 (서버 확인 필요) |
 | `totalChangeRequestCount`, `approvedChangeRequestCount` | 그 달 근무 변경 요청 수와 그중 승인 수                                                                                                              |
-| `totalAttendanceIssueCount`                             | 그 달 근태 이상 횟수. 목업은 지각 + 결근으로 셉니다 (서버 정의 확인 필요)                                                                           |
+| `workStartDate` (추가 요청)                             | 근로를 시작한 날. 목록의 "근로 시작" 열 (`YYYY.MM`)                                                                                                 |
+| `lateCount`, `lateMinutes` (`lateMinutes`는 추가 요청)  | 그 달 지각 횟수와 늦은 분 합계. 목록의 "지각 횟수 (시간)" 열 (예: `3회 (41분)`)                                                                     |
+| `totalAttendanceIssueCount`                             | 그 달 근태 이상 횟수. 목록 화면에서는 쓰지 않습니다. 목업은 지각 + 결근으로 셉니다 (서버 정의 확인 필요)                                            |
+| `weeklyWorkedMinutes`, `weeklyLimitMinutes`             | 목록 화면에서는 쓰지 않습니다 (주 누적은 상세보기 근로대장에서 보여 줍니다)                                                                         |
 | `totalElements`                                         | 검색어에 맞는 전체 인원. 목록 제목의 "총 인원 수"에 씁니다                                                                                          |
 
 ### GET `/admin/workers/{userId}?date=2026-07-15`
@@ -559,6 +566,7 @@
 
 - **인증**: 관리자 확인 방법(쿠키 / `Authorization` 헤더)과 권한이 없을 때의 응답
 - **오류 응답 모양**: 지금은 `409`(이미 배치된 칸) 외에는 정하지 않았습니다. `{ "message": "..." }`처럼 화면에 보여 줄 문구를 함께 주면 토스트로 그대로 띄울 수 있습니다
+- **목록 응답에 추가 요청**: 목록 화면의 "근로 시작"·"지각 횟수 (시간)" 열에 필요한 `workStartDate`, `lateMinutes`를 근무 인원 목록 응답에 넣어 달라고 요청합니다
 - **전체 근로장학생 목록**: `GET /admin/workers`는 이제 기준일·검색어·페이지를 받는 근무 인원 목록입니다. 근로시간 관리(사람 찾기)와 근로신청 관리(학생 고르기)는 페이지 없는 전체 목록이 필요해서, 지금은 프론트 `getWorkers()`가 목업 전체를 줍니다. 전체 목록을 받을 방법(큰 `size`, 별도 API 등)을 정해야 합니다
 - **근로장학생 상세보기에 없는 데이터**: 근태 요약의 지각 횟수·시간과 결근 횟수, 이번 달 지각 기록(날짜·시작 시각·출근 시각·늦은 분), 근로대장 표(근무 완료 건의 날짜·오전/오후·시작·종료·근무시간)가 상세 API에 없습니다. 지금은 `work-shifts`(제안)로 받아 화면에서 계산합니다
 - **그 달 근로학생이 아닌 사람**: 목록·상세의 근무 기록이 모두 0으로 오는지, 최대 근로시간 0으로 구분해도 되는지

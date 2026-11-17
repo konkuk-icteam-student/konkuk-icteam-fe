@@ -34,15 +34,17 @@ export type WorkerWorkRecord = {
   approvedChangeRequestCount: number;
 };
 
-// 근무 인원 목록 한 줄
+// 근무 인원 목록 한 줄. workStartDate·lateMinutes는 목록 화면에 필요해 백엔드에 추가를 요청한 필드다
 export type WorkerListItem = Pick<
   Worker,
-  'userId' | 'name' | 'studentId' | 'department' | 'grade' | 'phoneNumber'
+  'userId' | 'name' | 'studentId' | 'department' | 'grade' | 'phoneNumber' | 'workStartDate'
 > &
   WorkerWorkRecord & {
     // 그 달 근태 이상(지각·결근) 횟수
     totalAttendanceIssueCount: number;
+    // 그 달 지각 횟수와 늦은 분 합계
     lateCount: number;
+    lateMinutes: number;
   };
 
 export type GetWorkerListRequest = {
@@ -172,7 +174,14 @@ export const getWorkerList = ({
 }: GetWorkerListRequest): GetWorkerListResponse => {
   const json = getWorkerListMock({ dateKey: toApiDate(date), keyword: keyword.trim(), page, size });
 
-  return { ...json, date: parseApiDate(json.date) };
+  return {
+    ...json,
+    date: parseApiDate(json.date),
+    workers: json.workers.map((worker) => ({
+      ...worker,
+      workStartDate: parseApiDate(worker.workStartDate),
+    })),
+  };
 };
 
 /**
