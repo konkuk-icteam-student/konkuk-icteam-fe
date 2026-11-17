@@ -4,14 +4,13 @@ import { LUNCH_BREAK, SLOT_MINUTES, SLOT_TIMES } from '@/shared/config/slot';
 import { MIN_WORK_HOURS_PER_SHIFT } from '@/shared/config/workHours';
 import { checkWeekend } from '@/shared/utils/calendar';
 import { checkLunchSlot } from '@/shared/utils/slot';
-import type { MonthlyWorkRecord } from '../workers';
 import type { CreateWorkScheduleResponse, WorkScheduleSlot } from '../workSchedules';
 import { getMonthlyUserIdsMock, getWorkApplicationMock } from './workApplications';
 import { WORKERS_MOCK } from './workers';
 
-// 근무 시간표·근무 기록 목업. 날짜와 사람만으로 값이 정해져서 화면마다 숫자가 어긋나지 않는다
+// 근무 시간표 목업. 날짜와 사람만으로 값이 정해져서 화면마다 숫자가 어긋나지 않는다.
+// 한 사람의 한 달 근무 기록은 이 시간표로 만든 workerShifts 목업에서 센다
 
-const MONTHLY_LIMIT_MINUTES = 60 * 60;
 const DEFAULT_MAX_CONCURRENT_WORKERS = 4;
 
 // 이어진 근무 한 구간의 최소 칸 수 (1시간 = 30분 칸 2개)
@@ -125,8 +124,12 @@ export const getDaySlotsMock = (dateKey: string): WorkScheduleSlot[] => {
         userId,
         userName,
       }));
+    // 계정을 삭제한 근로장학생은 관리자가 넣은 배치도 함께 지워진 것으로 본다
     const addedUsers = ADDED_SCHEDULES.filter(
-      (schedule) => schedule.date === dateKey && schedule.start === start,
+      (schedule) =>
+        schedule.date === dateKey &&
+        schedule.start === start &&
+        WORKERS_MOCK.some(({ userId }) => userId === schedule.userId),
     ).map(({ scheduleId, userId, userName }) => ({ scheduleId, userId, userName }));
 
     return {
@@ -163,31 +166,4 @@ export const createWorkScheduleMock = ({
 
 export const deleteWorkScheduleMock = (scheduleId: number) => {
   DELETED_SCHEDULE_IDS.add(scheduleId);
-};
-
-/**
- * 한 사람의 한 달 근무 기록 목업을 얻습니다.
- * @param userId 근로학생 id
- * @param year 연도
- * @param month 월 (1~12)
- * @returns 누적 시간(분)과 한도, 지각·근무 변경 횟수
- * @example getMonthlyRecordMock(1, 2026, 10).monthlyLimitMinutes; // 3600
- */
-export const getMonthlyRecordMock = (
-  userId: number,
-  year: number,
-  month: number,
-): MonthlyWorkRecord => {
-  const seed = createSeed(userId - 1, month - 1, year);
-  const lateCount = seed % 3;
-  const totalChangeRequestCount = seed % 4;
-
-  return {
-    monthlyWorkedMinutes: Math.min(((seed % 40) + 12) * 60 + 30, MONTHLY_LIMIT_MINUTES),
-    monthlyLimitMinutes: MONTHLY_LIMIT_MINUTES,
-    lateCount,
-    lateMinutes: lateCount * (5 + (seed % 10)),
-    totalChangeRequestCount,
-    approvedChangeRequestCount: Math.floor(totalChangeRequestCount / 2),
-  };
 };

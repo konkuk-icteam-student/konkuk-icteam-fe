@@ -8,110 +8,140 @@
 
 ## 공통 규칙
 
-| 항목          | 규칙                                                                                    |
-| ------------- | --------------------------------------------------------------------------------------- |
-| 경로          | 모두 `/admin`으로 시작합니다                                                            |
-| 날짜          | `YYYY-MM-DD` 문자열 (예: `"2026-10-25"`)                                                |
-| 날짜·시각     | `YYYY-MM-DDTHH:mm:ss` 문자열, 한국 시간, 시간대 표기 없음 (예: `"2026-10-22T10:12:00"`) |
-| 시각만        | `HH:mm` 문자열 (예: `"09:00"`). 근무 칸은 30분 단위이고 09:00 ~ 18:00입니다             |
-| 월            | `year`(예: `2026`)와 `month`(1~12)를 따로 보냅니다                                      |
-| id            | 모두 숫자입니다 (`userId`, `scheduleId`, `requestId`, `todoId`, `noticeId`)             |
-| 빈 값         | 아직 채우지 않은 정보는 빈 문자열이 아니라 `null`로 보냅니다                            |
-| 근로시간 단위 | 근로신청 기준은 **시간**, 근무 기록은 **분**입니다 (아래 각 항목에 적어 둠)             |
+| 항목          | 규칙                                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------------------ |
+| 경로          | 모두 `/api/v1/admin`으로 시작합니다. 이 문서에서는 앞의 `/api/v1`을 빼고 적습니다                            |
+| 응답 모양     | `{ "isSuccess": true, "message": "...", "details": { ... } }`. 이 문서의 응답 예시는 `details` 안만 적습니다 |
+| 날짜          | `YYYY-MM-DD` 문자열 (예: `"2026-10-25"`)                                                                     |
+| 날짜·시각     | `YYYY-MM-DDTHH:mm:ss` 문자열, 한국 시간, 시간대 표기 없음 (예: `"2026-10-22T10:12:00"`)                      |
+| 시각만        | `HH:mm` 문자열 (예: `"09:00"`). 근무 칸은 30분 단위이고 09:00 ~ 18:00입니다                                  |
+| 월            | `year`(예: `2026`)와 `month`(1~12)를 따로 보냅니다                                                           |
+| id            | 모두 숫자입니다 (`userId`, `scheduleId`, `requestId`, `todoId`, `noticeId`)                                  |
+| 빈 값         | 아직 채우지 않은 정보는 빈 문자열이 아니라 `null`로 보냅니다                                                 |
+| 근로시간 단위 | 근로신청 기준은 **시간**, 근무 기록은 **분**입니다 (아래 각 항목에 적어 둠)                                  |
 
 > 프론트는 받은 날짜 문자열을 `_apis` 안에서 한 번만 `Date`로 바꾸고, 보낼 때도 `_apis` 안에서 문자열로 바꿉니다. 서버는 문자열 형식만 맞춰 주면 됩니다.
 
 ## 한눈에 보기
 
-| 메서드 | 경로                                        | 하는 일                                   | 쓰는 화면                                                                 |
-| ------ | ------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------- |
-| GET    | `/admin/workers`                            | 모든 근로장학생                           | 근로장학생(전체 탭), 근로시간 관리(사람 찾기), 근로신청 관리(학생 고르기) |
-| GET    | `/admin/workers/monthly?year=&month=`       | 그 달 근로학생과 근무 기록                | 근로장학생(월별 탭)                                                       |
-| PATCH  | `/admin/workers/{userId}`                   | 근로장학생 정보 수정                      | 근로장학생                                                                |
-| GET    | `/admin/work-schedules?startDate=&endDate=` | 기간의 근무 시간표                        | 대시보드(하루), 근로시간 관리(월~금)                                      |
-| GET    | `/admin/attendances?date=`                  | 그날 근무 구간별 출근 기록                | 대시보드(오늘 근로 현황, 시간표 근태 색)                                  |
-| POST   | `/admin/work-schedules`                     | 근무 칸에 근로학생 넣기                   | 근로시간 관리                                                             |
-| DELETE | `/admin/work-schedules/{scheduleId}`        | 근무 칸에서 근로학생 빼기                 | 근로시간 관리                                                             |
-| GET    | `/admin/work-change-requests?year=&month=`  | 한 달 근무 변경 요청과 상태별 건수        | 대시보드(승인 대기 건수), 근로시간 관리, 수정요청                         |
-| PATCH  | `/admin/work-change-requests/{requestId}`   | 근무 변경 요청 승인·반려                  | 수정요청                                                                  |
-| GET    | `/admin/work-applications?year=&month=`     | 그 달 근로신청 기준과 신청할 수 있는 학생 | 근로신청 관리                                                             |
-| PUT    | `/admin/work-applications`                  | 그 달 근로신청 열기·수정                  | 근로신청 관리                                                             |
-| GET    | `/admin/todos`                              | 반복 업무 목록                            | 대시보드                                                                  |
-| POST   | `/admin/todos`                              | 반복 업무 추가                            | 대시보드                                                                  |
-| PUT    | `/admin/todos/{todoId}`                     | 반복 업무 수정                            | 대시보드                                                                  |
-| DELETE | `/admin/todos/{todoId}`                     | 반복 업무 삭제                            | 대시보드                                                                  |
-| GET    | `/admin/todos/{todoId}/assignee-counts`     | 근로학생별 그 업무 누적 횟수              | 대시보드(업무 지정)                                                       |
-| GET    | `/admin/todo-progress?date=`                | 그날 업무 수와 완료한 업무                | 대시보드(업무 현황, 완료 업무 취소선)                                     |
-| GET    | `/admin/todo-assignments?date=`             | 그날 업무별 시작 시각과 담당 근로학생     | 대시보드                                                                  |
-| PUT    | `/admin/todo-assignments`                   | 그날 업무 지정 통째로 저장                | 대시보드                                                                  |
-| GET    | `/admin/notices`                            | 게시 중·게시 예정 공지                    | 대시보드                                                                  |
-| POST   | `/admin/notices`                            | 공지 등록                                 | 대시보드                                                                  |
-| PUT    | `/admin/notices/{noticeId}`                 | 공지 수정                                 | 대시보드                                                                  |
-| DELETE | `/admin/notices/{noticeId}`                 | 공지 삭제                                 | 대시보드                                                                  |
+| 메서드 | 경로                                                      | 하는 일                                                          | 쓰는 화면                                                                                |
+| ------ | --------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| GET    | `/admin/workers?date=&keyword=&page=&size=`               | 근무 인원 목록 (이름 검색·페이지는 서버)                         | 근로장학생(목록). 근로시간 관리·근로신청 관리의 전체 목록은 아래 "백엔드와 정해야 할 것" |
+| GET    | `/admin/workers/{userId}?date=`                           | 근무 인원 상세                                                   | 근로장학생(상세보기, 근로대장 카드)                                                      |
+| PATCH  | `/admin/workers/{userId}`                                 | 근로장학생 정보 수정                                             | 근로장학생                                                                               |
+| GET    | `/admin/workers/{userId}/work-shifts?startDate=&endDate=` | (백엔드에 요청할 API) 한 근로장학생의 기간 근무 구간과 출근 기록 | 근로장학생(근태 요약의 지각·결근, 지각 기록, 근로대장 표)                                |
+| POST   | `/admin/workers/{userId}/password-reset`                  | 비밀번호 재설정 링크를 학교 메일로 보내기                        | 근로장학생                                                                               |
+| DELETE | `/admin/workers/{userId}`                                 | 계정 삭제                                                        | 근로장학생                                                                               |
+| GET    | `/admin/work-schedules?startDate=&endDate=`               | 기간의 근무 시간표                                               | 대시보드(하루), 근로시간 관리(월~금)                                                     |
+| GET    | `/admin/attendances?date=`                                | 그날 근무 구간별 출근 기록                                       | 대시보드(오늘 근로 현황, 시간표 근태 색)                                                 |
+| POST   | `/admin/work-schedules`                                   | 근무 칸에 근로학생 넣기                                          | 근로시간 관리                                                                            |
+| DELETE | `/admin/work-schedules/{scheduleId}`                      | 근무 칸에서 근로학생 빼기                                        | 근로시간 관리                                                                            |
+| GET    | `/admin/work-change-requests?year=&month=`                | 한 달 근무 변경 요청과 상태별 건수                               | 대시보드(승인 대기 건수), 근로시간 관리, 수정요청                                        |
+| PATCH  | `/admin/work-change-requests/{requestId}`                 | 근무 변경 요청 승인·반려                                         | 수정요청                                                                                 |
+| GET    | `/admin/work-applications?year=&month=`                   | 그 달 근로신청 기준과 신청할 수 있는 학생                        | 근로신청 관리                                                                            |
+| PUT    | `/admin/work-applications`                                | 그 달 근로신청 열기·수정                                         | 근로신청 관리                                                                            |
+| GET    | `/admin/todos`                                            | 반복 업무 목록                                                   | 대시보드                                                                                 |
+| POST   | `/admin/todos`                                            | 반복 업무 추가                                                   | 대시보드                                                                                 |
+| PUT    | `/admin/todos/{todoId}`                                   | 반복 업무 수정                                                   | 대시보드                                                                                 |
+| DELETE | `/admin/todos/{todoId}`                                   | 반복 업무 삭제                                                   | 대시보드                                                                                 |
+| GET    | `/admin/todos/{todoId}/assignee-counts`                   | 근로학생별 그 업무 누적 횟수                                     | 대시보드(업무 지정)                                                                      |
+| GET    | `/admin/todo-progress?date=`                              | 그날 업무 수와 완료한 업무                                       | 대시보드(업무 현황, 완료 업무 취소선)                                                    |
+| GET    | `/admin/todo-assignments?date=`                           | 그날 업무별 시작 시각과 담당 근로학생                            | 대시보드                                                                                 |
+| PUT    | `/admin/todo-assignments`                                 | 그날 업무 지정 통째로 저장                                       | 대시보드                                                                                 |
+| GET    | `/admin/notices`                                          | 게시 중·게시 예정 공지                                           | 대시보드                                                                                 |
+| POST   | `/admin/notices`                                          | 공지 등록                                                        | 대시보드                                                                                 |
+| PUT    | `/admin/notices/{noticeId}`                               | 공지 수정                                                        | 대시보드                                                                                 |
+| DELETE | `/admin/notices/{noticeId}`                               | 공지 삭제                                                        | 대시보드                                                                                 |
 
 ---
 
 ## 근로장학생 `workers`
 
-### GET `/admin/workers`
+### GET `/admin/workers?date=2026-07-15&keyword=홍길동&page=0&size=10`
 
-같은 조직의 모든 근로장학생입니다. 이름 검색은 화면에서 하므로 검색 파라미터는 없습니다.
+근무 인원 목록입니다. 기준일(`date`)이 속한 주(월~일)·달의 근무 기록이 붙습니다. 이름 검색(`keyword`, 비우면 모두)과 페이지 나누기(`page`는 0부터)는 서버가 합니다.
+
+목록 화면 열은 번호 / 성명 / 학번 / 학과 / 학년 / 연락처 / 근로 시작 / 이번달 누적 근로시간 / 지각 횟수 (시간) / 수정요청 / 상세보기입니다. 이 중 **근로 시작(`workStartDate`)과 지각 시간(`lateMinutes`)은 지금 응답에 없어 백엔드에 추가를 요청**했고, 아래 예시에 `// 추가 요청`으로 표시했습니다. 프론트 목업은 두 필드를 채워서 보냅니다.
 
 ```json
 {
+  "date": "2026-07-15",
   "workers": [
     {
       "userId": 1,
       "name": "홍길동",
-      "studentId": "202312345",
-      "department": "컴퓨터공학부",
+      "studentId": "202211414",
+      "department": "컴퓨터공학과",
       "grade": 3,
       "phoneNumber": "010-1234-5678",
-      "email": "gildong@konkuk.ac.kr",
-      "workStartDate": "2025-03-01"
+      "workStartDate": "2025-03-01", // 추가 요청
+      "weeklyWorkedMinutes": 240,
+      "weeklyLimitMinutes": 780,
+      "monthlyWorkedMinutes": 960,
+      "monthlyLimitMinutes": 1620,
+      "totalChangeRequestCount": 9,
+      "approvedChangeRequestCount": 3,
+      "totalAttendanceIssueCount": 9,
+      "lateCount": 3,
+      "lateMinutes": 41 // 추가 요청
     }
-  ]
+  ],
+  "page": 0,
+  "size": 10,
+  "totalElements": 21,
+  "totalPages": 3,
+  "first": true,
+  "last": false
 }
 ```
 
-| 필드                                                       | 타입                                          | 설명                           |
-| ---------------------------------------------------------- | --------------------------------------------- | ------------------------------ |
-| `studentId`, `department`, `grade`, `phoneNumber`, `email` | `string \| null` (`grade`는 `number \| null`) | 아직 채우지 않았으면 `null`    |
-| `email`                                                    | `string \| null`                              | 로그인 아이디로 쓰는 학교 메일 |
-| `workStartDate`                                            | 날짜                                          | 근로를 시작한 달의 1일         |
+| 필드                                                    | 설명                                                                                                                                                |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `weeklyWorkedMinutes`, `monthlyWorkedMinutes`           | 기준일이 속한 주·달에 근무 완료한 시간 (분)                                                                                                         |
+| `weeklyLimitMinutes`, `monthlyLimitMinutes`             | 주·달 최대 근로시간 (분). 사람마다 다를 수 있습니다. 프론트는 **0이면 그 달 근로학생이 아닌 것**으로 보고 기록 칸을 `-`로 채웁니다 (서버 확인 필요) |
+| `totalChangeRequestCount`, `approvedChangeRequestCount` | 그 달 근무 변경 요청 수와 그중 승인 수                                                                                                              |
+| `workStartDate` (추가 요청)                             | 근로를 시작한 날. 목록의 "근로 시작" 열 (`YYYY.MM`)                                                                                                 |
+| `lateCount`, `lateMinutes` (`lateMinutes`는 추가 요청)  | 그 달 지각 횟수와 늦은 분 합계. 목록의 "지각 횟수 (시간)" 열 (예: `3회 (41분)`)                                                                     |
+| `totalAttendanceIssueCount`                             | 그 달 근태 이상 횟수. 목록 화면에서는 쓰지 않습니다. 목업은 지각 + 결근으로 셉니다 (서버 정의 확인 필요)                                            |
+| `weeklyWorkedMinutes`, `weeklyLimitMinutes`             | 목록 화면에서는 쓰지 않습니다 (주 누적은 상세보기 근로대장에서 보여 줍니다)                                                                         |
+| `totalElements`                                         | 검색어에 맞는 전체 인원. 목록 제목의 "총 인원 수"에 씁니다                                                                                          |
 
-### GET `/admin/workers/monthly?year=2026&month=10`
+### GET `/admin/workers/{userId}?date=2026-07-15`
 
-그 달 근로학생(근로신청 때 고른 학생)과 그 달 근무 기록입니다. 아직 명단을 정하지 않은 달은 `workers`가 빈 배열입니다.
+근무 인원 상세입니다. 기준일이 속한 주·달의 근무 기록이 붙습니다. 상세보기는 오늘을, 근로대장은 고른 달(이번 달은 오늘, 지난달은 그 달 마지막 날)을 기준일로 보냅니다.
 
 ```json
 {
-  "year": 2026,
-  "month": 10,
-  "workers": [
-    {
-      "userId": 1,
-      "name": "홍길동",
-      "studentId": "202312345",
-      "department": "컴퓨터공학부",
-      "grade": 3,
-      "phoneNumber": "010-1234-5678",
-      "email": "gildong@konkuk.ac.kr",
-      "workStartDate": "2025-03-01",
-      "monthlyRecord": {
-        "monthlyWorkedMinutes": 2160,
-        "monthlyLimitMinutes": 3600,
-        "lateCount": 1,
-        "lateMinutes": 10,
-        "totalChangeRequestCount": 2,
-        "approvedChangeRequestCount": 1
-      }
-    }
-  ]
+  "date": "2026-08-11",
+  "userId": 1,
+  "name": "학송은",
+  "studentId": "202211272",
+  "department": "컴퓨터공학부",
+  "grade": 4,
+  "phoneNumber": "010-5640-3252",
+  "email": "ucs155@naver.com",
+  "workStartDate": "2026-08-07",
+  "weeklyWorkedMinutes": 0,
+  "weeklyLimitMinutes": 540,
+  "monthlyWorkedMinutes": 0,
+  "monthlyLimitMinutes": 1620,
+  "totalChangeRequestCount": 3,
+  "approvedChangeRequestCount": 1,
+  "submittedMinutes": 330,
+  "lastRequestedAt": "2026-07-15 13:00"
 }
 ```
 
-`monthlyRecord`의 시간은 모두 **분** 단위입니다. `monthlyLimitMinutes`는 그 달 최대 근로시간입니다.
+| 필드                                                       | 설명                                                                                                                   |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `studentId`, `department`, `grade`, `phoneNumber`, `email` | 아직 채우지 않았으면 `null`                                                                                            |
+| `email`                                                    | 로그인 아이디로 쓰는 학교 메일                                                                                         |
+| `workStartDate`                                            | 근로를 시작한 날                                                                                                       |
+| `submittedMinutes`                                         | 제출한 근무시간 (분). 화면에서 쓰지 않습니다. 목업은 그 달 배정된 근무 시간 합으로 둡니다 (뜻 확인 필요)               |
+| `lastRequestedAt`                                          | 마지막 근무 변경 요청 시각. 이 값만 `YYYY-MM-DD HH:mm` 모양입니다 (공통 규칙과 달라 확인 필요). 화면에서 쓰지 않습니다 |
+| `timestamp`                                                | 서버 응답 시각. 화면에서 쓰지 않습니다                                                                                 |
+
+근태 요약의 지각 횟수·시간과 결근, 이번 달 지각 기록, 근로대장 표(날짜별 근무)는 이 응답에 없어서 아래 `work-shifts`(백엔드에 요청할 API)로 받습니다.
 
 ### PATCH `/admin/workers/{userId}`
 
@@ -121,7 +151,42 @@
 { "department": "소프트웨어학부", "phoneNumber": null }
 ```
 
-응답은 바뀐 근로장학생 한 명(`GET /admin/workers`의 항목 모양)입니다.
+응답은 바뀐 근로장학생 한 명입니다 (`userId`, `name`, `studentId`, `department`, `grade`, `phoneNumber`, `email`, `workStartDate`).
+
+### GET `/admin/workers/{userId}/work-shifts?startDate=2026-11-01&endDate=2026-11-30` (백엔드에 요청할 API)
+
+한 근로장학생의 기간(`endDate` 포함) 근무 구간과 출근 기록입니다. 한 사람의 이어진 30분 칸을 한 구간으로 묶고, 점심시간으로 끊기면 두 구간이 됩니다(`GET /admin/attendances`와 같은 묶음). 날짜·시작 시각 순으로 옵니다.
+
+```json
+{
+  "userId": 2,
+  "shifts": [
+    {
+      "date": "2026-11-04",
+      "start": "10:30",
+      "end": "11:30",
+      "checkedInAt": "2026-11-04T10:36:00"
+    },
+    { "date": "2026-11-05", "start": "13:00", "end": "16:30", "checkedInAt": null }
+  ]
+}
+```
+
+- 예정·근무중·결근 근무도 모두 보냅니다. 지각은 서버가 판정해 주지만, 상세보기에 쓸 서버 근태 API가 정해지기 전이라 지금은 화면에서 `checkedInAt`과 지금 시각으로 지각·결근·근무 완료를 계산합니다 (아래 "백엔드와 정해야 할 것 > 지각 판정")
+- 근로장학생 상세보기에서 이렇게 씁니다 (용어는 `apps/commute/CONTEXT.md`의 근무 절)
+
+| 화면                | 쓰는 근무                                                                                                                     |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| 근태 요약·지각 기록 | 이번 달 근무. 시작 시각에서 5분을 넘겨 출근했으면 지각(늦은 분은 시작 시각부터 셈), 끝났는데 출근하지 않았으면 결근           |
+| 근로대장            | 고른 달의 근무 완료(출근했고 끝난) 건만, 배정된 시작·종료 시각으로 적습니다. 이번 달이면 이번 주 누적을 위해 그 주 월요일부터 |
+
+### POST `/admin/workers/{userId}/password-reset`
+
+근로장학생 학교 메일로 비밀번호 재설정 링크를 보냅니다. 근로장학생이 링크를 누르면 새 비밀번호를 정하는 화면으로 갑니다(근로학생·인증 쪽 화면). 요청·응답 본문은 없습니다. 메일이 없는 근로장학생은 화면에서 버튼을 막습니다.
+
+### DELETE `/admin/workers/{userId}`
+
+계정과 시간표·근로대장·개인정보 등 그 근로장학생과 관련한 정보를 모두 지웁니다. 되돌릴 수 없습니다([ADR 0001](adr/0001-account-deletion-removes-all-records.md)). 요청·응답 본문은 없습니다.
 
 ---
 
@@ -501,10 +566,19 @@
 
 - **인증**: 관리자 확인 방법(쿠키 / `Authorization` 헤더)과 권한이 없을 때의 응답
 - **오류 응답 모양**: 지금은 `409`(이미 배치된 칸) 외에는 정하지 않았습니다. `{ "message": "..." }`처럼 화면에 보여 줄 문구를 함께 주면 토스트로 그대로 띄울 수 있습니다
-- **목록 페이지 나누기**: 근로장학생 목록은 전부 받아서 화면에서 나눕니다(한 페이지 10명). 인원이 많아지면 서버 페이지 나누기가 필요합니다
+- **목록 응답에 추가 요청**: 목록 화면의 "근로 시작"·"지각 횟수 (시간)" 열에 필요한 `workStartDate`, `lateMinutes`를 근무 인원 목록 응답에 넣어 달라고 요청합니다
+- **전체 근로장학생 목록**: `GET /admin/workers`는 이제 기준일·검색어·페이지를 받는 근무 인원 목록입니다. 근로시간 관리(사람 찾기)와 근로신청 관리(학생 고르기)는 페이지 없는 전체 목록이 필요해서, 지금은 프론트 `getWorkers()`가 목업 전체를 줍니다. 전체 목록을 받을 방법(큰 `size`, 별도 API 등)을 정해야 합니다
+- **근로장학생 상세보기에 없는 데이터**: 근태 요약의 지각 횟수·시간과 결근 횟수, 이번 달 지각 기록(날짜·시작 시각·출근 시각·늦은 분), 근로대장 표(근무 완료 건의 날짜·오전/오후·시작·종료·근무시간)가 상세 API에 없습니다. 지금은 `work-shifts`(제안)로 받아 화면에서 계산합니다
+- **그 달 근로학생이 아닌 사람**: 목록·상세의 근무 기록이 모두 0으로 오는지, 최대 근로시간 0으로 구분해도 되는지
+- **근태 이상 횟수**: `totalAttendanceIssueCount`가 지각 + 결근인지
+- **`submittedMinutes`·`lastRequestedAt`의 뜻**과 `lastRequestedAt`의 날짜 모양(`YYYY-MM-DD HH:mm`)
 - **업무 수정 메서드**: 업무 수정은 `PUT`(전체 바꾸기)으로 가정했습니다. 근로장학생·변경 요청처럼 `PATCH`로 맞출지 정해야 합니다
 - **업무 지정 검증**: 업무 시작 시각에 근무하지 않는 사람을 맡기는 요청을 서버에서도 막을지
 - **업무 누적 횟수 기준**: `assignee-counts`의 "한 번"을 지정된 날로 셀지, 근로학생이 완료 체크한 날로 셀지. 지금 목업은 업무·사람마다 정해 둔 임의의 기본 횟수에, 오늘 전 날짜에 지정한 횟수를 더해서 셉니다
-- **지각 기준**: 지금은 칸 시작 시각보다 1분이라도 늦게 출근하면 지각으로 봅니다. 몇 분까지 봐줄지 정해야 합니다
+- **지각 판정**: DB에는 출근 시각만 저장하고, 지각은 서버가 출근 시각으로 계산해 줍니다. 백엔드의 인원별 근태 현황 응답에 `attendanceStatusCode`·`lateCount`·`lateMinutes`가 있습니다. 지각 기준은 시작 시각에서 5분을 넘기면 지각이고, 늦은 분은 시작 시각부터 셉니다.
+  - 지금 프론트는 서버 근태 API를 붙이기 전이라 같은 기준(`LATE_GRACE_MINUTES`)으로 목업과 근로장학생 상세보기에서 직접 계산합니다. 서버 값을 쓰게 되면 `(admin)/_utils/workerShift.ts`의 지각·결근 계산을 걷어 냅니다
+  - 확인할 것: 서버의 5분 경계(10:35:00 정상, 10:35:01 지각)와 늦은 분 계산 방식, `attendanceStatusCode` 코드표, 인원별 근태 현황 응답만 `userId`가 문자열(`"1"`)인 이유 (근무 인원 목록·상세는 숫자)
+  - 대시보드 근태 색과 출근 기록(`GET /admin/attendances`)도 근태를 화면에서 정한다고 가정하고 있고 아직 1분이라도 늦으면 지각으로 보여서, 서버 응답에 맞춰 함께 고쳐야 합니다
 - **근로신청 재저장**: 이미 열린 달을 다시 저장할 때 들어온 신청을 초기화하는 처리를 서버에서 할지
+- **계정 삭제 범위**: 화면은 디자인 문구대로 근로대장까지 모두 지운다고 안내합니다([ADR 0001](adr/0001-account-deletion-removes-all-records.md)). 서버가 지난 근무 기록을 남기기로 하면 확인 창 문구와 ADR을 함께 고칩니다
 - **근로학생 화면 API**: 이 문서는 관리자 화면만 다룹니다. 근로학생 화면(홈·시간표)이 쓰는 API는 [`student-api.md`](student-api.md)에 정리했습니다

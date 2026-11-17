@@ -4,6 +4,8 @@ import {
   formatMonthDay,
   formatMonthDayTime,
   formatMonthDayWithWeekday,
+  formatTime,
+  formatWeekday,
   formatYearMonth,
 } from './formatDate';
 
@@ -15,6 +17,15 @@ describe('formatDate', () => {
 
   it('기간을 MM.DD - MM.DD로 보여 준다', () => {
     expect(formatDateRange('2026-10-20', new Date(2026, 9, 25))).toBe('10.20 - 10.25');
+  });
+
+  it('요일만 보여 준다', () => {
+    expect(formatWeekday('2026-11-02')).toBe('월');
+    expect(formatWeekday(new Date(2026, 10, 8))).toBe('일');
+  });
+
+  it('시각만 HH:mm으로 보여 준다', () => {
+    expect(formatTime(new Date(2026, 10, 4, 9, 5))).toBe('09:05');
   });
 
   it('요일을 붙인다', () => {

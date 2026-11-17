@@ -15,6 +15,9 @@ const getCurrentMonth = () => {
   return { year: today.getFullYear(), month: today.getMonth() + 1 };
 };
 
+// 달마다 쉬는 사람을 고르는 순서. 처음 목록으로 고정해서, 계정을 삭제해 WORKERS_MOCK이 줄어도 다른 사람의 지난 달 명단이 바뀌지 않는다
+const RESTING_ORDER = WORKERS_MOCK.map(({ userId }) => userId);
+
 /**
  * 근로신청을 열지 않고 지난 달 명단 목업을 만듭니다. 근로를 시작하기 전 달에는 넣지 않고, 달마다 한 명씩 돌아가며 쉽니다.
  * @param year 연도
@@ -25,13 +28,14 @@ const getCurrentMonth = () => {
 const createPastRosterMock = (year: number, month: number) => {
   const monthKey = createMonthKey(year, month);
   const current = getCurrentMonth();
-  const restingIndex =
+  const restingUserId =
     monthKey === createMonthKey(current.year, current.month)
-      ? WORKERS_MOCK.length - 1
-      : month % WORKERS_MOCK.length;
+      ? RESTING_ORDER.at(-1)
+      : RESTING_ORDER[month % RESTING_ORDER.length];
 
   return WORKERS_MOCK.filter(
-    ({ workStartDate }, index) => workStartDate.slice(0, 7) <= monthKey && index !== restingIndex,
+    ({ userId, workStartDate }) =>
+      workStartDate.slice(0, 7) <= monthKey && userId !== restingUserId,
   ).map(({ userId }) => userId);
 };
 
