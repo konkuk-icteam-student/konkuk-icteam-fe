@@ -10,7 +10,8 @@ type AccountSectionProps = {
   onDelete: () => void;
 };
 
-// 계정. 로그인 ID와 비밀번호 초기화·계정 삭제. 둘 다 한 번 더 묻고 실행한다
+// 계정. 로그인 ID와 비밀번호 초기화·계정 삭제. 둘 다 한 번 더 묻고 실행한다.
+// 비밀번호 초기화는 학교 메일로 재설정 링크를 보내는 것이라, 메일이 없으면 할 수 없다
 export default function AccountSection({ email, onPasswordReset, onDelete }: AccountSectionProps) {
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -27,6 +28,7 @@ export default function AccountSection({ email, onPasswordReset, onDelete }: Acc
           size='medium'
           tone='subtle_2'
           color='black'
+          disabled={!email}
           onClick={() => setIsResetConfirmOpen(true)}
         >
           비밀번호 초기화
@@ -46,7 +48,7 @@ export default function AccountSection({ email, onPasswordReset, onDelete }: Acc
         open={isResetConfirmOpen}
         handleOpenChange={setIsResetConfirmOpen}
         title='비밀번호를 초기화 하시겠습니까?'
-        description='기존의 비밀번호가 삭제되며 새로운 비밀번호가 발급됩니다.'
+        description={`학교 메일(${email})로 비밀번호 재설정 링크를 보냅니다.`}
         buttons={[
           { label: '이전', tone: 'subtle_2', color: 'gray', size: 'medium' },
           { label: '초기화하기', color: 'blue', size: 'medium', onClick: onPasswordReset },

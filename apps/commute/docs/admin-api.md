@@ -30,7 +30,7 @@
 | GET    | `/admin/workers/{userId}?date=`                           | 근무 인원 상세                                                   | 근로장학생(상세보기, 근로대장 카드)                                                      |
 | PATCH  | `/admin/workers/{userId}`                                 | 근로장학생 정보 수정                                             | 근로장학생                                                                               |
 | GET    | `/admin/workers/{userId}/work-shifts?startDate=&endDate=` | (백엔드에 요청할 API) 한 근로장학생의 기간 근무 구간과 출근 기록 | 근로장학생(근태 요약의 지각·결근, 지각 기록, 근로대장 표)                                |
-| POST   | `/admin/workers/{userId}/password-reset`                  | 비밀번호 초기화                                                  | 근로장학생                                                                               |
+| POST   | `/admin/workers/{userId}/password-reset`                  | 비밀번호 재설정 링크를 학교 메일로 보내기                        | 근로장학생                                                                               |
 | DELETE | `/admin/workers/{userId}`                                 | 계정 삭제                                                        | 근로장학생                                                                               |
 | GET    | `/admin/work-schedules?startDate=&endDate=`               | 기간의 근무 시간표                                               | 대시보드(하루), 근로시간 관리(월~금)                                                     |
 | GET    | `/admin/attendances?date=`                                | 그날 근무 구간별 출근 기록                                       | 대시보드(오늘 근로 현황, 시간표 근태 색)                                                 |
@@ -182,7 +182,7 @@
 
 ### POST `/admin/workers/{userId}/password-reset`
 
-기존 비밀번호를 지우고 새 비밀번호를 발급합니다. 요청·응답 본문은 없습니다. 새 비밀번호를 누구에게 어떻게 전달할지는 아직 정하지 않았습니다(아래 "백엔드와 정해야 할 것").
+근로장학생 학교 메일로 비밀번호 재설정 링크를 보냅니다. 근로장학생이 링크를 누르면 새 비밀번호를 정하는 화면으로 갑니다(근로학생·인증 쪽 화면). 요청·응답 본문은 없습니다. 메일이 없는 근로장학생은 화면에서 버튼을 막습니다.
 
 ### DELETE `/admin/workers/{userId}`
 
@@ -580,6 +580,5 @@
   - 확인할 것: 서버의 5분 경계(10:35:00 정상, 10:35:01 지각)와 늦은 분 계산 방식, `attendanceStatusCode` 코드표, 인원별 근태 현황 응답만 `userId`가 문자열(`"1"`)인 이유 (근무 인원 목록·상세는 숫자)
   - 대시보드 근태 색과 출근 기록(`GET /admin/attendances`)도 근태를 화면에서 정한다고 가정하고 있고 아직 1분이라도 늦으면 지각으로 보여서, 서버 응답에 맞춰 함께 고쳐야 합니다
 - **근로신청 재저장**: 이미 열린 달을 다시 저장할 때 들어온 신청을 초기화하는 처리를 서버에서 할지
-- **비밀번호 초기화 전달**: 새 비밀번호를 근로장학생 학교 메일로 보낼지, 응답으로 돌려줘 관리자 화면에 보여 줄지. 지금 화면은 확인 창에서 초기화를 요청하고 따로 알리지 않습니다
 - **계정 삭제 범위**: 화면은 디자인 문구대로 근로대장까지 모두 지운다고 안내합니다([ADR 0001](adr/0001-account-deletion-removes-all-records.md)). 서버가 지난 근무 기록을 남기기로 하면 확인 창 문구와 ADR을 함께 고칩니다
 - **근로학생 화면 API**: 이 문서는 관리자 화면만 다룹니다. 근로학생 화면(홈·시간표)이 쓰는 API는 [`student-api.md`](student-api.md)에 정리했습니다

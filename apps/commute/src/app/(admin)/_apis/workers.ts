@@ -229,7 +229,7 @@ export const getWorkerShifts = ({
 
 /**
  * POST /admin/workers/{userId}/password-reset
- * 기존 비밀번호를 지우고 새 비밀번호를 발급한다. 새 비밀번호를 어떻게 전달할지는 아직 정하지 않았다 (응답 본문 없음)
+ * 근로장학생 학교 메일로 비밀번호 재설정 링크를 보낸다. 근로장학생이 링크를 눌러 새 비밀번호를 정한다 (응답 본문 없음)
  */
 export const resetWorkerPassword = ({ userId }: ResetWorkerPasswordRequest) => {
   findWorkerMock(userId);

@@ -18,9 +18,10 @@ export default function PageClient() {
     showToast('근로장학생 정보를 수정했어요.');
   };
 
-  // 새 비밀번호를 어떻게 전달할지 정해지기 전이라 초기화한 뒤 따로 알리지 않는다
-  const handlePasswordReset = ({ userId }: Worker) => {
+  // 학교 메일로 비밀번호 재설정 링크를 보낸다. 근로장학생이 링크를 눌러 새 비밀번호를 정한다
+  const handlePasswordReset = ({ userId, name }: Worker) => {
     students.handlePasswordReset(userId);
+    showToast(`${name}님 학교 메일로 비밀번호 재설정 링크를 보냈어요.`);
   };
 
   const handleDelete = ({ userId, name }: Worker) => {
