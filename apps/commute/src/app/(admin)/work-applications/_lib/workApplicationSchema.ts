@@ -11,6 +11,8 @@ const workApplicationSettingsSchema = z
     monthlyMinHours: z.number(),
     monthlyMaxHours: z.number(),
     unavailableDates: z.array(z.date()),
+    // 시간대 규칙(30분 단위·겹침)은 추가할 때 확인한다
+    unavailableTimeRanges: z.array(z.object({ start: z.string(), end: z.string() })),
   })
   .refine(({ applyStartDate, applyEndDate }) => applyStartDate < applyEndDate, {
     message: '신청 마감이 시작보다 늦어야 해요.',
@@ -29,10 +31,9 @@ const workApplicationSettingsSchema = z
     path: ['monthlyMaxHours'],
   });
 
-// 한 달치 근로신청. 고른 학생만 그 달 근무를 신청할 수 있다
+// 한 달치 근로신청. 승인된 모든 근로장학생이 이 기준으로 신청할 수 있다
 export const workApplicationSchema = z.object({
   settings: workApplicationSettingsSchema,
-  userIds: z.array(z.number()).min(1, '근로학생을 한 명 이상 골라 주세요.'),
 });
 
 export type WorkApplication = z.infer<typeof workApplicationSchema>;

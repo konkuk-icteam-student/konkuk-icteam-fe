@@ -1,5 +1,6 @@
-import { Fragment, useId } from 'react';
+import { Fragment, useId, useState } from 'react';
 import { parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
+import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { DatePicker, Input, Message, TagChip } from '@konkuk-icteam-fe/design-system/ui';
 import DateRangeField from '../../_components/DateRangeField';
 import type { WorkApplicationSettings } from '../../_apis/workApplications';
@@ -8,10 +9,13 @@ import { getNonWorkingDates } from '../_utils/getNonWorkingDates';
 import { formatMonthDay } from '@/shared/utils/formatDate';
 import { IconEllipse } from '@konkuk-icteam-fe/design-system/assets';
 import type { SettingsErrors } from '../_lib/workApplicationSchema';
+import { createAddedTimeRanges } from '../_utils/unavailableTimeRanges';
+import AddTimeRangePopover from './AddTimeRangePopover';
+import TimeTextInput from './TimeTextInput';
 
 type NumberSettingKey = Exclude<
   keyof WorkApplicationSettings,
-  'applyStartDate' | 'applyEndDate' | 'unavailableDates'
+  'applyStartDate' | 'applyEndDate' | 'unavailableDates' | 'unavailableTimeRanges'
 >;
 
 type SettingsPanelProps = {
@@ -30,22 +34,29 @@ const HOUR_ROWS: { label: string; minKey: NumberSettingKey; maxKey: NumberSettin
 
 type SectionProps = {
   title: string;
+  // 제목 옆에 붙는 짧은 안내
+  description?: string;
+  // 꼭 정해야 하는 항목이면 제목 오른쪽 위에 빨간 점을 붙인다
+  isRequired?: boolean;
   children: React.ReactNode;
 };
 
-const Section = ({ title, children }: SectionProps) => (
-  // 점을 제목 왼쪽에 붙이도록 section을 기준 위치로 둔다
-  <section className='relative flex flex-col gap-[0.8rem]'>
-    <IconEllipse
-      aria-hidden
-      className='text-red absolute top-[0.8rem] left-[-1.6rem] h-[0.4rem] w-[0.4rem]'
-    />
-    <h3 className='font-14-bd text-black'>{title}</h3>
+const Section = ({ title, description, isRequired = true, children }: SectionProps) => (
+  <section className='flex flex-col gap-[0.8rem]'>
+    <div className='flex items-center gap-[0.8rem]'>
+      <h3 className='font-14-bd flex items-start gap-[0.3rem] text-black'>
+        {title}
+        {isRequired ? (
+          <IconEllipse aria-hidden className='text-red mt-[0.1rem] h-[0.4rem] w-[0.4rem]' />
+        ) : null}
+      </h3>
+      {description ? <p className='caption-12-md text-gray-400'>{description}</p> : null}
+    </div>
     {children}
   </section>
 );
 
-// 근로신청 설정. 신청 기간, 근무 인원·시간 기준, 근무할 수 없는 날을 정한다
+// 근로신청 설정. 신청 기간, 근무 인원·시간 기준, 근무할 수 없는 날과 매일 근무할 수 없는 시간대를 정한다
 export default function SettingsPanel({
   monthKey,
   settings,
@@ -54,6 +65,7 @@ export default function SettingsPanel({
   onChange,
 }: SettingsPanelProps) {
   const errorIdPrefix = useId();
+  const [isTimeRangePopoverOpen, setIsTimeRangePopoverOpen] = useState(false);
   const [year = 0, month = 1] = monthKey.split('-').map(Number);
   const monthStart = `${monthKey}-01`;
   const monthEnd = `${monthKey}-${new Date(year, month, 0).getDate()}`;
@@ -95,31 +107,26 @@ export default function SettingsPanel({
           <div className='grid grid-cols-2 gap-[0.8rem]'>
             <label className='flex flex-col gap-[0.4rem]'>
               <span className='caption-12-md text-gray-500'>시작 시각</span>
-              <Input
-                type='time'
+              <TimeTextInput
+                placeholder='09:00'
+                aria-label='시작 시각'
                 disabled={!isEditable}
                 value={getTimeOfDay(settings.applyStartDate)}
-                onChange={(event) =>
-                  updateSetting(
-                    'applyStartDate',
-                    createDateWithTime(settings.applyStartDate, event.target.value),
-                  )
+                onChange={(time) =>
+                  updateSetting('applyStartDate', createDateWithTime(settings.applyStartDate, time))
                 }
               />
             </label>
             <label className='flex flex-col gap-[0.4rem]'>
               <span className='caption-12-md text-gray-500'>마감 시각</span>
-              <Input
-                type='time'
+              <TimeTextInput
+                placeholder='18:00'
+                aria-label='마감 시각'
                 disabled={!isEditable}
                 hasError={errors.applyEndDate !== undefined}
-                aria-invalid={errors.applyEndDate !== undefined}
                 value={getTimeOfDay(settings.applyEndDate)}
-                onChange={(event) =>
-                  updateSetting(
-                    'applyEndDate',
-                    createDateWithTime(settings.applyEndDate, event.target.value),
-                  )
+                onChange={(time) =>
+                  updateSetting('applyEndDate', createDateWithTime(settings.applyEndDate, time))
                 }
               />
             </label>
@@ -201,47 +208,109 @@ export default function SettingsPanel({
         </Section>
       </div>
 
-      <Section title='근무 불가 날짜'>
-        <div className='rounded-[1.2rem] border border-gray-50'>
-          <DatePicker
-            // 달을 바꾸면 그 달 달력부터 다시 보이도록 key로 새로 그린다
-            key={monthKey}
-            defaultViewDateMonth={parseISO(monthStart)}
-            minDate={monthStart}
-            maxDate={monthEnd}
-            disablePastDates={false}
-            disabledDates={nonWorkingDates}
-            color='red'
-            mode='multiple'
-            selectedDates={unavailableDateKeys}
-            handleDatesChangeAction={(dateKeys) => {
-              if (isEditable) handleUnavailableDatesChange(dateKeys);
-            }}
-          />
-        </div>
-        <ul aria-label='근무 불가 날짜' className='flex flex-wrap gap-[0.6rem]'>
-          {unavailableDateKeys.length === 0 ? (
-            <li className='caption-12-md text-gray-400'>근무 불가 날짜가 없어요.</li>
-          ) : (
-            unavailableDateKeys.map((dateKey) => (
-              <li key={dateKey}>
+      <div className='flex flex-col gap-[2.4rem]'>
+        <Section title='근무 불가 날짜'>
+          <div className='rounded-[1.2rem] border border-gray-50'>
+            <DatePicker
+              // 달을 바꾸면 그 달 달력부터 다시 보이도록 key로 새로 그린다
+              key={monthKey}
+              defaultViewDateMonth={parseISO(monthStart)}
+              minDate={monthStart}
+              maxDate={monthEnd}
+              disablePastDates={false}
+              disabledDates={nonWorkingDates}
+              color='red'
+              mode='multiple'
+              selectedDates={unavailableDateKeys}
+              handleDatesChangeAction={(dateKeys) => {
+                if (isEditable) handleUnavailableDatesChange(dateKeys);
+              }}
+            />
+          </div>
+          <ul aria-label='근무 불가 날짜' className='flex flex-wrap gap-[0.6rem]'>
+            {unavailableDateKeys.length === 0 ? (
+              <li className='caption-12-md text-gray-400'>근무 불가 날짜가 없어요.</li>
+            ) : (
+              unavailableDateKeys.map((dateKey) => (
+                <li key={dateKey}>
+                  <TagChip
+                    label={formatMonthDay(dateKey)}
+                    tone='red'
+                    onRemove={
+                      isEditable
+                        ? () =>
+                            handleUnavailableDatesChange(
+                              unavailableDateKeys.filter((key) => key !== dateKey),
+                            )
+                        : undefined
+                    }
+                  />
+                </li>
+              ))
+            )}
+          </ul>
+        </Section>
+
+        <Section
+          title='근무 불가 시간대'
+          description='매일 같은 시간에 적용돼요'
+          isRequired={false}
+        >
+          <ul aria-label='근무 불가 시간대' className='flex flex-wrap items-center gap-[0.6rem]'>
+            {settings.unavailableTimeRanges.map(({ start, end }) => (
+              <li key={start}>
                 <TagChip
-                  label={formatMonthDay(dateKey)}
+                  label={`${start} - ${end}`}
                   tone='red'
                   onRemove={
                     isEditable
                       ? () =>
-                          handleUnavailableDatesChange(
-                            unavailableDateKeys.filter((key) => key !== dateKey),
+                          updateSetting(
+                            'unavailableTimeRanges',
+                            settings.unavailableTimeRanges.filter((range) => range.start !== start),
                           )
                       : undefined
                   }
                 />
               </li>
-            ))
-          )}
-        </ul>
-      </Section>
+            ))}
+            {isEditable ? (
+              // 카드는 버튼 바로 아래에 띄운다
+              <li className='relative'>
+                <button
+                  type='button'
+                  aria-expanded={isTimeRangePopoverOpen}
+                  onClick={() => setIsTimeRangePopoverOpen((prev) => !prev)}
+                  className={cn(
+                    'caption-12-md rounded-[0.4rem] border border-dashed px-[0.8rem] py-[0.3rem]',
+                    isTimeRangePopoverOpen
+                      ? 'border-blue text-blue border-solid'
+                      : 'border-gray-400 text-gray-500 hover:text-black',
+                  )}
+                >
+                  + 시간대 추가
+                </button>
+                {isTimeRangePopoverOpen ? (
+                  <AddTimeRangePopover
+                    existingRanges={settings.unavailableTimeRanges}
+                    onAdd={(range) => {
+                      updateSetting(
+                        'unavailableTimeRanges',
+                        createAddedTimeRanges(settings.unavailableTimeRanges, range),
+                      );
+                      setIsTimeRangePopoverOpen(false);
+                    }}
+                    onClose={() => setIsTimeRangePopoverOpen(false)}
+                  />
+                ) : null}
+              </li>
+            ) : null}
+            {!isEditable && settings.unavailableTimeRanges.length === 0 ? (
+              <li className='caption-12-md text-gray-400'>근무 불가 시간대가 없어요.</li>
+            ) : null}
+          </ul>
+        </Section>
+      </div>
     </div>
   );
 }

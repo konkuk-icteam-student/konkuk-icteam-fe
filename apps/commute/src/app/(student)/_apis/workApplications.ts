@@ -5,6 +5,7 @@ import {
   type ApiJson,
   type WorkTimeRange,
 } from './common';
+import type { TimeRange } from '@/shared/utils/timeRange';
 import {
   getMyWorkApplicationMock,
   getWorkApplicationSettingsMock,
@@ -24,6 +25,8 @@ export type WorkApplicationSettings = {
   monthlyMaxHours: number;
   // 근무할 수 없는 날. 주말·공휴일은 원래 근무가 없어서 들어 있지 않다
   unavailableDates: Date[];
+  // 매일 근무할 수 없는 시간대 (예: 점심시간 11:30 - 13:00)
+  unavailableTimeRanges: TimeRange[];
 };
 
 export type GetWorkApplicationSettingsRequest = {
@@ -38,8 +41,6 @@ export type GetWorkApplicationSettingsResponse = {
   // 관리자가 그 달 신청을 열었는지. 열지 않은 달은 settings가 null이다
   isOpened: boolean;
   settings: WorkApplicationSettings | null;
-  // 내가 그 달 근로학생 명단에 들어 있어 신청할 수 있는지
-  canApply: boolean;
 };
 
 export type GetMyWorkApplicationRequest = GetWorkApplicationSettingsRequest;
@@ -70,7 +71,7 @@ const toWorkTimeRange = (json: ApiJson<WorkTimeRange>): WorkTimeRange => ({
 
 /**
  * GET /me/work-applications/settings?year=&month=
- * 그 달 근로신청 기준과 내가 신청할 수 있는지
+ * 그 달 근로신청 기준. 신청이 열려 있으면 승인된 근로장학생은 누구나 신청할 수 있다
  */
 export const getWorkApplicationSettings = ({
   year,
@@ -84,9 +85,8 @@ export const getWorkApplicationSettings = ({
         month,
         isOpened: true,
         settings: toSettings(saved.settings),
-        canApply: saved.canApply,
       }
-    : { year, month, isOpened: false, settings: null, canApply: false };
+    : { year, month, isOpened: false, settings: null };
 };
 
 /**
