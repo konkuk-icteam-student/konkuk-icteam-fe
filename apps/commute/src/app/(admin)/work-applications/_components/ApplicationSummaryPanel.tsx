@@ -47,9 +47,8 @@ export default function ApplicationSummaryPanel({
       className='flex h-full flex-col'
       action={
         // 화면 이동이라 링크로 두고, 모양만 디자인 시스템 Button(small·solid·blue)에 맞춘다
-        // TODO: 근로신청 시간표 화면을 근로신청 관리 아래로 옮기면 그 주소로 바꾼다
         <Link
-          href={ROUTES.ADMIN_WORKTIME}
+          href={ROUTES.ADMIN_WORK_APPLICATIONS_TIMETABLE}
           className='bg-blue text-black-1 caption-12-md inline-flex items-center justify-center rounded-[0.4rem] px-[1.2rem] py-[0.6rem]'
         >
           시간표 자세히보기

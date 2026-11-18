@@ -1,6 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
+import { parseISO } from '@konkuk-icteam-fe/design-system/date';
+import { getMonthWeekInfo } from '@/shared/utils/week';
+import { IconArrowLeft } from '@konkuk-icteam-fe/design-system/assets';
+import { ROUTES } from '@/shared/config/routes';
 import { Button, ConfirmModal } from '@konkuk-icteam-fe/design-system/ui';
 import { useToast } from '@/shared/hooks/useToast';
 import type { Worker } from '../_apis/workers';
@@ -17,6 +22,13 @@ import {
   type ScheduleCellWorker,
 } from './_hooks/useWeekSchedule';
 import { getWeekStartKey, shiftWeek } from './_utils/weekKey';
+import {
+  checkWeekInMonth,
+  getMonthFirstWeekStartKey,
+  getMonthLastWeekStartKey,
+} from './_utils/viewableWeeks';
+import { getWorkApplication } from '../_apis/workApplications';
+import { getCurrentMonthKey, parseMonthKey, shiftMonthKey } from '../_utils/monthKey';
 import { formatMonthDay } from '@/shared/utils/formatDate';
 
 type RemoveTarget = { cell: ScheduleCell; user: WorkScheduleUser };
@@ -24,10 +36,37 @@ type RemoveTarget = { cell: ScheduleCell; user: WorkScheduleUser };
 // 이 요일 열부터(0 = 월) 칸의 검색창을 왼쪽으로 연다
 const SEARCH_TO_LEFT_FROM_COLUMN = 3;
 
-// 근로시간 관리. 편집하기를 누르면 칸마다 근무자를 넣고 뺄 수 있다. 오른쪽에서 승인 대기 수정요청을 미리 보고,
-// 근무자를 찾으면 시간표에서 그 사람 칸을 강조하며 검색창 바로 아래에 그 주 근무 시간을 보여 준다
-export default function PageClient() {
-  const [weekStartKey, setWeekStartKey] = useState(() => getWeekStartKey(new Date()));
+type PageClientProps = {
+  // worktime: 근로시간 관리 (이번 달부터, 신청을 연 다음 달까지)
+  // application: 근로신청 시간표 (근로신청 관리에서 들어온다. 볼 수 있는 범위는 같고,
+  //   제목 줄이 붙으며 신청을 열었으면 신청 받는 달 첫 주부터 연다)
+  variant?: 'worktime' | 'application';
+};
+
+// 근로시간 관리·근로신청 시간표가 함께 쓰는 주간 시간표. 편집하기를 누르면 칸마다 근무자를 넣고 뺄 수 있다. 오른쪽에서 승인 대기 수정요청을 미리 보고,
+// 근무자를 찾으면 시간표에서 그 사람 칸을 강조하며 검색창 바로 아래에 그 주 근무 시간을 보여 준다.
+// 다음 달 근로신청을 열었으면 그 달까지 넘겨 볼 수 있다. 신청 받는 달의 칸은 학생이 낸 신청이고,
+// 고치면 그 학생의 제출에 반영된다 (신청 마감 뒤에는 그대로 그 달 근무 시간표가 된다)
+export default function PageClient({ variant = 'worktime' }: PageClientProps) {
+  const isApplicationView = variant === 'application';
+  const [currentMonthKey] = useState(getCurrentMonthKey);
+  const applicationMonthKey = shiftMonthKey(currentMonthKey, 1);
+  const isApplicationOpened = getWorkApplication(parseMonthKey(applicationMonthKey)).isOpened;
+  // 넘겨 볼 수 있는 마지막 주. 이번 달까지이고, 다음 달 신청을 열었으면 그 달까지다 (지난 주는 막지 않는다)
+  const lastWeekStartKey = getMonthLastWeekStartKey(
+    isApplicationOpened ? applicationMonthKey : currentMonthKey,
+  );
+  // 근로신청 시간표는 신청을 열었으면 신청 받는 달 첫 주부터, 아니면 이번 주부터 연다
+  const [weekStartKey, setWeekStartKey] = useState(() =>
+    isApplicationView && isApplicationOpened
+      ? getMonthFirstWeekStartKey(applicationMonthKey)
+      : getWeekStartKey(new Date()),
+  );
+  // 신청 받는 달이 든 주. 설정 기준과 관계없이 편집할 수 있다고 알리고, 확정된 달의 승인 대기 패널은 숨긴다
+  const isApplicationWeek =
+    isApplicationOpened && checkWeekInMonth(weekStartKey, applicationMonthKey);
+  // 제목에 쓰는 달. 두 달에 걸친 주는 목요일이 속한 달로 센다 (11.30 - 12.04는 12월)
+  const { month: weekMonth } = getMonthWeekInfo(parseISO(weekStartKey));
   const [isEditMode, setIsEditMode] = useState(false);
   const [filteredWorker, setFilteredWorker] = useState<Worker | null>(null);
   const [removeTarget, setRemoveTarget] = useState<RemoveTarget | null>(null);
@@ -51,12 +90,30 @@ export default function PageClient() {
 
   return (
     <div className='mx-auto grid w-full max-w-[150rem] grid-cols-[minmax(0,1fr)_30rem] items-start gap-[2.4rem] p-[3.4rem]'>
+      {isApplicationView ? (
+        <h1 className='title-20-bd col-span-2 flex items-center gap-[1.2rem] text-black'>
+          <Link
+            href={ROUTES.ADMIN_WORK_APPLICATIONS}
+            aria-label='근로신청 관리로 돌아가기'
+            className='flex h-[2.4rem] w-[2.4rem] items-center justify-center text-black'
+          >
+            <IconArrowLeft aria-hidden className='h-[2rem] w-[2rem]' />
+          </Link>
+          {`근로신청 관리 - ${weekMonth}월 근로신청 시간표`}
+        </h1>
+      ) : null}
       <section className='bg-black-1 flex flex-col gap-[2.4rem] rounded-[1.2rem] border border-gray-50 p-[2.4rem]'>
         <div className='flex items-center justify-between gap-[1.6rem]'>
           <WeekRangeNavigator
             weekStartKey={weekStartKey}
+            canMoveNext={weekStartKey < lastWeekStartKey}
             onMove={(delta) => setWeekStartKey((prev) => shiftWeek(prev, delta))}
           />
+          {isApplicationWeek ? (
+            <p className='caption-12-md bg-blue/10 text-blue ml-auto rounded-full px-[1.2rem] py-[0.6rem]'>
+              ⓘ 최대 인원 등 설정 기준과 관계없이 편집할 수 있습니다.
+            </p>
+          ) : null}
           <Button
             display='inline'
             size='medium'
@@ -96,7 +153,7 @@ export default function PageClient() {
             onClose={() => setFilteredWorker(null)}
           />
         ) : null}
-        <PendingRequestsPanel />
+        {isApplicationWeek ? null : <PendingRequestsPanel />}
       </div>
 
       <ConfirmModal
