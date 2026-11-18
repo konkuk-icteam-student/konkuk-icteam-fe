@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { Dropdown, StateChip } from '@konkuk-icteam-fe/design-system/ui';
 import { ROUTES } from '@/shared/config/routes';
-import { formatMonthDay, formatMonthDayTime } from '@/shared/utils/formatDate';
+import { formatMonthDayTime } from '@/shared/utils/formatDate';
 import AdminPanel from '../../_layouts/AdminPanel';
 import {
   getWorkApplicationSubmissions,
@@ -27,8 +27,6 @@ type ApplicationSummaryPanelProps = {
   monthLabel: string;
   // 저장된 근로신청 기준. 신청을 열지 않았으면 null
   savedSettings: WorkApplicationSettings | null;
-  // 왼쪽에서 고르고 있는 근무 불가 날짜
-  unavailableDates: Date[];
 };
 
 const SORT_KEYS = Object.keys(SUBMISSION_SORT_LABELS) as SubmissionSortKey[];
@@ -39,7 +37,6 @@ export default function ApplicationSummaryPanel({
   monthKey,
   monthLabel,
   savedSettings,
-  unavailableDates,
 }: ApplicationSummaryPanelProps) {
   const [sortKey, setSortKey] = useState<SubmissionSortKey>('STATUS');
 
@@ -75,13 +72,6 @@ export default function ApplicationSummaryPanel({
             </p>
           </div>
         )}
-
-        <dl className='flex flex-col gap-[0.6rem] rounded-[1.2rem] bg-gray-50 p-[1.4rem]'>
-          <dt className='caption-12-md text-gray-700'>근무 불가 날짜</dt>
-          <dd className='caption-12-md break-keep text-gray-500'>
-            {unavailableDates.length > 0 ? unavailableDates.map(formatMonthDay).join(', ') : '없음'}
-          </dd>
-        </dl>
       </div>
     </AdminPanel>
   );

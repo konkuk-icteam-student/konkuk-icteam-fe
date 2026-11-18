@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, StateChip } from '@konkuk-icteam-fe/design-system/ui';
 import { useToast } from '@/shared/hooks/useToast';
@@ -42,9 +42,6 @@ export default function PageClient() {
     resolver: zodResolver(workApplicationSchema),
     defaultValues: createInitialApplication(monthKey),
   });
-
-  // 요약 패널에 왼쪽에서 고르고 있는 근무 불가 날짜를 바로 보여 준다
-  const unavailableDates = useWatch({ control, name: 'settings.unavailableDates' });
 
   const [, month] = monthKey.split('-').map(Number);
   const monthLabel = `${month}월`;
@@ -110,7 +107,6 @@ export default function PageClient() {
               monthKey={monthKey}
               monthLabel={monthLabel}
               savedSettings={savedSettings}
-              unavailableDates={unavailableDates}
             />
           </div>
         </div>
