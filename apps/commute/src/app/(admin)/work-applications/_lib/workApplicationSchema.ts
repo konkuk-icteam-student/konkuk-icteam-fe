@@ -11,6 +11,8 @@ const workApplicationSettingsSchema = z
     monthlyMinHours: z.number(),
     monthlyMaxHours: z.number(),
     unavailableDates: z.array(z.date()),
+    // 시간대 규칙(30분 단위·겹침)은 추가할 때 확인한다
+    unavailableTimeRanges: z.array(z.object({ start: z.string(), end: z.string() })),
   })
   .refine(({ applyStartDate, applyEndDate }) => applyStartDate < applyEndDate, {
     message: '신청 마감이 시작보다 늦어야 해요.',

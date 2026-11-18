@@ -13,6 +13,7 @@ const createApplication = (
     monthlyMinHours: 30,
     monthlyMaxHours: 60,
     unavailableDates: [],
+    unavailableTimeRanges: [],
     ...settings,
   },
 });

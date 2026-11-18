@@ -5,6 +5,7 @@ import {
   type ApiJson,
   type WorkTimeRange,
 } from './common';
+import type { TimeRange } from '@/shared/utils/timeRange';
 import {
   getMyWorkApplicationMock,
   getWorkApplicationSettingsMock,
@@ -24,6 +25,8 @@ export type WorkApplicationSettings = {
   monthlyMaxHours: number;
   // 근무할 수 없는 날. 주말·공휴일은 원래 근무가 없어서 들어 있지 않다
   unavailableDates: Date[];
+  // 매일 근무할 수 없는 시간대 (예: 점심시간 11:30 - 13:00)
+  unavailableTimeRanges: TimeRange[];
 };
 
 export type GetWorkApplicationSettingsRequest = {

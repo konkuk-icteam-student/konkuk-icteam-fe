@@ -6,7 +6,8 @@ import {
   getWorkSchedules,
   type WorkScheduleUser,
 } from '../../_apis/workSchedules';
-import { checkLunchSlot } from '@/shared/utils/slot';
+import { checkUnavailableSlot } from '@/shared/utils/slot';
+import { getWorkApplication } from '../../_apis/workApplications';
 import { getWeekDays, type WeekDay } from '../_utils/weekKey';
 
 // 칸에 넣을 사람. 배치 id는 넣은 뒤에 서버가 정한다
@@ -17,8 +18,8 @@ export type ScheduleCell = {
   start: string;
   end: string;
   users: WorkScheduleUser[];
-  // 점심시간 칸. 아무도 넣을 수 없다
-  isLunch: boolean;
+  // 그 달 근무 불가 시간대 칸. 아무도 넣을 수 없다
+  isUnavailable: boolean;
 };
 
 // 시간표 한 열 (하루). 요일·날짜 글자와 30분 단위 칸
@@ -33,20 +34,28 @@ export const useWeekSchedule = (weekStartKey: string) => {
     startDate: parseISO(weekStartKey),
     endDate: parseISO(weekDays[weekDays.length - 1]?.dateKey ?? weekStartKey),
   });
-  const days: ScheduleDay[] = weekDays.map((day, index) => ({
-    ...day,
-    cells: (response.days[index]?.slots ?? []).map(({ start, end, users }) => ({
-      dateKey: day.dateKey,
-      start,
-      end,
-      users,
-      isLunch: checkLunchSlot(start),
-    })),
-  }));
+  const days: ScheduleDay[] = weekDays.map((day, index) => {
+    // 한 주가 두 달에 걸칠 수 있어서 날마다 그 달 근로신청 기준을 본다
+    const date = parseISO(day.dateKey);
+    const unavailableTimeRanges =
+      getWorkApplication({ year: date.getFullYear(), month: date.getMonth() + 1 }).settings
+        ?.unavailableTimeRanges ?? [];
 
-  // 칸에 사람을 넣는다. 점심시간 칸이거나 이미 그 칸에 있으면 넣지 않고 false를 돌려준다
+    return {
+      ...day,
+      cells: (response.days[index]?.slots ?? []).map(({ start, end, users }) => ({
+        dateKey: day.dateKey,
+        start,
+        end,
+        users,
+        isUnavailable: checkUnavailableSlot(start, unavailableTimeRanges),
+      })),
+    };
+  });
+
+  // 칸에 사람을 넣는다. 근무 불가 칸이거나 이미 그 칸에 있으면 넣지 않고 false를 돌려준다
   const handleUserAdd = (cell: ScheduleCell, { userId }: ScheduleCellWorker) => {
-    if (cell.isLunch || cell.users.some((user) => user.userId === userId)) return false;
+    if (cell.isUnavailable || cell.users.some((user) => user.userId === userId)) return false;
 
     createWorkSchedule({ userId, date: parseISO(cell.dateKey), start: cell.start, end: cell.end });
     refresh();

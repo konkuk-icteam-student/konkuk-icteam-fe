@@ -48,6 +48,14 @@ export default function ApplicationConfirmModal({
           ? settings.unavailableDates.map(formatMonthDay).join(', ')
           : '없음',
     },
+    {
+      label: '근무 불가 시간대',
+      canWrap: true,
+      value:
+        settings.unavailableTimeRanges.length > 0
+          ? settings.unavailableTimeRanges.map(({ start, end }) => `${start} - ${end}`).join(', ')
+          : '없음',
+    },
   ];
 
   return (

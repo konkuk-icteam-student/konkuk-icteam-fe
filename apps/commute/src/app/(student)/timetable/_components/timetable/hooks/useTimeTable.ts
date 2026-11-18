@@ -5,7 +5,7 @@ import { parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
 import { SLOT_MINUTES } from '@/shared/config/slot';
 import { MIN_WORK_HOURS_PER_SHIFT } from '@/shared/config/workHours';
 import { formatMonthDay } from '@/shared/utils/formatDate';
-import { checkLunchSlot } from '@/shared/utils/slot';
+import { checkUnavailableSlot } from '@/shared/utils/slot';
 import { convertTimeToMinutes } from '@/shared/utils/time';
 
 import {
@@ -80,9 +80,12 @@ export const useTimeTable = (mode: TimeTableMode, dates: Date[], source: TimeTab
     setEditedSlots({});
   };
 
-  // 서버에서 받은 원래 상태. 근무할 수 없는 날과 점심시간은 언제나 신청 불가다.
+  // 서버에서 받은 원래 상태. 근무할 수 없는 날과 근무 불가 시간대는 언제나 신청 불가다.
   const getOriginalStatus = (dateKey: string, startTime: string): SlotStatus => {
-    if (source.unavailableDates.includes(dateKey) || checkLunchSlot(startTime)) {
+    if (
+      source.unavailableDates.includes(dateKey) ||
+      checkUnavailableSlot(startTime, source.unavailableTimeRanges)
+    ) {
       return 'UNAVAILABLE';
     }
 

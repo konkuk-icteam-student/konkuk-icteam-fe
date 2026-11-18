@@ -1,3 +1,4 @@
+import type { TimeRange } from '@/shared/utils/timeRange';
 // 표 전체의 상태
 // - read: 보기 전용. 슬롯을 클릭할 수 없다.
 // - detail: 보기 전용 + 슬롯마다 신청 인원을 보여주고, 마우스를 올리면 근무자 명단을 띄운다.
@@ -48,6 +49,8 @@ export type TimeTableSource = {
   maxConcurrentWorkers: number;
   // 하루 통째로 근무할 수 없는 날 ('YYYY-MM-DD'). 공휴일과 관리자가 막은 날
   unavailableDates: string[];
+  // 매일 근무할 수 없는 시간대. 그 달 근로신청 기준에서 관리자가 정한다
+  unavailableTimeRanges: readonly TimeRange[];
   // 주 최대 근로시간. 채우면 빈 칸을 더 고를 수 없다
   weeklyMaxHours: number;
   // edit·apply에서 이 시각보다 먼저 시작하는 칸은 바꿀 수 없다

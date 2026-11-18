@@ -1,5 +1,6 @@
 import { formatNumber, parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
 import { getWorkApplicationMock } from '@/app/(admin)/_apis/mock/workApplications';
+import { DEFAULT_UNAVAILABLE_TIME_RANGES } from '@/shared/config/slot';
 import { getMonthDates } from '@/shared/utils/calendar';
 import type { ApiJson, WorkTimeRange } from '../common';
 import type { WorkApplicationSettings } from '../workApplications';
@@ -25,6 +26,7 @@ const createDemoSettings = (today: Date): ApiJson<WorkApplicationSettings> => {
     monthlyMinHours: 30,
     monthlyMaxHours: 60,
     unavailableDates: [],
+    unavailableTimeRanges: DEFAULT_UNAVAILABLE_TIME_RANGES.map((range) => ({ ...range })),
   };
 };
 
