@@ -17,7 +17,7 @@ import {
   type ScheduleCellWorker,
 } from './hooks/useWeekSchedule';
 import { getWeekStartKey, shiftWeek } from './utils/weekKey';
-import { checkWeekInMonth, getMonthLastWeekStartKey } from './utils/viewableWeeks';
+import { checkApplicationWeek, getLastViewableWeekStartKey } from './utils/viewableWeeks';
 import { getWorkApplication } from '../../_apis/workApplications';
 import { getCurrentMonthKey, parseMonthKey, shiftMonthKey } from '../../_utils/monthKey';
 import { formatMonthDay } from '@/shared/utils/formatDate';
@@ -40,18 +40,20 @@ type WeekScheduleProps = {
 // 고치면 그 학생의 제출에 반영된다 (신청 마감 뒤에는 그대로 그 달 근무 시간표가 된다)
 export default function WeekSchedule({ initialWeekStartKey, renderHeader }: WeekScheduleProps) {
   const [currentMonthKey] = useState(getCurrentMonthKey);
-  const applicationMonthKey = shiftMonthKey(currentMonthKey, 1);
-  const isApplicationOpened = getWorkApplication(parseMonthKey(applicationMonthKey)).isOpened;
-  // 넘겨 볼 수 있는 마지막 주. 이번 달까지이고, 다음 달 신청을 열었으면 그 달까지다 (지난 주는 막지 않는다)
-  const lastWeekStartKey = getMonthLastWeekStartKey(
-    isApplicationOpened ? applicationMonthKey : currentMonthKey,
-  );
+  const isApplicationOpened = getWorkApplication(
+    parseMonthKey(shiftMonthKey(currentMonthKey, 1)),
+  ).isOpened;
+  // 지난 주로는 막지 않고, 다음 주로는 이번 달(다음 달 신청을 열었으면 그 달)까지 넘긴다
+  const lastWeekStartKey = getLastViewableWeekStartKey(currentMonthKey, isApplicationOpened);
   const [weekStartKey, setWeekStartKey] = useState(
     () => initialWeekStartKey ?? getWeekStartKey(new Date()),
   );
   // 신청 받는 달이 든 주. 설정 기준과 관계없이 편집할 수 있다고 알리고, 확정된 달의 승인 대기 패널은 숨긴다
-  const isApplicationWeek =
-    isApplicationOpened && checkWeekInMonth(weekStartKey, applicationMonthKey);
+  const isApplicationWeek = checkApplicationWeek(
+    weekStartKey,
+    currentMonthKey,
+    isApplicationOpened,
+  );
   const [isEditMode, setIsEditMode] = useState(false);
   const [filteredWorker, setFilteredWorker] = useState<Worker | null>(null);
   const [removeTarget, setRemoveTarget] = useState<RemoveTarget | null>(null);
