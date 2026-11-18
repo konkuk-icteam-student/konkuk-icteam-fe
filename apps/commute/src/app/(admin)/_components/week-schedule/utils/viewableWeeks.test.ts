@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   checkApplicationWeek,
+  checkDateBeyondMonth,
   checkWeekInMonth,
   getApplicationInitialWeekStartKey,
+  getLastViewableMonthKey,
   getLastViewableWeekStartKey,
   getMonthFirstWeekStartKey,
   getMonthLastWeekStartKey,
@@ -75,10 +77,35 @@ describe('시간표 주 범위 (이번 달 2026-11)', () => {
   });
 });
 
+describe('getLastViewableMonthKey', () => {
+  it('신청 전에는 이번 달, 신청 후에는 신청 받는 달이다', () => {
+    expect(getLastViewableMonthKey('2026-11', false)).toBe('2026-11');
+    expect(getLastViewableMonthKey('2026-11', true)).toBe('2026-12');
+  });
+});
+
+describe('checkDateBeyondMonth', () => {
+  it('볼 수 있는 마지막 달보다 뒤인 날만 true다', () => {
+    expect(checkDateBeyondMonth('2026-12-01', '2026-11')).toBe(true);
+    expect(checkDateBeyondMonth('2026-11-30', '2026-11')).toBe(false);
+    expect(checkDateBeyondMonth('2026-12-01', '2026-12')).toBe(false);
+  });
+});
+
 describe('getWeekTitleMonth', () => {
-  it('두 달에 걸친 주는 목요일이 속한 달이다', () => {
-    expect(getWeekTitleMonth('2026-11-30')).toBe(12);
-    // 12.28 - 01.01은 목요일(12.31)이 12월
-    expect(getWeekTitleMonth('2026-12-28')).toBe(12);
+  it('신청 전에는 다음 달에 걸친 주도 이번 달이다', () => {
+    expect(getWeekTitleMonth('2026-11-30', '2026-11', false)).toBe(11);
+  });
+
+  it('신청 후에는 신청 받는 달 날이 하루라도 있으면 신청 받는 달이다', () => {
+    expect(getWeekTitleMonth('2026-11-30', '2026-11', true)).toBe(12);
+    // 12.28 - 01.01도 12월 날이 있어서 12월
+    expect(getWeekTitleMonth('2026-12-28', '2026-11', true)).toBe(12);
+  });
+
+  it('그 밖에 두 달에 걸친 주는 목요일이 속한 달이다', () => {
+    // 10.26 - 10.30, 09.28 - 10.02 (목요일 10.01)
+    expect(getWeekTitleMonth('2026-10-26', '2026-11', true)).toBe(10);
+    expect(getWeekTitleMonth('2026-09-28', '2026-11', true)).toBe(10);
   });
 });

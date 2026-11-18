@@ -13,19 +13,18 @@ import {
 import { getCurrentMonthKey, parseMonthKey, shiftMonthKey } from '../../_utils/monthKey';
 
 // 근로신청 시간표. 근로시간 관리와 같은 주간 시간표에 제목 줄을 붙인다.
-// 다음 달 신청을 열었으면 그 달 첫 주부터, 아니면 이번 주부터 연다
+// 다음 달 신청을 열었으면 그 달 첫 주부터, 아니면 이번 주부터 연다.
+// 제목의 달은 신청 전에는 이번 달, 신청 후에는 신청 받는 달 날이 든 주에서 신청 받는 달이다
 // (주소가 근로신청 관리 아래라 사이드바도 근로신청 관리가 켜진다)
 export default function PageClient() {
-  const [initialWeekStartKey] = useState(() => {
-    const currentMonthKey = getCurrentMonthKey();
-    const { isOpened } = getWorkApplication(parseMonthKey(shiftMonthKey(currentMonthKey, 1)));
-
-    return getApplicationInitialWeekStartKey(currentMonthKey, isOpened);
-  });
+  const [currentMonthKey] = useState(getCurrentMonthKey);
+  const isApplicationOpened = getWorkApplication(
+    parseMonthKey(shiftMonthKey(currentMonthKey, 1)),
+  ).isOpened;
 
   return (
     <WeekSchedule
-      initialWeekStartKey={initialWeekStartKey}
+      initialWeekStartKey={getApplicationInitialWeekStartKey(currentMonthKey, isApplicationOpened)}
       renderHeader={(weekStartKey) => (
         <h1 className='title-20-bd flex items-center gap-[1.2rem] text-black'>
           <Link
@@ -35,7 +34,7 @@ export default function PageClient() {
           >
             <IconArrowLeft aria-hidden className='h-[2rem] w-[2rem]' />
           </Link>
-          {`근로신청 관리 - ${getWeekTitleMonth(weekStartKey)}월 근로신청 시간표`}
+          {`근로신청 관리 - ${getWeekTitleMonth(weekStartKey, currentMonthKey, isApplicationOpened)}월 근로신청 시간표`}
         </h1>
       )}
     />

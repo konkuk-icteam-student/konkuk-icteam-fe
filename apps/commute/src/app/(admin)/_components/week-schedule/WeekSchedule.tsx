@@ -17,7 +17,11 @@ import {
   type ScheduleCellWorker,
 } from './hooks/useWeekSchedule';
 import { getWeekStartKey, shiftWeek } from './utils/weekKey';
-import { checkApplicationWeek, getLastViewableWeekStartKey } from './utils/viewableWeeks';
+import {
+  checkApplicationWeek,
+  getLastViewableMonthKey,
+  getLastViewableWeekStartKey,
+} from './utils/viewableWeeks';
 import { getWorkApplication } from '../../_apis/workApplications';
 import { getCurrentMonthKey, parseMonthKey, shiftMonthKey } from '../../_utils/monthKey';
 import { formatMonthDay } from '@/shared/utils/formatDate';
@@ -58,7 +62,10 @@ export default function WeekSchedule({ initialWeekStartKey, renderHeader }: Week
   const [filteredWorker, setFilteredWorker] = useState<Worker | null>(null);
   const [removeTarget, setRemoveTarget] = useState<RemoveTarget | null>(null);
   const { showToast, toast } = useToast();
-  const schedule = useWeekSchedule(weekStartKey);
+  const schedule = useWeekSchedule(
+    weekStartKey,
+    getLastViewableMonthKey(currentMonthKey, isApplicationOpened),
+  );
 
   const handleAdd = (cell: ScheduleCell, user: ScheduleCellWorker) => {
     const isAdded = schedule.handleUserAdd(cell, user);

@@ -38,6 +38,17 @@ export default function WeekScheduleGrid({
             const cell = cells[timeIndex];
             if (!cell) return <div key={`${dateKey}-${time}`} />;
 
+            // 아직 볼 수 없는 달(신청을 열기 전 다음 달)의 칸은 글자 없이 회색으로 막아 둔다
+            if (cell.isBeyondViewableMonth) {
+              return (
+                <div
+                  key={`${dateKey}-${time}`}
+                  aria-label='아직 신청을 받지 않은 달'
+                  className='min-h-[8.4rem] rounded-[1.2rem] bg-gray-50'
+                />
+              );
+            }
+
             // 근무 불가 칸은 인원 수도 편집 버튼도 없이 막아 둔다
             if (cell.isUnavailable) {
               return (
