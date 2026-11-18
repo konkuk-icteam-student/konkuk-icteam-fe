@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ComboBox } from '@konkuk-icteam-fe/design-system/ui';
 import type { Worker } from '../../_apis/workers';
-import { findWorkerByOptionLabel, getWorkerOptionLabels } from '../_lib/workerSearch';
+import { findWorkerByOptionLabel, getWorkerOptionLabels } from './lib/workerSearch';
 
 type WorkerSearchProps = {
   placeholder: string;

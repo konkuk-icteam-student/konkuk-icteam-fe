@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { SearchBar, useComposingEnter } from '@konkuk-icteam-fe/design-system/ui';
 import { getWorkers, type Worker } from '../../_apis/workers';
-import { formatWorkerDetail } from '../_utils/workerLabel';
+import { formatWorkerDetail } from './utils/workerLabel';
 
 type AddWorkerPopoverProps = {
   // 이미 그 칸에 있는 사람. 목록에서 뺀다

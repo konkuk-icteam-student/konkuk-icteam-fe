@@ -1,5 +1,5 @@
-import { getWorkers } from '../../_apis/workers';
-import { createWorkerOptionLabel } from '../_utils/workerLabel';
+import { getWorkers } from '../../../_apis/workers';
+import { createWorkerOptionLabel } from '../utils/workerLabel';
 
 /**
  * 검색 목록 글자로 근로학생을 찾습니다. 목록에서 고른 글자와 정확히 같을 때만 찾습니다.

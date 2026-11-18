@@ -1,5 +1,5 @@
 import { ArrowButton } from '@/shared/ui';
-import { formatWeekRange } from '../_utils/weekKey';
+import { formatWeekRange } from './utils/weekKey';
 
 type WeekRangeNavigatorProps = {
   weekStartKey: string;

@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
-import type { ScheduleCell, ScheduleDay } from '../_hooks/useWeekSchedule';
+import type { ScheduleCell, ScheduleDay } from './hooks/useWeekSchedule';
 
 type WeekScheduleGridProps = {
   days: ScheduleDay[];

@@ -6,7 +6,7 @@ import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { TagChip } from '@konkuk-icteam-fe/design-system/ui';
 import { getWorkerChipTone } from '@/shared/utils/getWorkerChipTone';
 import type { WorkScheduleUser } from '../../_apis/workSchedules';
-import type { ScheduleCell, ScheduleCellWorker } from '../_hooks/useWeekSchedule';
+import type { ScheduleCell, ScheduleCellWorker } from './hooks/useWeekSchedule';
 import AddWorkerPopover from './AddWorkerPopover';
 
 type EditableScheduleCellProps = {

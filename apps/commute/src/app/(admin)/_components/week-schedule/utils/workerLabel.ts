@@ -1,4 +1,4 @@
-import type { Worker } from '../../_apis/workers';
+import type { Worker } from '../../../_apis/workers';
 
 /**
  * 검색 결과 아래에 보여 줄 학과·학번을 만듭니다. 둘 다 없으면 빈 글자입니다.

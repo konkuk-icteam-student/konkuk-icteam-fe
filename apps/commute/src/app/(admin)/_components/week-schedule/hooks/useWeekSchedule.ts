@@ -5,10 +5,10 @@ import {
   deleteWorkSchedule,
   getWorkSchedules,
   type WorkScheduleUser,
-} from '../../_apis/workSchedules';
+} from '../../../_apis/workSchedules';
 import { checkUnavailableSlot } from '@/shared/utils/slot';
-import { getWorkApplication } from '../../_apis/workApplications';
-import { getWeekDays, type WeekDay } from '../_utils/weekKey';
+import { getWorkApplication } from '../../../_apis/workApplications';
+import { getWeekDays, type WeekDay } from '../utils/weekKey';
 
 // 칸에 넣을 사람. 배치 id는 넣은 뒤에 서버가 정한다
 export type ScheduleCellWorker = Pick<WorkScheduleUser, 'userId' | 'userName'>;

@@ -8,27 +8,27 @@ import { IconArrowLeft } from '@konkuk-icteam-fe/design-system/assets';
 import { ROUTES } from '@/shared/config/routes';
 import { Button, ConfirmModal } from '@konkuk-icteam-fe/design-system/ui';
 import { useToast } from '@/shared/hooks/useToast';
-import type { Worker } from '../_apis/workers';
-import type { WorkScheduleUser } from '../_apis/workSchedules';
-import EditableScheduleCell from './_components/EditableScheduleCell';
-import PendingRequestsPanel from './_components/PendingRequestsPanel';
-import QuickSearchPanel from './_components/QuickSearchPanel';
-import WeekRangeNavigator from './_components/WeekRangeNavigator';
-import WeekScheduleGrid from './_components/WeekScheduleGrid';
-import WorkerTimePanel from './_components/WorkerTimePanel';
+import type { Worker } from '../../_apis/workers';
+import type { WorkScheduleUser } from '../../_apis/workSchedules';
+import EditableScheduleCell from './EditableScheduleCell';
+import PendingRequestsPanel from './PendingRequestsPanel';
+import QuickSearchPanel from './QuickSearchPanel';
+import WeekRangeNavigator from './WeekRangeNavigator';
+import WeekScheduleGrid from './WeekScheduleGrid';
+import WorkerTimePanel from './WorkerTimePanel';
 import {
   useWeekSchedule,
   type ScheduleCell,
   type ScheduleCellWorker,
-} from './_hooks/useWeekSchedule';
-import { getWeekStartKey, shiftWeek } from './_utils/weekKey';
+} from './hooks/useWeekSchedule';
+import { getWeekStartKey, shiftWeek } from './utils/weekKey';
 import {
   checkWeekInMonth,
   getMonthFirstWeekStartKey,
   getMonthLastWeekStartKey,
-} from './_utils/viewableWeeks';
-import { getWorkApplication } from '../_apis/workApplications';
-import { getCurrentMonthKey, parseMonthKey, shiftMonthKey } from '../_utils/monthKey';
+} from './utils/viewableWeeks';
+import { getWorkApplication } from '../../_apis/workApplications';
+import { getCurrentMonthKey, parseMonthKey, shiftMonthKey } from '../../_utils/monthKey';
 import { formatMonthDay } from '@/shared/utils/formatDate';
 
 type RemoveTarget = { cell: ScheduleCell; user: WorkScheduleUser };
@@ -36,7 +36,7 @@ type RemoveTarget = { cell: ScheduleCell; user: WorkScheduleUser };
 // 이 요일 열부터(0 = 월) 칸의 검색창을 왼쪽으로 연다
 const SEARCH_TO_LEFT_FROM_COLUMN = 3;
 
-type PageClientProps = {
+type WeekScheduleProps = {
   // worktime: 근로시간 관리 (이번 달부터, 신청을 연 다음 달까지)
   // application: 근로신청 시간표 (근로신청 관리에서 들어온다. 볼 수 있는 범위는 같고,
   //   제목 줄이 붙으며 신청을 열었으면 신청 받는 달 첫 주부터 연다)
@@ -47,7 +47,7 @@ type PageClientProps = {
 // 근무자를 찾으면 시간표에서 그 사람 칸을 강조하며 검색창 바로 아래에 그 주 근무 시간을 보여 준다.
 // 다음 달 근로신청을 열었으면 그 달까지 넘겨 볼 수 있다. 신청 받는 달의 칸은 학생이 낸 신청이고,
 // 고치면 그 학생의 제출에 반영된다 (신청 마감 뒤에는 그대로 그 달 근무 시간표가 된다)
-export default function PageClient({ variant = 'worktime' }: PageClientProps) {
+export default function WeekSchedule({ variant = 'worktime' }: WeekScheduleProps) {
   const isApplicationView = variant === 'application';
   const [currentMonthKey] = useState(getCurrentMonthKey);
   const applicationMonthKey = shiftMonthKey(currentMonthKey, 1);
