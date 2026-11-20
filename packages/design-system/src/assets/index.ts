@@ -26,6 +26,7 @@ export { default as IconMessageFill } from './components/IconMessageFill';
 export { default as IconPencil } from './components/IconPencil';
 export { default as IconProfile } from './components/IconProfile';
 export { default as IconProfileFill } from './components/IconProfileFill';
+export { default as IconRefresh } from './components/IconRefresh';
 export { default as IconRemove } from './components/IconRemove';
 export { default as IconRestore } from './components/IconRestore';
 export { default as IconSearch } from './components/IconSearch';

@@ -21,6 +21,13 @@ export default function SlotCell({ cell }: SlotCellProps) {
     cell.mode === 'detail' && cell.status !== 'UNAVAILABLE' && cell.workers.length > 0;
   // 클릭은 edit·apply에서만 된다. 그 안에서 막을 칸은 화면이 disabled로 정해 준다.
   const isClickable = cell.mode === 'edit' || cell.mode === 'apply';
+  // 칸에 보여 줄 인원. detail은 늘, edit·apply는 '자세히보기'를 켰을 때만 있다
+  const occupancy =
+    cell.mode === 'detail'
+      ? { count: cell.workers.length, maxCount: cell.maxCount }
+      : isClickable
+        ? cell.occupancy
+        : undefined;
   // 칸 안에서의 커서 위치. 마우스가 칸 밖으로 나가면 null이라 툴팁을 숨긴다.
   const [tooltipPosition, setTooltipPosition] = useState<TooltipPosition | null>(null);
 
@@ -52,7 +59,7 @@ export default function SlotCell({ cell }: SlotCellProps) {
         type='button'
       >
         {/* 신청 불가 칸은 인원을 보여 주지 않는다 */}
-        {cell.mode === 'detail' && cell.status !== 'UNAVAILABLE' && (
+        {occupancy && cell.status !== 'UNAVAILABLE' && (
           <span
             className={cn(
               'caption-12-rg',
@@ -61,7 +68,7 @@ export default function SlotCell({ cell }: SlotCellProps) {
               cell.status !== 'APPLIED' && cell.status !== 'OVER_CAPACITY' && 'text-gray-400',
             )}
           >
-            {cell.workers.length}/{cell.maxCount}
+            {occupancy.count}/{occupancy.maxCount}
           </span>
         )}
       </button>

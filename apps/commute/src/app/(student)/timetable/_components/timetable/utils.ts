@@ -1,4 +1,6 @@
-import { convertMinutesToTime, convertTimeToMinutes } from '@/shared/utils/time';
+import { formatNumber } from '@konkuk-icteam-fe/design-system/date';
+import { SLOT_MINUTES } from '@/shared/config/slot';
+import { convertMinutesToTime, convertTimeToMinutes, MINUTES_PER_HOUR } from '@/shared/utils/time';
 
 /**
  * 칸 하나를 가리키는 key를 만듭니다.
@@ -38,3 +40,25 @@ export const mergeSlotsToRanges = (
       : [...ranges, { date: slot.date, start: slot.startTime, end }];
   }, []);
 };
+
+/**
+ * 근무 칸 수를 시간으로 바꿉니다.
+ * @param slotCount 30분 칸 수
+ * @returns 근무 시간 (30분 칸은 0.5시간)
+ * @example convertSlotCountToHours(3); // 1.5
+ */
+export const convertSlotCountToHours = (slotCount: number) =>
+  (slotCount * SLOT_MINUTES) / MINUTES_PER_HOUR;
+
+/**
+ * 그 달에 든 근무 칸을 시간으로 셉니다. 표는 앞뒤 달 날짜도 보여 주므로 그 달 날짜만 셉니다.
+ * @param slots 근무 칸 목록 (date는 'YYYY-MM-DD')
+ * @param year 연도
+ * @param month 월 (1~12)
+ * @returns 근무 시간 (30분 칸은 0.5시간)
+ * @example getMonthWorkHours([{ date: '2026-11-02' }, { date: '2026-10-30' }], 2026, 11); // 0.5
+ */
+export const getMonthWorkHours = (slots: { date: string }[], year: number, month: number) =>
+  convertSlotCountToHours(
+    slots.filter(({ date }) => date.startsWith(`${year}-${formatNumber(month)}-`)).length,
+  );
