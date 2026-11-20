@@ -6,7 +6,7 @@ import { SLOT_MINUTES } from '@/shared/config/slot';
 import { MIN_WORK_HOURS_PER_SHIFT } from '@/shared/config/workHours';
 import { formatMonthDay } from '@/shared/utils/formatDate';
 import { checkUnavailableSlot } from '@/shared/utils/slot';
-import { convertTimeToMinutes } from '@/shared/utils/time';
+import { convertTimeToMinutes, MINUTES_PER_HOUR } from '@/shared/utils/time';
 
 import {
   SLOT_START_TIMES,
@@ -19,11 +19,10 @@ import {
 
 import { APPLY_NEXT_STATUS, EDIT_NEXT_STATUS, WEEKDAY_LABELS } from '../constants';
 import type { SlotEdit, TimeTableSource } from '../types';
-import { createSlotKey } from '../utils';
+import { convertSlotCountToHours, createSlotKey } from '../utils';
 
 // 근무로 치는 상태. 삭제 예정은 빠질 칸이라 넣지 않는다.
 const WORKING_STATUSES: SlotStatus[] = ['APPLIED', 'PENDING_ADD'];
-const MINUTES_PER_HOUR = 60;
 const MIN_SLOTS_PER_SHIFT = (MIN_WORK_HOURS_PER_SHIFT * MINUTES_PER_HOUR) / SLOT_MINUTES;
 
 // 칸이 시작하는 시각
@@ -133,7 +132,7 @@ export const useTimeTable = (
   const weekWorkingSlotCount = dateKeys
     .flatMap((dateKey) => SLOT_START_TIMES.map((startTime) => getSlotEdit(dateKey, startTime)))
     .filter(({ status }) => WORKING_STATUSES.includes(status)).length;
-  const weekHours = (weekWorkingSlotCount * SLOT_MINUTES) / MINUTES_PER_HOUR;
+  const weekHours = convertSlotCountToHours(weekWorkingSlotCount);
   const isWeekFull = weekWorkingSlotCount >= maxSlotsPerWeek;
 
   // 바꾼 칸이 있는 날 중 최소 근무 시간보다 짧은 구간이 생긴 날짜 ('YYYY-MM-DD', 오름차순)
