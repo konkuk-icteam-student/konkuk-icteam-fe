@@ -56,7 +56,6 @@ export default function PageClient() {
     changedSlots,
     resetEdits,
     weekHours,
-    isWeekFull,
     getShortShiftDates,
     getWorkingSlots,
   } = useTimeTable('apply', tableWeek.dates, source, { isOccupancyVisible: isDetailVisible });
@@ -119,7 +118,6 @@ export default function PageClient() {
         onDetailVisibleChange={setIsDetailVisible}
       />
       <RefreshableInfo
-        isWarning={settings !== null && (isWeekFull || weekHours < settings.weeklyMinHours)}
         onRefresh={() => setSource(loadSource())}
       >
         {settings
