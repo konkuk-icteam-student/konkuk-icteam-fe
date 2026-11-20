@@ -50,15 +50,8 @@ export default function PageClient() {
       editableFrom: new Date(),
     });
   const [source, setSource] = useState(loadSource);
-  const {
-    days,
-    cells,
-    changedSlots,
-    resetEdits,
-    weekHours,
-    getShortShiftDates,
-    getWorkingSlots,
-  } = useTimeTable('apply', tableWeek.dates, source, { isOccupancyVisible: isDetailVisible });
+  const { days, cells, changedSlots, resetEdits, weekHours, getShortShiftDates, getWorkingSlots } =
+    useTimeTable('apply', tableWeek.dates, source, { isOccupancyVisible: isDetailVisible });
   const { settings } = applyPeriod;
 
   const hasChangedSlots = changedSlots.length > 0;
@@ -117,9 +110,7 @@ export default function PageClient() {
         isDetailVisible={isDetailVisible}
         onDetailVisibleChange={setIsDetailVisible}
       />
-      <RefreshableInfo
-        onRefresh={() => setSource(loadSource())}
-      >
+      <RefreshableInfo onRefresh={() => setSource(loadSource())}>
         {settings
           ? `이번 주 ${weekHours}시간 · 주 ${settings.weeklyMinHours}~${settings.weeklyMaxHours}시간`
           : `이번 주 ${weekHours}시간`}

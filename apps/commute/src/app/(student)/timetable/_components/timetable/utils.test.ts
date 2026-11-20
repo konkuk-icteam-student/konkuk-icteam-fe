@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getDatesWorkHours, getMonthWorkHours } from './utils';
+import { getMonthWorkHours } from './utils';
 
 describe('getMonthWorkHours', () => {
   it('그 달 날짜의 칸만 30분씩 센다', () => {
@@ -17,13 +17,5 @@ describe('getMonthWorkHours', () => {
 
   it('근무가 없으면 0시간이다', () => {
     expect(getMonthWorkHours([], 2026, 11)).toBe(0);
-  });
-});
-
-describe('getDatesWorkHours', () => {
-  it('고른 날짜의 칸만 30분씩 센다', () => {
-    const slots = [{ date: '2026-11-16' }, { date: '2026-11-17' }, { date: '2026-11-23' }];
-
-    expect(getDatesWorkHours(slots, ['2026-11-16', '2026-11-17', '2026-11-18'])).toBe(1);
   });
 });

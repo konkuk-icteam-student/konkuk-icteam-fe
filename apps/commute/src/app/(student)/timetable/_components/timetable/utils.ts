@@ -53,14 +53,3 @@ export const getMonthWorkHours = (slots: { date: string }[], year: number, month
   (slots.filter(({ date }) => date.startsWith(`${year}-${formatNumber(month)}-`)).length *
     SLOT_MINUTES) /
   MINUTES_PER_HOUR;
-
-/**
- * 고른 날짜들에 든 근무 칸을 시간으로 셉니다. 한 주처럼 보고 있는 날짜의 근무시간을 셀 때 씁니다.
- * 지난 칸도 근무로 셉니다 (수정 화면에서 지난 칸이 신청 불가로 막혀 있어도).
- * @param slots 근무 칸 목록 (date는 'YYYY-MM-DD')
- * @param dateKeys 셀 날짜 목록 ('YYYY-MM-DD')
- * @returns 근무 시간 (30분 칸은 0.5시간)
- * @example getDatesWorkHours([{ date: '2026-11-16' }], ['2026-11-16', '2026-11-17']); // 0.5
- */
-export const getDatesWorkHours = (slots: { date: string }[], dateKeys: string[]) =>
-  (slots.filter(({ date }) => dateKeys.includes(date)).length * SLOT_MINUTES) / MINUTES_PER_HOUR;

@@ -21,11 +21,7 @@ import { SlotLegend, TimeTable } from '@/shared/ui';
 import { useTimeTable } from '../_components/timetable/hooks/useTimeTable';
 import { useTimeTableWeek } from '../_components/timetable/hooks/useTimeTableWeek';
 import type { SlotEdit } from '../_components/timetable/types';
-import {
-  getDatesWorkHours,
-  getMonthWorkHours,
-  mergeSlotsToRanges,
-} from '../_components/timetable/utils';
+import { getMonthWorkHours, mergeSlotsToRanges } from '../_components/timetable/utils';
 import { getMonthWeekInfo } from '@/shared/utils/week';
 import { ROUTES } from '@/shared/config/routes';
 import { SLOT_MINUTES } from '@/shared/config/slot';
@@ -79,7 +75,7 @@ export default function PageClient() {
     };
   };
   const [{ source, settings, usedChangeCount }, setTimeTableData] = useState(loadTimeTableData);
-  const { days, cells, changedSlots, resetEdits, getWorkingSlots } = useTimeTable(
+  const { days, cells, changedSlots, resetEdits, weekHours, getWorkingSlots } = useTimeTable(
     'edit',
     tableWeek.dates,
     source,
@@ -141,16 +137,10 @@ export default function PageClient() {
       <WorkRuleNotice settings={settings}>
         <SlotLegend items={EDIT_LEGEND_ITEMS} />
       </WorkRuleNotice>
-      {/* 추가·삭제 예정을 반영한 근무시간. 이미 지난 칸도 센다 */}
+      {/* 추가·삭제 예정을 반영한 근무시간 */}
       <WorkHoursSummary
         items={[
-          {
-            label: `${tableWeek.week}주차 근무시간`,
-            hours: getDatesWorkHours(
-              getWorkingSlots(),
-              days.map(({ date }) => date),
-            ),
-          },
+          { label: `${tableWeek.week}주차 근무시간`, hours: weekHours },
           {
             label: `${tableWeek.month}월 근무시간`,
             hours: getMonthWorkHours(getWorkingSlots(), tableWeek.year, tableWeek.month),
