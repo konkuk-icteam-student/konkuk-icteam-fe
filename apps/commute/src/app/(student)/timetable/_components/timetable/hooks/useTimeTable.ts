@@ -197,7 +197,6 @@ export const useTimeTable = (
     changedSlots,
     resetEdits,
     weekHours,
-    isWeekFull,
     getShortShiftDates,
     getWorkingSlots,
   };
