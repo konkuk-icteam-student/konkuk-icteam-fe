@@ -10,6 +10,8 @@ type WorkerSearchProps = {
   onSelect: (worker: Worker) => void;
   autoFocus?: boolean;
   className?: string;
+  // 입력칸 모양을 덮어쓴다 (예: 바깥에 배경을 깔 때 입력칸은 투명하게)
+  inputClassName?: string;
 };
 
 // 이름으로 근로학생을 찾아 고르는 입력칸. 디자인 시스템 ComboBox를 쓰고, 고르면 입력칸을 비운다
@@ -18,6 +20,7 @@ export default function WorkerSearch({
   onSelect,
   autoFocus = false,
   className,
+  inputClassName,
 }: WorkerSearchProps) {
   const [keyword, setKeyword] = useState('');
 
@@ -43,6 +46,7 @@ export default function WorkerSearch({
         options={getWorkerOptionLabels().filter((label) => label.includes(keyword.trim()))}
         value={keyword}
         onChange={handleChange}
+        inputClassName={inputClassName}
         optionWrapperClassName='relative z-30'
       />
     </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { IconSearch } from '@konkuk-icteam-fe/design-system/assets';
 import { parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
 import { Button, StateChip } from '@konkuk-icteam-fe/design-system/ui';
 import type { WorkTimeRange } from '@/app/(student)/_apis/common';
@@ -94,11 +95,16 @@ export default function RequestTimeTablePanel({
   return (
     <section className='bg-black-1 flex flex-col gap-[1.6rem] rounded-[1.2rem] border border-gray-50 p-[2rem]'>
       <div className='flex items-center gap-[0.8rem]'>
-        <WorkerSearch
-          placeholder='이름을 검색하세요.'
-          onSelect={onWorkerSelect}
-          className='flex-1'
-        />
+        {/* 디자인 시스템 SearchBar와 같은 모양: 옅은 회색 배경에 돋보기 */}
+        <div className='flex flex-1 items-center gap-[0.8rem] rounded-[1.2rem] bg-gray-50 px-[1.6rem]'>
+          <IconSearch aria-hidden className='h-[2.4rem] w-[2.4rem] shrink-0 text-gray-700' />
+          <WorkerSearch
+            placeholder='이름을 검색하세요.'
+            onSelect={onWorkerSelect}
+            className='flex-1'
+            inputClassName='h-[5rem] border-0 bg-transparent px-0 placeholder:text-gray-500'
+          />
+        </div>
         <Button display='inline' size='small' color='blue' onClick={onReset}>
           초기화
         </Button>
@@ -146,8 +152,8 @@ export default function RequestTimeTablePanel({
       ) : (
         // 아직 아무도 고르지 않았으면 시간표 대신 고르는 방법을 알려 준다
         <div className='flex min-h-[80rem] flex-col items-center justify-center gap-[0.4rem] rounded-[1.2rem] bg-gray-50 text-center'>
-          <p className='font-16-bd text-gray-700'>학생을 검색하거나 왼쪽 수정요청 카드를 고르면</p>
-          <p className='caption-14-md text-gray-500'>
+          <p className='font-16-bd text-gray-500'>학생을 검색하거나 왼쪽 수정요청 카드를 고르면</p>
+          <p className='caption-14-md text-gray-400'>
             그 학생의 시간표에 추가·삭제할 칸이 표시돼요.
           </p>
         </div>
