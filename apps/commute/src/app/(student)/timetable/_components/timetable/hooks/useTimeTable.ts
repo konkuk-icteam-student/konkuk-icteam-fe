@@ -64,7 +64,6 @@ export const useTimeTable = (
   // edit·apply 모드에서 사용자가 바꾼 슬롯. key는 createSlotKey로 만든다.
   // 주차를 옮겨도 남아 있어서 여러 주를 한 번에 고칠 수 있다.
   const [editedSlots, setEditedSlots] = useState<Record<string, SlotEdit>>({});
-  const isEditable = mode === 'edit' || mode === 'apply';
   const maxSlotsPerWeek = (source.weeklyMaxHours * MINUTES_PER_HOUR) / SLOT_MINUTES;
 
   // 칸을 눌렀을 때 바뀌는 상태. 수정은 예정 상태를 거치고, 신청은 바로 바뀐다.
@@ -96,11 +95,6 @@ export const useTimeTable = (
 
   // 한 칸의 지금 상태. 사용자가 바꾼 값이 있으면 그것을, 없으면 원래 상태를 쓴다.
   const getSlotEdit = (dateKey: string, startTime: string): SlotEdit => {
-    // 수정·신청 화면에서 이미 지났거나 마감이 지난 칸은 고칠 수 없으니 신청 불가로 막는다.
-    if (isEditable && getSlotStartDate(dateKey, startTime) < source.editableFrom) {
-      return { date: dateKey, startTime, status: 'UNAVAILABLE' };
-    }
-
     return (
       editedSlots[createSlotKey(dateKey, startTime)] ?? {
         date: dateKey,
@@ -154,6 +148,8 @@ export const useTimeTable = (
 
   const createSlotCellData = (key: string, edit: SlotEdit): SlotCellData => {
     const { status } = edit;
+    // 이미 지났거나 바꿀 수 있는 마감이 지난 칸. 상태(신청 완료 등)는 그대로 보여 주고 누르지만 못하게 막는다
+    const isPastDeadline = getSlotStartDate(edit.date, edit.startTime) < source.editableFrom;
 
     if (mode === 'read') return { mode, status };
 
@@ -172,7 +168,10 @@ export const useTimeTable = (
       onClick: () => handleEditSlot(key, edit),
       // 바꿀 수 없는 칸(신청 불가)은 막는다.
       // 주 최대 시간을 채웠으면 빈 칸은 더 추가할 수 없다. 이미 고른 칸은 되돌릴 수 있다.
-      disabled: nextStatusMap[status] === undefined || (isWeekFull && status === 'AVAILABLE'),
+      disabled:
+        isPastDeadline ||
+        nextStatusMap[status] === undefined ||
+        (isWeekFull && status === 'AVAILABLE'),
       occupancy: isOccupancyVisible
         ? {
             count: source.workersBySlot[key]?.length ?? 0,
