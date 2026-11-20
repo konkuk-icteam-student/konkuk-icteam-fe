@@ -12,18 +12,16 @@ type TimeTableToolbarProps = {
   onDetailVisibleChange: (isVisible: boolean) => void;
 };
 
-// 시간표 위 한 줄. 가운데에 주차 이동, 오른쪽에 자세히보기 스위치를 둔다
+// 시간표 위 한 줄. 오른쪽에 주차 이동과 자세히보기 스위치를 나란히 둔다
 export default function TimeTableToolbar({
   isDetailVisible,
   onDetailVisibleChange,
   ...weekNavigatorProps
 }: TimeTableToolbarProps) {
   return (
-    <div className='grid grid-cols-[1fr_auto_1fr] items-center'>
-      <div />
+    <div className='flex items-center justify-end gap-[1.6rem]'>
       <MonthWeekNavigator {...weekNavigatorProps} />
       <Toggle
-        className='justify-self-end'
         label='자세히보기'
         checked={isDetailVisible}
         onCheckedChange={onDetailVisibleChange}
