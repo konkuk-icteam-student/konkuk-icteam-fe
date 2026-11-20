@@ -1,4 +1,4 @@
-import { IconRestore } from '@konkuk-icteam-fe/design-system/assets';
+import { IconRefresh } from '@konkuk-icteam-fe/design-system/assets';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 
 type RefreshableInfoProps = {
@@ -27,7 +27,7 @@ export default function RefreshableInfo({
         onClick={onRefresh}
         className='bg-black-1 flex h-[3.6rem] w-[3.6rem] items-center justify-center justify-self-end rounded-full border border-gray-50 text-black'
       >
-        <IconRestore aria-hidden className='h-[2rem] w-[2rem]' />
+        <IconRefresh aria-hidden className='h-[2.2rem] w-[2.2rem]' />
       </button>
     </div>
   );
