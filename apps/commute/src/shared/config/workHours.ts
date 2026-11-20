@@ -7,7 +7,7 @@ export const MIN_WORK_HOURS_PER_SHIFT = 1;
 // 일정 변경(수정 요청) 규칙. 한 달에 maxPerMonth번까지, 근로 시작 deadlineHours시간 전까지 요청할 수 있다
 export const SCHEDULE_CHANGE_RULES = {
   maxPerMonth: 3,
-  deadlineHours: 2,
+  deadlineHours: 1,
 } as const;
 
 // 누적 지각이 이 시간(분)을 넘으면 장학금 지급에 불이익이 생길 수 있다
