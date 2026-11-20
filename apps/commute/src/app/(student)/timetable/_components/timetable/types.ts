@@ -14,7 +14,7 @@ export type SlotEdit = {
 export type TimeTableSource = {
   // 처음(서버 기준) 내 근무·신청 칸. key는 createSlotKey로 만든다
   mySlotKeys: Set<string>;
-  // detail 모드에서 칸마다 보여 줄 근무자 이름 (칸 key → 이름 목록)
+  // 자세히보기에서 칸마다 보여 줄 근무자 이름 (칸 key → 이름 목록). 인원은 이 목록의 길이다
   workersBySlot: Record<string, string[]>;
   // 한 칸에 함께 근무할 수 있는 최대 인원
   maxConcurrentWorkers: number;

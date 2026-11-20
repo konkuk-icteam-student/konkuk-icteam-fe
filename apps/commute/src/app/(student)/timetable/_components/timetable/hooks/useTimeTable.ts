@@ -54,7 +54,13 @@ const createDay = (date: Date, index: number): TimeTableDay => ({
 });
 
 // dates: 표에 그릴 월~금 날짜, source: 화면이 조회한 근무·기준 데이터
-export const useTimeTable = (mode: TimeTableMode, dates: Date[], source: TimeTableSource) => {
+// isOccupancyVisible: edit·apply에서 '자세히보기'를 켰는지. 켜면 칸마다 인원/최대 인원을 보여 준다
+export const useTimeTable = (
+  mode: TimeTableMode,
+  dates: Date[],
+  source: TimeTableSource,
+  { isOccupancyVisible = false }: { isOccupancyVisible?: boolean } = {},
+) => {
   // edit·apply 모드에서 사용자가 바꾼 슬롯. key는 createSlotKey로 만든다.
   // 주차를 옮겨도 남아 있어서 여러 주를 한 번에 고칠 수 있다.
   const [editedSlots, setEditedSlots] = useState<Record<string, SlotEdit>>({});
@@ -167,6 +173,12 @@ export const useTimeTable = (mode: TimeTableMode, dates: Date[], source: TimeTab
       // 바꿀 수 없는 칸(신청 불가)은 막는다.
       // 주 최대 시간을 채웠으면 빈 칸은 더 추가할 수 없다. 이미 고른 칸은 되돌릴 수 있다.
       disabled: nextStatusMap[status] === undefined || (isWeekFull && status === 'AVAILABLE'),
+      occupancy: isOccupancyVisible
+        ? {
+            count: source.workersBySlot[key]?.length ?? 0,
+            maxCount: source.maxConcurrentWorkers,
+          }
+        : undefined,
     };
   };
 
