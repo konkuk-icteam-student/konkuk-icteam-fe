@@ -93,11 +93,11 @@ export default function PageClient() {
     setIsApplyDoneModalOpen(true);
   };
 
-  // 확인 버튼·바깥 클릭·ESC 어느 쪽으로 닫아도 메인으로 돌아간다
+  // 확인 버튼·바깥 클릭·ESC 어느 쪽으로 닫아도 근로 시간표로 돌아간다
   const handleApplyDoneModalOpenChange = (open: boolean) => {
     setIsApplyDoneModalOpen(open);
 
-    if (!open) router.replace(ROUTES.HOME);
+    if (!open) router.replace(ROUTES.TIMETABLE);
   };
 
   return (
