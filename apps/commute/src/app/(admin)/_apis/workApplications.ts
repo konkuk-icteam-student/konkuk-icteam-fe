@@ -11,6 +11,7 @@ import {
   getWorkApplicationSubmissionsMock,
   saveWorkApplicationMock,
 } from './mock/workApplications';
+import { getMonthlyScheduledMinutesMock } from './mock/workSchedules';
 
 // 한 달 근로신청 기준. 시간은 모두 시간 단위다
 export type WorkApplicationSettings = {
@@ -129,7 +130,11 @@ export const getWorkApplicationSubmissions = ({
 }: GetWorkApplicationSubmissionsRequest): GetWorkApplicationSubmissionsResponse => ({
   year,
   month,
-  submissions: getWorkApplicationSubmissionsMock(year, month).map((json) => ({
+  submissions: getWorkApplicationSubmissionsMock(
+    year,
+    month,
+    getMonthlyScheduledMinutesMock(year, month),
+  ).map((json) => ({
     ...json,
     lastSubmittedAt: json.lastSubmittedAt ? parseApiDateTime(json.lastSubmittedAt) : null,
   })),

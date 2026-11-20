@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
-import type { ScheduleCell, ScheduleDay } from '../_hooks/useWeekSchedule';
+import type { ScheduleCell, ScheduleDay } from './hooks/useWeekSchedule';
 
 type WeekScheduleGridProps = {
   days: ScheduleDay[];
@@ -8,7 +8,7 @@ type WeekScheduleGridProps = {
   maxConcurrentWorkers: number;
   // 칸 안에 그릴 내용 (배치된 사람과 편집 버튼). 몇 번째 요일 열인지도 넘긴다 (0 = 월)
   renderCell: (cell: ScheduleCell, columnIndex: number) => React.ReactNode;
-  // 조회 대상이 있으면 그 사람이 있는 칸은 파랗게 강조하고, 없는 칸은 흐리게 한다
+  // 조회 대상이 있으면 그 사람이 있는 칸을 파랗게 강조한다. 없는 칸은 평소대로 두어 다른 배치도 읽히게 한다
   focusedUserId?: number | null;
 };
 
@@ -38,6 +38,17 @@ export default function WeekScheduleGrid({
             const cell = cells[timeIndex];
             if (!cell) return <div key={`${dateKey}-${time}`} />;
 
+            // 아직 볼 수 없는 달(신청을 열기 전 다음 달)의 칸은 글자 없이 회색으로 막아 둔다
+            if (cell.isBeyondViewableMonth) {
+              return (
+                <div
+                  key={`${dateKey}-${time}`}
+                  aria-label='아직 신청을 받지 않은 달'
+                  className='min-h-[8.4rem] rounded-[1.2rem] bg-gray-50'
+                />
+              );
+            }
+
             // 근무 불가 칸은 인원 수도 편집 버튼도 없이 막아 둔다
             if (cell.isUnavailable) {
               return (
@@ -52,15 +63,13 @@ export default function WeekScheduleGrid({
 
             const hasFocusedUser = cell.users.some(({ userId }) => userId === focusedUserId);
             const isFocused = focusedUserId !== null && hasFocusedUser;
-            const isDimmed = focusedUserId !== null && !hasFocusedUser;
 
             return (
               <div
                 key={`${dateKey}-${time}`}
                 className={cn(
-                  'flex min-h-[8.4rem] flex-col gap-[0.6rem] rounded-[1.2rem] border p-[1rem] transition-opacity',
+                  'flex min-h-[8.4rem] flex-col gap-[0.6rem] rounded-[1.2rem] border p-[1rem]',
                   isFocused ? 'border-blue bg-blue/5' : 'border-gray-50',
-                  isDimmed && 'opacity-30',
                 )}
               >
                 <span className='caption-12-md flex justify-end text-gray-400'>

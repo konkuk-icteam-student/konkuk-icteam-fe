@@ -6,12 +6,14 @@ import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { TagChip } from '@konkuk-icteam-fe/design-system/ui';
 import { getWorkerChipTone } from '@/shared/utils/getWorkerChipTone';
 import type { WorkScheduleUser } from '../../_apis/workSchedules';
-import type { ScheduleCell, ScheduleCellWorker } from '../_hooks/useWeekSchedule';
+import type { ScheduleCell, ScheduleCellWorker } from './hooks/useWeekSchedule';
 import AddWorkerPopover from './AddWorkerPopover';
 
 type EditableScheduleCellProps = {
   cell: ScheduleCell;
   isEditMode: boolean;
+  // 이름으로 찾은 사람. 그 사람의 라벨만 파랗게 채워 칸 안에서 바로 보이게 한다
+  focusedUserId?: number | null;
   // 오른쪽 열에서는 추가 카드가 시간표 밖으로 넘치지 않게 칸 오른쪽 끝에 맞춰 연다
   opensSearchToLeft?: boolean;
   onAdd: (cell: ScheduleCell, user: ScheduleCellWorker) => void;
@@ -22,6 +24,7 @@ type EditableScheduleCellProps = {
 export default function EditableScheduleCell({
   cell,
   isEditMode,
+  focusedUserId = null,
   opensSearchToLeft = false,
   onAdd,
   onRemoveRequest,
@@ -36,7 +39,8 @@ export default function EditableScheduleCell({
           <TagChip
             key={user.userId}
             label={user.userName}
-            tone={getWorkerChipTone(user.userId)}
+            tone={user.userId === focusedUserId ? 'blue' : getWorkerChipTone(user.userId)}
+            isSelected={user.userId === focusedUserId}
             // 편집 중일 때만 X로 뺄 수 있다
             onRemove={isEditMode ? () => onRemoveRequest(cell, user) : undefined}
           />
