@@ -9,20 +9,16 @@ import { checkUnavailableSlot } from '@/shared/utils/slot';
 import { convertTimeToMinutes } from '@/shared/utils/time';
 
 import {
-  APPLY_NEXT_STATUS,
-  EDIT_NEXT_STATUS,
   SLOT_START_TIMES,
-  WEEKDAY_LABELS,
-} from '../constants';
-import type {
-  SlotCellData,
-  SlotEdit,
-  SlotStatus,
-  TimeTableCell,
-  TimeTableDay,
-  TimeTableMode,
-  TimeTableSource,
-} from '../types';
+  type SlotCellData,
+  type SlotStatus,
+  type TimeTableCell,
+  type TimeTableDay,
+  type TimeTableMode,
+} from '@/shared/ui';
+
+import { APPLY_NEXT_STATUS, EDIT_NEXT_STATUS, WEEKDAY_LABELS } from '../constants';
+import type { SlotEdit, TimeTableSource } from '../types';
 import { createSlotKey } from '../utils';
 
 // 근무로 치는 상태. 삭제 예정은 빠질 칸이라 넣지 않는다.

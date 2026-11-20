@@ -205,6 +205,50 @@ export const deleteWorkScheduleMock = (scheduleId: number) => {
 };
 
 /**
+ * 승인한 근무 변경을 시간표에 반영합니다. 뺄 근무는 그 사람 칸에서 빼고, 더할 근무는 근무 불가 칸을 빼고 넣습니다.
+ * @param userId 근로학생 id
+ * @param changes 뺄 근무·더할 근무 (JSON 모양)
+ * @param changes.deleteSchedules 뺄 근무 구간
+ * @param changes.addSchedules 더할 근무 구간
+ * @example applyWorkChangeMock(6, { deleteSchedules: [{ date: '2026-11-25', start: '11:00', end: '12:00' }], addSchedules: [] });
+ */
+export const applyWorkChangeMock = (
+  userId: number,
+  {
+    deleteSchedules,
+    addSchedules,
+  }: {
+    deleteSchedules: { date: string; start: string; end: string }[];
+    addSchedules: { date: string; start: string; end: string }[];
+  },
+) => {
+  deleteSchedules.forEach(({ date, start, end }) => {
+    getDaySlotsMock(date)
+      .filter((slot) => slot.start >= start && slot.start < end)
+      .flatMap(({ users }) => users.filter((user) => user.userId === userId))
+      .forEach(({ scheduleId }) => deleteWorkScheduleMock(scheduleId));
+  });
+
+  addSchedules.forEach(({ date, start, end }) => {
+    const unavailableTimeRanges = getUnavailableTimeRangesMock(
+      Number(date.slice(0, 4)),
+      Number(date.slice(5, 7)),
+    );
+    getDaySlotsMock(date)
+      .filter(
+        (slot) =>
+          slot.start >= start &&
+          slot.start < end &&
+          !checkUnavailableSlot(slot.start, unavailableTimeRanges) &&
+          !slot.users.some((user) => user.userId === userId),
+      )
+      .forEach((slot) =>
+        createWorkScheduleMock({ userId, date, start: slot.start, end: slot.end }),
+      );
+  });
+};
+
+/**
  * 한 사람의 한 달 근무 기록 목업을 얻습니다.
  * @param userId 근로학생 id
  * @param year 연도

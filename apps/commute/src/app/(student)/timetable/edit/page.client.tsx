@@ -18,7 +18,7 @@ import {
   createWorkChangeRequest,
   getMyWorkChangeRequests,
 } from '@/app/(student)/_apis/workChangeRequests';
-import TimeTable from '../_components/timetable/base/Week';
+import { SlotLegend, TimeTable } from '@/shared/ui';
 import { useTimeTable } from '../_components/timetable/hooks/useTimeTable';
 import { useTimeTableWeek } from '../_components/timetable/hooks/useTimeTableWeek';
 import type { SlotEdit } from '../_components/timetable/types';
@@ -29,7 +29,6 @@ import { SLOT_MINUTES } from '@/shared/config/slot';
 import { SCHEDULE_CHANGE_RULES } from '@/shared/config/workHours';
 
 import BackHeader from '../_components/BackHeader';
-import SlotLegend from '../_components/SlotLegend';
 import MonthWeekNavigator from '../_components/MonthWeekNavigator';
 import WorkRuleNotice from '../_components/WorkRuleNotice';
 import { EDIT_LEGEND_ITEMS } from '../_constants/slotLegend';

@@ -14,7 +14,7 @@ import {
 import { parseISO } from '@konkuk-icteam-fe/design-system/date';
 
 import { saveMyWorkApplication } from '@/app/(student)/_apis/workApplications';
-import TimeTable from '../_components/timetable/base/Week';
+import { SlotLegend, TimeTable } from '@/shared/ui';
 import { useTimeTable } from '../_components/timetable/hooks/useTimeTable';
 import { useTimeTableWeek } from '../_components/timetable/hooks/useTimeTableWeek';
 import { mergeSlotsToRanges } from '../_components/timetable/utils';
@@ -26,7 +26,6 @@ import { useApplyPeriod } from '@/shared/hooks/useApplyPeriod';
 import { formatMonthDay, formatMonthDayTime } from '@/shared/utils/formatDate';
 
 import BackHeader from '../_components/BackHeader';
-import SlotLegend from '../_components/SlotLegend';
 import MonthWeekNavigator from '../_components/MonthWeekNavigator';
 import WorkRuleNotice from '../_components/WorkRuleNotice';
 import { APPLY_LEGEND_ITEMS } from '../_constants/slotLegend';

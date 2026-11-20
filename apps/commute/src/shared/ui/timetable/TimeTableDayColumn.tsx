@@ -1,5 +1,5 @@
-import type { TimeTableCell, TimeTableDay } from '../types';
-import SlotCell from './Hour';
+import SlotCell from './SlotCell';
+import type { TimeTableCell, TimeTableDay } from './types';
 
 type DayProps = {
   day: TimeTableDay;
@@ -7,7 +7,7 @@ type DayProps = {
 };
 
 // 요일 한 칸: 요일 이름과 날짜, 그 아래로 하루치 슬롯을 세로로 늘어놓는다.
-export default function Day({ day, cells }: DayProps) {
+export default function TimeTableDayColumn({ day, cells }: DayProps) {
   return (
     <div className='flex flex-1 flex-col items-center'>
       <span className='caption-14-bd text-black'>{day.label}</span>

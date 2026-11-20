@@ -1,6 +1,4 @@
-import type { SlotStatus } from '../_components/timetable/types';
-
-export type SlotLegendItem = { status: SlotStatus; label: string };
+import type { SlotLegendItem } from '@/shared/ui';
 
 // 수정 요청 화면: 관리자 승인 전이라 추가·삭제가 '예정'으로 보인다
 export const EDIT_LEGEND_ITEMS: SlotLegendItem[] = [

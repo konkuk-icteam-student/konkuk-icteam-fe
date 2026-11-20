@@ -4,8 +4,8 @@ import { useState } from 'react';
 
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 
-import { SLOT_STATUS_CLASS_NAME } from '../constants';
-import type { SlotCellData } from '../types';
+import { SLOT_STATUS_CLASS_NAME } from './constants';
+import type { SlotCellData } from './types';
 
 // 명단 툴팁을 커서에서 오른쪽 아래로 얼마나 띄울지(px)
 const TOOLTIP_CURSOR_OFFSET = 12;
@@ -17,8 +17,9 @@ type SlotCellProps = {
 };
 
 export default function SlotCell({ cell }: SlotCellProps) {
-  const hasWorkers = cell.mode === 'detail' && cell.workers.length > 0;
-  // 클릭은 edit·apply에서만 된다. 그 안에서 막을 칸은 useTimeTable이 disabled로 정해 준다.
+  const hasWorkers =
+    cell.mode === 'detail' && cell.status !== 'UNAVAILABLE' && cell.workers.length > 0;
+  // 클릭은 edit·apply에서만 된다. 그 안에서 막을 칸은 화면이 disabled로 정해 준다.
   const isClickable = cell.mode === 'edit' || cell.mode === 'apply';
   // 칸 안에서의 커서 위치. 마우스가 칸 밖으로 나가면 null이라 툴팁을 숨긴다.
   const [tooltipPosition, setTooltipPosition] = useState<TooltipPosition | null>(null);
@@ -50,11 +51,14 @@ export default function SlotCell({ cell }: SlotCellProps) {
         onClick={isClickable ? cell.onClick : undefined}
         type='button'
       >
-        {cell.mode === 'detail' && (
+        {/* 신청 불가 칸은 인원을 보여 주지 않는다 */}
+        {cell.mode === 'detail' && cell.status !== 'UNAVAILABLE' && (
           <span
             className={cn(
               'caption-12-rg',
-              cell.status === 'APPLIED' ? 'text-black-1' : 'text-gray-400',
+              cell.status === 'APPLIED' && 'text-black-1',
+              cell.status === 'OVER_CAPACITY' && 'text-red',
+              cell.status !== 'APPLIED' && cell.status !== 'OVER_CAPACITY' && 'text-gray-400',
             )}
           >
             {cell.workers.length}/{cell.maxCount}

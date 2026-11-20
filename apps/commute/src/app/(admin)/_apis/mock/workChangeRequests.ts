@@ -1,6 +1,7 @@
 import { formatNumber } from '@konkuk-icteam-fe/design-system/date';
 import type { ApiJson } from '@/app/(student)/_apis/common';
 import type { WorkChangeRequest } from '../workChangeRequests';
+import { applyWorkChangeMock } from './workSchedules';
 
 type ProcessedResult = Pick<WorkChangeRequest, 'statusCode' | 'rejectReason'>;
 
@@ -142,6 +143,9 @@ export const updateWorkChangeRequestMock = (requestId: number, result: Processed
     (item) => item.requestId === requestId,
   );
   if (!request) throw new Error(`근무 변경 요청(${requestId})을 찾을 수 없습니다.`);
+
+  // 승인하면 서버처럼 시간표에 바로 반영한다
+  if (result.statusCode === 'CS02') applyWorkChangeMock(request.userId, request);
 
   return request;
 };
