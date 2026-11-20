@@ -11,7 +11,7 @@ export type TimeTableMode = 'read' | 'detail' | 'edit' | 'apply';
 // - PENDING_ADD: 추가 예정
 // - PENDING_DELETE: 삭제 예정
 // - APPLIED: 신청 완료
-// - OVER_CAPACITY: 정원 초과. 관리자 시간표에서 칸 인원이 동시 근무 최대 인원을 넘은 칸
+// - OVER_CAPACITY: 정원 초과. 관리자 수정요청 시간표에서 추가하려는 칸 중 승인하면 동시 근무 최대 인원을 넘는 칸
 export type SlotStatus =
   'AVAILABLE' | 'UNAVAILABLE' | 'PENDING_ADD' | 'PENDING_DELETE' | 'APPLIED' | 'OVER_CAPACITY';
 

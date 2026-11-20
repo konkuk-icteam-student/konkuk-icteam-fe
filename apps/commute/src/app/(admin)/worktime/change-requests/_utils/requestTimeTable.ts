@@ -75,8 +75,9 @@ const getWorkersAfterApproval = (
 
 /**
  * 수정요청 화면 시간표의 칸을 만듭니다. 칸마다 요청을 승인한 뒤의 인원/최대 인원과 근무자 명단을 보여 줍니다.
- * 칸 모양은 이 순서로 정합니다: 신청 불가 → (보고 있는 학생의) 삭제 예정 → 신청 완료 → 정원 초과 → 추가 예정 → 빈 칸.
- * 보고 있는 학생이 이미 있는 칸은 정원을 넘어도 신청 완료이고, 추가 예정 칸이라도 승인하면 정원을 넘으면 정원 초과입니다
+ * 칸 모양은 이 순서로 정합니다: 신청 불가 → (보고 있는 학생의) 삭제 예정(빨간 테두리) → 신청 완료 → 추가 예정.
+ * 추가 예정 칸은 승인하면 정원을 넘으면 정원 초과(빨간 테두리·옅은 빨간 배경), 아니면 파란 테두리입니다.
+ * 추가하지 않는 칸은 인원이 정원을 넘어도 따로 칠하지 않습니다
  * @param days 요일별 칸과 그 날의 근무 불가 정보
  * @param maxCount 동시 근무 최대 인원
  * @param focus 보고 있는 학생과 예정 칸. 없으면 인원만 보여 준다
@@ -98,9 +99,9 @@ export const createRequestTimeTableCells = (
         }
         if (focus?.deleteSlotKeys.has(key)) return 'PENDING_DELETE';
         if (focus && users.some(({ userId }) => userId === focus.userId)) return 'APPLIED';
-        if (workers.length > maxCount) return 'OVER_CAPACITY';
+        if (!focus?.addSlotKeys.has(key)) return 'AVAILABLE';
 
-        return focus?.addSlotKeys.has(key) ? 'PENDING_ADD' : 'AVAILABLE';
+        return workers.length > maxCount ? 'OVER_CAPACITY' : 'PENDING_ADD';
       };
 
       return { key, mode: 'detail', status: getStatus(), workers, maxCount };
@@ -123,7 +124,7 @@ export const createOverCapacityRanges = (
   createRequestTimeTableCells(days, maxCount, focus).flatMap((cells, dayIndex) => {
     const dateKey = days[dayIndex]?.dateKey ?? '';
     const overSlots = cells
-      .filter(({ key, status }) => status === 'OVER_CAPACITY' && focus?.addSlotKeys.has(key))
+      .filter(({ status }) => status === 'OVER_CAPACITY')
       .map(({ key }) => {
         const start = key.slice(-5);
 

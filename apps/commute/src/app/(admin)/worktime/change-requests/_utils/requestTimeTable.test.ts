@@ -38,11 +38,11 @@ describe('createSlotKeys', () => {
 });
 
 describe('createRequestTimeTableCells', () => {
-  it('보고 있는 학생이 없으면 인원만 보고, 최대를 넘으면 정원 초과다', () => {
+  it('추가하지 않는 칸은 인원이 정원을 넘어도 따로 칠하지 않는다', () => {
     expect(getStatuses(createRequestTimeTableCells([DAY], 4, null))).toEqual([
       'AVAILABLE',
       'AVAILABLE',
-      'OVER_CAPACITY',
+      'AVAILABLE',
       'AVAILABLE',
       'UNAVAILABLE',
     ]);
