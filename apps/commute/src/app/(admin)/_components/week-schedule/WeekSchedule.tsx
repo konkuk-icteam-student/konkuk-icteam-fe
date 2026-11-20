@@ -117,6 +117,7 @@ export default function WeekSchedule({ initialWeekStartKey, renderHeader }: Week
             <EditableScheduleCell
               cell={cell}
               isEditMode={isEditMode}
+              focusedUserId={filteredWorker?.userId ?? null}
               // 목·금 열은 검색창을 왼쪽으로 연다
               opensSearchToLeft={columnIndex >= SEARCH_TO_LEFT_FROM_COLUMN}
               onAdd={handleAdd}
