@@ -102,7 +102,8 @@ export default function RequestTimeTablePanel({
             placeholder='이름을 검색하세요.'
             onSelect={onWorkerSelect}
             className='flex-1'
-            inputClassName='h-[5rem] border-0 bg-transparent px-0 placeholder:text-gray-500'
+            isTransparent
+            inputClassName='h-[5rem] px-0 placeholder:text-gray-500'
           />
         </div>
         <Button display='inline' size='small' color='blue' onClick={onReset}>
