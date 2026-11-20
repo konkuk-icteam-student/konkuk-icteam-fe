@@ -4,8 +4,8 @@ import { useState } from 'react';
 
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 
-import { SLOT_STATUS_CLASS_NAME } from '../constants';
-import type { SlotCellData } from '../types';
+import { SLOT_STATUS_CLASS_NAME } from './constants';
+import type { SlotCellData } from './types';
 
 // 명단 툴팁을 커서에서 오른쪽 아래로 얼마나 띄울지(px)
 const TOOLTIP_CURSOR_OFFSET = 12;
@@ -18,7 +18,7 @@ type SlotCellProps = {
 
 export default function SlotCell({ cell }: SlotCellProps) {
   const hasWorkers = cell.mode === 'detail' && cell.workers.length > 0;
-  // 클릭은 edit·apply에서만 된다. 그 안에서 막을 칸은 useTimeTable이 disabled로 정해 준다.
+  // 클릭은 edit·apply에서만 된다. 그 안에서 막을 칸은 화면이 disabled로 정해 준다.
   const isClickable = cell.mode === 'edit' || cell.mode === 'apply';
   // 칸 안에서의 커서 위치. 마우스가 칸 밖으로 나가면 null이라 툴팁을 숨긴다.
   const [tooltipPosition, setTooltipPosition] = useState<TooltipPosition | null>(null);

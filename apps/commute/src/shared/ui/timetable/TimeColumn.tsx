@@ -1,4 +1,4 @@
-import { SLOT_START_TIMES } from '../constants';
+import { SLOT_START_TIMES } from './constants';
 
 // 정시 칸('09:00')에만 시(9)를 붙이고, 30분 칸은 비워 둔다.
 const getHourLabel = (startTime: string) =>

@@ -1,7 +1,7 @@
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 
-import { SLOT_STATUS_CLASS_NAME } from './timetable/constants';
-import type { SlotLegendItem } from '../_constants/slotLegend';
+import { SLOT_STATUS_CLASS_NAME } from './constants';
+import type { SlotLegendItem } from './types';
 
 type SlotLegendProps = {
   items: SlotLegendItem[];
