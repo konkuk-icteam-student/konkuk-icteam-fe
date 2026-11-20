@@ -18,16 +18,16 @@ export default function RefreshableInfo({
   return (
     <div className='grid grid-cols-[1fr_auto_1fr] items-center'>
       <div />
-      <p className={cn('caption-14-md text-center', isWarning ? 'text-red' : 'text-gray-500')}>
+      <p className={cn('caption-12-md text-center', isWarning ? 'text-red' : 'text-gray-500')}>
         {children}
       </p>
       <button
         type='button'
         aria-label='인원 새로고침'
         onClick={onRefresh}
-        className='bg-black-1 flex h-[4rem] w-[4rem] items-center justify-center justify-self-end rounded-full border border-gray-50 text-black'
+        className='bg-black-1 flex h-[3.6rem] w-[3.6rem] items-center justify-center justify-self-end rounded-full border border-gray-50 text-black'
       >
-        <IconRefresh aria-hidden className='h-[2.4rem] w-[2.4rem]' />
+        <IconRefresh aria-hidden className='h-[2.2rem] w-[2.2rem]' />
       </button>
     </div>
   );
