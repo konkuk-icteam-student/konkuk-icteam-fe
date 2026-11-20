@@ -4,7 +4,7 @@ import { SLOT_MINUTES } from '@/shared/config/slot';
 import type { SlotStatus, TimeTableCell } from '@/shared/ui';
 import { checkUnavailableSlot } from '@/shared/utils/slot';
 import { convertMinutesToTime, convertTimeToMinutes } from '@/shared/utils/time';
-import type { TimeRange } from '@/shared/utils/timeRange';
+import { mergeContinuousSlots, type TimeRange } from '@/shared/utils/timeRange';
 
 // 시간표 하루치 입력. 칸마다 그 칸에 근무하는 사람이 들어 있다
 export type RequestTimeTableDay = {
@@ -19,6 +19,7 @@ export type RequestTimeTableDay = {
 // 시간표에서 보고 있는 학생과, 승인되면 그 학생에게 더해지거나 빠질 칸 (createSlotKey로 만든 key)
 export type RequestTimeTableFocus = {
   userId: number;
+  userName: string;
   addSlotKeys: Set<string>;
   deleteSlotKeys: Set<string>;
 };
@@ -51,8 +52,31 @@ export const createSlotKeys = (ranges: WorkTimeRange[]) =>
   );
 
 /**
- * 수정요청 화면 시간표의 칸을 만듭니다. 칸마다 인원/최대 인원과 근무자 명단을 보여 줍니다.
- * 칸 모양은 이 순서로 정합니다: 신청 불가 → (보고 있는 학생의) 삭제 예정 → 추가 예정 → 신청 완료 → 정원 초과 → 빈 칸
+ * 승인한 뒤 칸에 근무할 사람 이름을 얻습니다. 추가 예정 칸에는 보고 있는 학생을 더하고, 삭제 예정 칸에서는 뺍니다.
+ * @param slotKey 칸 key
+ * @param users 지금 그 칸에 근무하는 사람
+ * @param focus 보고 있는 학생과 예정 칸
+ * @returns 근무자 이름 목록
+ * @example getWorkersAfterApproval(key, [{ userId: 1, userName: '홍길동' }], focus); // ['홍길동', '최유나']
+ */
+const getWorkersAfterApproval = (
+  slotKey: string,
+  users: RequestTimeTableDay['slots'][number]['users'],
+  focus: RequestTimeTableFocus | null,
+) => {
+  const names = users
+    .filter(({ userId }) => !(focus?.deleteSlotKeys.has(slotKey) && userId === focus.userId))
+    .map(({ userName }) => userName);
+  const isAdded =
+    focus?.addSlotKeys.has(slotKey) && !users.some(({ userId }) => userId === focus.userId);
+
+  return isAdded && focus ? [...names, focus.userName] : names;
+};
+
+/**
+ * 수정요청 화면 시간표의 칸을 만듭니다. 칸마다 요청을 승인한 뒤의 인원/최대 인원과 근무자 명단을 보여 줍니다.
+ * 칸 모양은 이 순서로 정합니다: 신청 불가 → (보고 있는 학생의) 삭제 예정 → 신청 완료 → 정원 초과 → 추가 예정 → 빈 칸.
+ * 보고 있는 학생이 이미 있는 칸은 정원을 넘어도 신청 완료이고, 추가 예정 칸이라도 승인하면 정원을 넘으면 정원 초과입니다
  * @param days 요일별 칸과 그 날의 근무 불가 정보
  * @param maxCount 동시 근무 최대 인원
  * @param focus 보고 있는 학생과 예정 칸. 없으면 인원만 보여 준다
@@ -67,23 +91,44 @@ export const createRequestTimeTableCells = (
   days.map(({ dateKey, slots, isUnavailableDate, unavailableTimeRanges }) =>
     slots.map(({ start, users }) => {
       const key = createSlotKey(dateKey, start);
+      const workers = getWorkersAfterApproval(key, users, focus);
       const getStatus = (): SlotStatus => {
         if (isUnavailableDate || checkUnavailableSlot(start, unavailableTimeRanges)) {
           return 'UNAVAILABLE';
         }
         if (focus?.deleteSlotKeys.has(key)) return 'PENDING_DELETE';
-        if (focus?.addSlotKeys.has(key)) return 'PENDING_ADD';
         if (focus && users.some(({ userId }) => userId === focus.userId)) return 'APPLIED';
+        if (workers.length > maxCount) return 'OVER_CAPACITY';
 
-        return users.length > maxCount ? 'OVER_CAPACITY' : 'AVAILABLE';
+        return focus?.addSlotKeys.has(key) ? 'PENDING_ADD' : 'AVAILABLE';
       };
 
-      return {
-        key,
-        mode: 'detail',
-        status: getStatus(),
-        workers: users.map(({ userName }) => userName),
-        maxCount,
-      };
+      return { key, mode: 'detail', status: getStatus(), workers, maxCount };
     }),
   );
+
+/**
+ * 요청을 승인하면 정원을 넘게 되는 시간대를 모읍니다. 보고 있는 학생이 새로 들어가는 칸 중 인원이 최대를 넘는 칸을 이어진 구간으로 묶습니다.
+ * @param days 요일별 칸과 그 날의 근무 불가 정보
+ * @param maxCount 동시 근무 최대 인원
+ * @param focus 보고 있는 학생과 예정 칸
+ * @returns 날짜(YYYY-MM-DD)와 구간 목록. 날짜·시각 순
+ * @example createOverCapacityRanges(days, 4, focus); // [{ dateKey: '2026-11-24', start: '14:00', end: '15:00' }]
+ */
+export const createOverCapacityRanges = (
+  days: RequestTimeTableDay[],
+  maxCount: number,
+  focus: RequestTimeTableFocus | null,
+) =>
+  createRequestTimeTableCells(days, maxCount, focus).flatMap((cells, dayIndex) => {
+    const dateKey = days[dayIndex]?.dateKey ?? '';
+    const overSlots = cells
+      .filter(({ key, status }) => status === 'OVER_CAPACITY' && focus?.addSlotKeys.has(key))
+      .map(({ key }) => {
+        const start = key.slice(-5);
+
+        return { start, end: convertMinutesToTime(convertTimeToMinutes(start) + SLOT_MINUTES) };
+      });
+
+    return mergeContinuousSlots(overSlots).map((range) => ({ dateKey, ...range }));
+  });

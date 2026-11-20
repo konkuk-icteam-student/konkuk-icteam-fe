@@ -16,7 +16,9 @@ import type { Worker } from '../../../_apis/workers';
 import { getWorkSchedules } from '../../../_apis/workSchedules';
 import WorkerSearch from '../../../_components/week-schedule/WorkerSearch';
 import { formatWeekRange, getWeekDays } from '../../../_components/week-schedule/utils/weekKey';
+import { formatMonthDayWithWeekday } from '@/shared/utils/formatDate';
 import {
+  createOverCapacityRanges,
   createRequestTimeTableCells,
   createSlotKeys,
   type RequestTimeTableDay,
@@ -31,7 +33,7 @@ const LEGEND_ITEMS: SlotLegendItem[] = [
 ];
 
 type RequestTimeTablePanelProps = {
-  // 보고 있는 학생. 없으면 칸마다 인원만 보여 준다
+  // 보고 있는 학생. 없으면 시간표 대신 고르는 방법을 안내한다
   focusedUser: { userId: number; name: string } | null;
   // 이름 옆에 붙일 요청 상태 (요청 카드를 골랐을 때)
   statusChip: { label: string; tone: ChipTone } | null;
@@ -44,7 +46,7 @@ type RequestTimeTablePanelProps = {
 };
 
 // 수정요청 화면 오른쪽. 고른 학생의 한 주 시간표에 요청이 승인되면 빠질 칸·더해질 칸을 예정으로 보여 준다.
-// 칸마다 그 칸 인원/최대 인원을 보여 주고, 마우스를 올리면 근무자 명단이 뜬다
+// 칸마다 승인한 뒤의 인원/최대 인원을 보여 주고(마우스를 올리면 근무자 명단), 정원을 넘게 되면 위에 알린다
 export default function RequestTimeTablePanel({
   focusedUser,
   statusChip,
@@ -75,17 +77,19 @@ export default function RequestTimeTablePanel({
       unavailableTimeRanges: settings?.unavailableTimeRanges ?? [],
     };
   });
-  const cells = createRequestTimeTableCells(
-    timeTableDays,
-    maxConcurrentWorkers,
-    focusedUser
-      ? {
-          userId: focusedUser.userId,
-          addSlotKeys: createSlotKeys(pendingChanges.addSchedules),
-          deleteSlotKeys: createSlotKeys(pendingChanges.deleteSchedules),
-        }
-      : null,
-  );
+  const focus = focusedUser
+    ? {
+        userId: focusedUser.userId,
+        userName: focusedUser.name,
+        addSlotKeys: createSlotKeys(pendingChanges.addSchedules),
+        deleteSlotKeys: createSlotKeys(pendingChanges.deleteSchedules),
+      }
+    : null;
+  const cells = createRequestTimeTableCells(timeTableDays, maxConcurrentWorkers, focus);
+  // 승인하면 정원을 넘는 시간대. 예: 11.24 (화) 14:00 - 15:00
+  const overCapacityLabel = createOverCapacityRanges(timeTableDays, maxConcurrentWorkers, focus)
+    .map(({ dateKey, start, end }) => `${formatMonthDayWithWeekday(dateKey)} ${start} - ${end}`)
+    .join(', ');
 
   return (
     <section className='bg-black-1 flex flex-col gap-[1.6rem] rounded-[1.2rem] border border-gray-50 p-[2rem]'>
@@ -100,33 +104,54 @@ export default function RequestTimeTablePanel({
         </Button>
       </div>
 
-      <div className='flex items-end justify-between gap-[1.2rem]'>
-        <div className='flex flex-col gap-[0.2rem]'>
-          <span className='caption-12-md text-gray-500'>지금 보고 있는 시간표</span>
-          <div className='flex items-center gap-[0.8rem]'>
-            <h2 className='font-18-bd text-black'>{focusedUser?.name ?? '전체'}</h2>
-            {statusChip ? <StateChip label={statusChip.label} tone={statusChip.tone} /> : null}
+      {focusedUser ? (
+        <>
+          <div className='flex items-end justify-between gap-[1.2rem]'>
+            <div className='flex flex-col gap-[0.2rem]'>
+              <span className='caption-12-md text-gray-500'>지금 보고 있는 시간표</span>
+              <div className='flex items-center gap-[0.8rem]'>
+                <h2 className='font-18-bd text-black'>{focusedUser.name}</h2>
+                {statusChip ? <StateChip label={statusChip.label} tone={statusChip.tone} /> : null}
+              </div>
+            </div>
+            <div className='flex items-center gap-[1.2rem]'>
+              <ArrowButton direction='left' aria-label='이전 주' onClick={() => onWeekMove(-1)} />
+              <span className='font-16-bd min-w-[11rem] text-center text-black'>
+                {formatWeekRange(weekStartKey)}
+              </span>
+              <ArrowButton direction='right' aria-label='다음 주' onClick={() => onWeekMove(1)} />
+            </div>
           </div>
-        </div>
-        <div className='flex items-center gap-[1.2rem]'>
-          <ArrowButton direction='left' aria-label='이전 주' onClick={() => onWeekMove(-1)} />
-          <span className='font-16-bd min-w-[11rem] text-center text-black'>
-            {formatWeekRange(weekStartKey)}
-          </span>
-          <ArrowButton direction='right' aria-label='다음 주' onClick={() => onWeekMove(1)} />
-        </div>
-      </div>
 
-      <TimeTable
-        days={weekDays.map(({ dateKey, weekday, dateLabel }) => ({
-          date: dateKey,
-          label: weekday,
-          dateLabel,
-        }))}
-        cells={cells}
-        timeLabelFormat='time'
-      />
-      <SlotLegend items={LEGEND_ITEMS} />
+          {overCapacityLabel ? (
+            <p
+              role='alert'
+              className='caption-12-md bg-red/10 text-red rounded-[0.8rem] px-[1.2rem] py-[1rem]'
+            >
+              {`승인하면 ${overCapacityLabel}에 정원(${maxConcurrentWorkers}명)을 넘어요.`}
+            </p>
+          ) : null}
+
+          <TimeTable
+            days={weekDays.map(({ dateKey, weekday, dateLabel }) => ({
+              date: dateKey,
+              label: weekday,
+              dateLabel,
+            }))}
+            cells={cells}
+            timeLabelFormat='time'
+          />
+          <SlotLegend items={LEGEND_ITEMS} />
+        </>
+      ) : (
+        // 아직 아무도 고르지 않았으면 시간표 대신 고르는 방법을 알려 준다
+        <div className='flex min-h-[80rem] flex-col items-center justify-center gap-[0.4rem] rounded-[1.2rem] bg-gray-50 text-center'>
+          <p className='font-16-bd text-gray-700'>학생을 검색하거나 왼쪽 수정요청 카드를 고르면</p>
+          <p className='caption-14-md text-gray-500'>
+            그 학생의 시간표에 추가·삭제할 칸이 표시돼요.
+          </p>
+        </div>
+      )}
     </section>
   );
 }

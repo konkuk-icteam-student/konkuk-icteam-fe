@@ -5,7 +5,7 @@ import { Button, ConfirmModal } from '@konkuk-icteam-fe/design-system/ui';
 import type { WorkTimeRange } from '@/app/(student)/_apis/common';
 import { useToast } from '@/shared/hooks/useToast';
 import { ArrowButton } from '@/shared/ui';
-import { getWorkChangeRequests, type WorkChangeRequest } from '../../_apis/workChangeRequests';
+import type { WorkChangeRequest } from '../../_apis/workChangeRequests';
 import type { Worker } from '../../_apis/workers';
 import { getWeekStartKey, shiftWeek } from '../../_components/week-schedule/utils/weekKey';
 import { getCurrentMonthKey, parseMonthKey, shiftMonthKey } from '../../_utils/monthKey';
@@ -62,18 +62,11 @@ export default function PageClient({ statusFilter }: PageClientProps) {
   const [monthKey, setMonthKey] = useState(currentMonthKey);
   const [rejectTarget, setRejectTarget] = useState<WorkChangeRequest | null>(null);
   const [isBulkApproveOpen, setIsBulkApproveOpen] = useState(false);
-  // 처음에는 이번 달 첫 승인 대기 요청을 본다
-  const [selectedRequest, setSelectedRequest] = useState<WorkChangeRequest | null>(
-    () =>
-      getWorkChangeRequests(parseMonthKey(currentMonthKey)).requests.find(
-        ({ statusCode }) => statusCode === 'CS01',
-      ) ?? null,
-  );
+  // 오른쪽 시간표에서 보고 있는 요청. 처음에는 아무것도 고르지 않는다
+  const [selectedRequest, setSelectedRequest] = useState<WorkChangeRequest | null>(null);
   // 이름으로 찾은 학생. 고른 요청보다 먼저 보여 준다
   const [searchedWorker, setSearchedWorker] = useState<Worker | null>(null);
-  const [weekStartKey, setWeekStartKey] = useState(() =>
-    selectedRequest ? getRequestWeekStartKey(selectedRequest) : getWeekStartKey(new Date()),
-  );
+  const [weekStartKey, setWeekStartKey] = useState(() => getWeekStartKey(new Date()));
   const { showToast, toast } = useToast();
 
   const { year, month } = parseMonthKey(monthKey);
@@ -175,7 +168,8 @@ export default function PageClient({ statusFilter }: PageClientProps) {
               해당하는 요청이 없습니다.
             </p>
           ) : (
-            <ul className='flex flex-col gap-[1.2rem]'>
+            // 목록은 그 안에서 스크롤하고, 오른쪽 시간표 높이에 맞춘다
+            <ul className='flex max-h-[calc(100vh-12rem)] flex-col gap-[1.2rem] overflow-y-auto pr-[0.8rem]'>
               {visibleRequests.map((request) => (
                 <li key={request.requestId}>
                   <WorkChangeRequestCard
