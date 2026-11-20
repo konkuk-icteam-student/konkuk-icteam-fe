@@ -11,4 +11,5 @@ export const SLOT_STATUS_CLASS_NAME: Record<SlotStatus, string> = {
   PENDING_ADD: 'border-2 border-blue bg-black-1',
   PENDING_DELETE: 'border-2 border-red bg-black-1',
   APPLIED: 'border border-blue bg-blue',
+  OVER_CAPACITY: 'border border-red/40 bg-red/10',
 };

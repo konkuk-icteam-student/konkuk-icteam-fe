@@ -11,7 +11,14 @@ export type TimeTableMode = 'read' | 'detail' | 'edit' | 'apply';
 // - PENDING_ADD: 추가 예정
 // - PENDING_DELETE: 삭제 예정
 // - APPLIED: 신청 완료
-export type SlotStatus = 'AVAILABLE' | 'UNAVAILABLE' | 'PENDING_ADD' | 'PENDING_DELETE' | 'APPLIED';
+// - OVER_CAPACITY: 정원 초과. 관리자 시간표에서 칸 인원이 동시 근무 최대 인원을 넘은 칸
+export type SlotStatus =
+  'AVAILABLE' | 'UNAVAILABLE' | 'PENDING_ADD' | 'PENDING_DELETE' | 'APPLIED' | 'OVER_CAPACITY';
+
+// 시간 열 표기
+// - hour: 정시에 시만 ('9'). 좁은 근로학생 화면
+// - time: 정시에 시각 ('09:00'). 관리자 화면
+export type TimeLabelFormat = 'hour' | 'time';
 
 // 표 위에 보여줄 요일 한 칸
 export type TimeTableDay = {

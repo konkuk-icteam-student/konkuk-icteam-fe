@@ -54,7 +54,9 @@ export default function SlotCell({ cell }: SlotCellProps) {
           <span
             className={cn(
               'caption-12-rg',
-              cell.status === 'APPLIED' ? 'text-black-1' : 'text-gray-400',
+              cell.status === 'APPLIED' && 'text-black-1',
+              cell.status === 'OVER_CAPACITY' && 'text-red',
+              cell.status !== 'APPLIED' && cell.status !== 'OVER_CAPACITY' && 'text-gray-400',
             )}
           >
             {cell.workers.length}/{cell.maxCount}

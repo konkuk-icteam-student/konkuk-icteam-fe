@@ -7,5 +7,6 @@ export type {
   SlotStatus,
   TimeTableCell,
   TimeTableDay,
+  TimeLabelFormat,
   TimeTableMode,
 } from './types';
