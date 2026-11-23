@@ -3,15 +3,12 @@ import { MY_USER_ID } from '@/app/(student)/_apis/mock/me';
 import { USER_ROLE } from '@/shared/constants/userRole';
 import type { LoginErrorResponse, LoginRequest, LoginResponse } from '../auth';
 
-// 목업 계정은 모두 같은 비밀번호를 쓴다 (목업 전용 값)
 const PASSWORD_MOCK = 'password1234';
 
-// 로그인할 수 있는 계정 (서버가 갖고 있는 정보)
 type AccountMock = {
   email: string;
   password: string;
   user: LoginResponse;
-  // 관리자가 가입을 승인했는지. 승인 전에는 로그인할 수 없다
   isApproved: boolean;
 };
 
@@ -28,7 +25,7 @@ const getStudentAccountMock = (): AccountMock | undefined => {
   };
 };
 
-// 관리자 계정. 관리자는 근로장학생 목록에 없다
+// 관리자는 근로장학생 목록에 없어 따로 둔다
 const ADMIN_ACCOUNT_MOCK: AccountMock = {
   email: 'admin@konkuk.ac.kr',
   password: PASSWORD_MOCK,
@@ -36,7 +33,6 @@ const ADMIN_ACCOUNT_MOCK: AccountMock = {
   isApproved: true,
 };
 
-// 회원가입은 했지만 관리자가 아직 승인하지 않은 근로장학생 계정
 const PENDING_ACCOUNT_MOCK: AccountMock = {
   email: 'newbie@konkuk.ac.kr',
   password: PASSWORD_MOCK,
