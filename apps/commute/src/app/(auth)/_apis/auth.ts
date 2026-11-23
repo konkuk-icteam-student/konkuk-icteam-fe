@@ -1,6 +1,5 @@
-import type { UserRole } from '@/shared/constants/userRole';
-import { loginMock } from './mock/auth';
-import signupMock from './mock/signup';
+import { MY_USER_ID } from '@/app/(student)/_apis/mock/me';
+import { USER_ROLE, type UserRole } from '@/shared/constants/userRole';
 
 export type LoginRequest = {
   email: string;
@@ -29,19 +28,15 @@ export type LoginResult =
 
 /**
  * POST /auth/login
- * 학교 메일과 비밀번호로 로그인한다. 성공하면 사용자를, 실패하면 그 까닭을 돌려준다
  */
-export const login = (request: LoginRequest): LoginResult => {
-  const response = loginMock(request);
-
-  return 'code' in response
-    ? { isSuccess: false, errorCode: response.code }
-    : { isSuccess: true, user: response };
-};
+export const login: (request: LoginRequest) => LoginResult = () => ({
+  isSuccess: true,
+  // 서버가 없어 늘 근로학생 화면 목업의 본인(홍길동)으로 로그인한다
+  user: { userId: MY_USER_ID, name: '홍길동', role: USER_ROLE.STUDENT },
+});
 
 export type SignupRequest = {
   name: string;
-  // 학교 메일 (@konkuk.ac.kr)
   email: string;
   password: string;
   // 근무 부서 목록(GET /auth/work-departments)에서 고른 부서
@@ -50,7 +45,6 @@ export type SignupRequest = {
   verificationToken: string;
 };
 
-// 가입에 실패한 까닭
 // - EMAIL_NOT_VERIFIED: 메일 인증을 하지 않았거나 인증 토큰이 맞지 않음
 // - ALREADY_REGISTERED: 인증한 뒤 같은 메일로 이미 가입됨 (가입 요청이 겹친 경우)
 export type SignupErrorCode = 'EMAIL_NOT_VERIFIED' | 'ALREADY_REGISTERED';
@@ -60,15 +54,10 @@ export type SignupErrorResponse = {
   code: SignupErrorCode;
 };
 
-// 화면이 받는 가입 결과
 export type SignupResult = { isSuccess: true } | { isSuccess: false; errorCode: SignupErrorCode };
 
 /**
  * POST /auth/signup
  * 근로장학생 계정을 만든다. 가입한 계정은 관리자가 승인할 때까지 승인 대기 상태다
  */
-export const signup = (request: SignupRequest): SignupResult => {
-  const errorResponse = signupMock(request);
-
-  return errorResponse ? { isSuccess: false, errorCode: errorResponse.code } : { isSuccess: true };
-};
+export const signup: (request: SignupRequest) => SignupResult = () => ({ isSuccess: true });
