@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import LoginForm from './_components/LoginForm';
+import LoginForm from './LoginForm';
 
 export const metadata: Metadata = {
   title: '로그인 | Commute',

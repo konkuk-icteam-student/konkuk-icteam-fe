@@ -1,41 +1,48 @@
 'use client';
 
+import { useId } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Button } from '@konkuk-icteam-fe/design-system/ui';
 import FormField from '../../../_components/FormField';
 import PasswordInput from '../../../_components/PasswordInput';
-import useFormField from '../../../_hooks/useFormField';
 import type { SignupFormValues } from '../../_lib/signupSchema';
 
-// 2단계: 비밀번호와 확인. [다음](또는 Enter)을 누르면 폼이 두 칸을 검사하고 넘긴다
 export default function PasswordStep() {
-  const form = useFormContext<SignupFormValues>();
-  // 비밀번호를 고쳐 확인과 같아지면 확인 칸의 '서로 달라요'도 바로 사라지게 함께 다시 검사한다
-  const password = useFormField(form, 'password', { relatedFields: ['passwordConfirm'] });
-  const passwordConfirm = useFormField(form, 'passwordConfirm');
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<SignupFormValues>();
+  const fieldIdPrefix = useId();
+  const passwordId = `${fieldIdPrefix}-password`;
+  const passwordConfirmId = `${fieldIdPrefix}-password-confirm`;
+  const passwordError = errors.password?.message;
+  const passwordConfirmError = errors.passwordConfirm?.message;
 
   return (
     <div className='flex flex-col gap-[2.4rem]'>
       <div className='flex flex-col gap-[1.6rem]'>
-        <FormField label='비밀번호' htmlFor={password.inputId} errorProps={password.errorProps}>
+        <FormField label='비밀번호' htmlFor={passwordId} error={passwordError}>
           <PasswordInput
-            {...password.field}
-            {...password.inputProps}
+            id={passwordId}
+            // 비밀번호를 고쳐 확인과 같아지면 확인 칸의 '서로 달라요'도 바로 사라지게 함께 다시 검사한다
+            {...register('password', { deps: ['passwordConfirm'] })}
             autoComplete='new-password'
             placeholder='영문과 숫자를 섞어 8자 이상'
+            hasError={passwordError !== undefined}
+            aria-invalid={passwordError !== undefined}
+            aria-describedby={`${passwordId}-error`}
           />
         </FormField>
 
-        <FormField
-          label='비밀번호 확인'
-          htmlFor={passwordConfirm.inputId}
-          errorProps={passwordConfirm.errorProps}
-        >
+        <FormField label='비밀번호 확인' htmlFor={passwordConfirmId} error={passwordConfirmError}>
           <PasswordInput
-            {...passwordConfirm.field}
-            {...passwordConfirm.inputProps}
+            id={passwordConfirmId}
+            {...register('passwordConfirm')}
             autoComplete='new-password'
             placeholder='비밀번호를 한 번 더 입력해 주세요'
+            hasError={passwordConfirmError !== undefined}
+            aria-invalid={passwordConfirmError !== undefined}
+            aria-describedby={`${passwordConfirmId}-error`}
           />
         </FormField>
       </div>

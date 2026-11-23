@@ -1,9 +1,7 @@
 import { z } from 'zod';
 
-// 학교 메일: 아이디 + @konkuk.ac.kr. 아이디에는 공백과 @가 없다
 const SCHOOL_EMAIL_PATTERN = /^[^\s@]+@konkuk\.ac\.kr$/;
 
-// 학교 메일 칸 (로그인·회원가입 공통).
 // 메일은 대소문자를 가리지 않으므로 앞뒤 공백을 빼고 소문자로 바꾼 뒤 검사한다
 const schoolEmailSchema = z
   .string()

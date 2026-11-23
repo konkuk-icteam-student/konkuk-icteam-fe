@@ -9,7 +9,6 @@ type SignupProgressProps = {
   onBack?: () => void;
 };
 
-// 회원가입 진행 표시. 뒤로 버튼, n/전체, 진행 막대를 보여 준다.
 // 디자인 시스템 Stepper는 숫자를 올리고 내리는 입력이라 단계 표시는 여기서 만든다
 export default function SignupProgress({ currentStep, totalSteps, onBack }: SignupProgressProps) {
   const stepNumber = currentStep + 1;

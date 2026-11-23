@@ -4,6 +4,7 @@ import { signupSchema, verificationCodeSchema, type SignupFormValues } from './s
 const VALID_VALUES: SignupFormValues = {
   name: '홍길동',
   email: 'gildong@konkuk.ac.kr',
+  verificationCode: '123456',
   password: 'password1234',
   passwordConfirm: 'password1234',
   workDepartmentId: 1,
@@ -72,9 +73,11 @@ describe('signupSchema', () => {
 });
 
 describe('verificationCodeSchema', () => {
-  it('숫자 6자리면 통과하고, 아니면 6자리를 입력하라고 안내한다', () => {
-    expect(verificationCodeSchema.safeParse('123456').success).toBe(true);
-    ['', '12345', '1234567', '12345a'].forEach((code) => {
+  it('영문·숫자 6자리면 통과하고, 아니면 6자리를 입력하라고 안내한다', () => {
+    ['123456', 'a1B2c3'].forEach((code) => {
+      expect(verificationCodeSchema.safeParse(code).success).toBe(true);
+    });
+    ['', '12345', '1234567', '12345!'].forEach((code) => {
       expect(verificationCodeSchema.safeParse(code).error?.issues[0]?.message).toBe(
         '인증번호 6자리를 입력해 주세요.',
       );

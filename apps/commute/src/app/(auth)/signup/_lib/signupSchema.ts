@@ -1,18 +1,21 @@
 import { z } from 'zod';
 import schoolEmailSchema from '../../_lib/schoolEmailSchema';
 
-// 비밀번호: 영문과 숫자를 하나 이상씩 넣어 8자 이상
 const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
-// 회원가입 폼의 칸별 규칙. 이름, 학교 메일, 비밀번호와 확인, 근무 부서를 받는다
+// TODO: 인증번호 형식(문자 포함 여부, 대소문자 구분)은 서버 확인 후 변경 필요
+export const verificationCodeSchema = z
+  .string()
+  .regex(/^[A-Za-z0-9]{6}$/, '인증번호 6자리를 입력해 주세요.');
+
 const signupFieldsSchema = z.object({
   name: z.string().trim().min(1, '이름을 입력해 주세요.'),
   email: schoolEmailSchema,
+  verificationCode: verificationCodeSchema,
   password: z
     .string()
     .regex(PASSWORD_PATTERN, '비밀번호는 영문과 숫자를 섞어 8자 이상으로 입력해 주세요.'),
   passwordConfirm: z.string(),
-  // 근무 부서 목록에서 고른 부서의 id. 고르기 전에는 비어 있다
   workDepartmentId: z.number({ error: '근무 부서를 골라 주세요.' }),
 });
 
@@ -31,8 +34,3 @@ export const signupSchema = signupFieldsSchema.refine(
 );
 
 export type SignupFormValues = z.infer<typeof signupSchema>;
-
-// 메일로 받은 인증번호. 가입할 때 보내는 값이 아니라 [확인]을 누를 때만 검사한다
-export const verificationCodeSchema = z
-  .string()
-  .regex(/^\d{6}$/, '인증번호 6자리를 입력해 주세요.');

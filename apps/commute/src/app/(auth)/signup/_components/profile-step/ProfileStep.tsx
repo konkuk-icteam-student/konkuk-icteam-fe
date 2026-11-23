@@ -1,41 +1,49 @@
 'use client';
 
-import { useFormContext } from 'react-hook-form';
+import { useId } from 'react';
+import { useController, useFormContext } from 'react-hook-form';
 import { Button, Input, Message } from '@konkuk-icteam-fe/design-system/ui';
 import type { WorkDepartment } from '../../../_apis/workDepartments';
 import FormField from '../../../_components/FormField';
-import useFormField from '../../../_hooks/useFormField';
 import type { SignupFormValues } from '../../_lib/signupSchema';
 import WorkDepartmentSelect from './WorkDepartmentSelect';
 
 type ProfileStepProps = {
   workDepartments: WorkDepartment[];
-  // 가입하는 중이거나 승인 대기 화면으로 넘어가는 중
   isSubmitting: boolean;
 };
 
-// 3단계: 이름과 근무 부서. [가입하기]를 누르면 폼이 전체를 검사하고 가입한다
 export default function ProfileStep({ workDepartments, isSubmitting }: ProfileStepProps) {
-  const form = useFormContext<SignupFormValues>();
-  // 화면 순서대로 불러야 둘 다 틀렸을 때 이름 칸에 먼저 초점이 간다
-  const name = useFormField(form, 'name');
-  const workDepartment = useFormField(form, 'workDepartmentId');
-  // 근무 부서 고르기는 입력칸이 아니라 inputProps를 펼쳐 넘기지 않으므로 ref만 꺼내 넘긴다
   const {
-    inputProps: { ref: workDepartmentRef },
-  } = workDepartment;
+    register,
+    formState: { errors },
+  } = useFormContext<SignupFormValues>();
+  // 화면 순서대로 등록해야 둘 다 틀렸을 때 이름 칸에 먼저 초점이 간다
+  const nameField = register('name');
+  // 근무 부서 고르기는 입력칸이 아니라 ref를 따로 꺼내 넘긴다. 같은 객체에서 ref와 값을 함께 읽으면 렌더 중에 ref를 읽는 것으로 본다
+  const {
+    field: { ref: workDepartmentRef, ...workDepartmentField },
+  } = useController<SignupFormValues, 'workDepartmentId'>({ name: 'workDepartmentId' });
+  const fieldIdPrefix = useId();
+  const nameId = `${fieldIdPrefix}-name`;
   // Dropdown 펼침 버튼에 id를 줄 수 없어 label 대신 이름 글자를 두고 묶음에 잇는다
-  const workDepartmentLabelId = `${workDepartment.inputId}-label`;
+  const workDepartmentLabelId = `${fieldIdPrefix}-work-department-label`;
+  const workDepartmentErrorId = `${fieldIdPrefix}-work-department-error`;
+  const nameError = errors.name?.message;
+  const workDepartmentError = errors.workDepartmentId?.message;
 
   return (
     <div className='flex flex-col gap-[2.4rem]'>
       <div className='flex flex-col gap-[1.6rem]'>
-        <FormField label='이름' htmlFor={name.inputId} errorProps={name.errorProps}>
+        <FormField label='이름' htmlFor={nameId} error={nameError}>
           <Input
-            {...name.field}
-            {...name.inputProps}
+            id={nameId}
+            {...nameField}
             autoComplete='name'
             placeholder='이름을 입력해 주세요'
+            hasError={nameError !== undefined}
+            aria-invalid={nameError !== undefined}
+            aria-describedby={`${nameId}-error`}
           />
         </FormField>
 
@@ -47,14 +55,14 @@ export default function ProfileStep({ workDepartments, isSubmitting }: ProfileSt
             <WorkDepartmentSelect
               ref={workDepartmentRef}
               workDepartments={workDepartments}
-              value={workDepartment.field.value}
-              onChange={workDepartment.field.onChange}
-              onBlur={workDepartment.field.onBlur}
+              value={workDepartmentField.value}
+              onChange={workDepartmentField.onChange}
+              onBlur={workDepartmentField.onBlur}
               labelId={workDepartmentLabelId}
-              errorId={workDepartment.errorId}
-              hasError={workDepartment.hasError}
+              errorId={workDepartmentErrorId}
+              hasError={workDepartmentError !== undefined}
             />
-            <Message {...workDepartment.errorProps} />
+            <Message id={workDepartmentErrorId} message={workDepartmentError} variant='error' />
           </div>
         </div>
       </div>

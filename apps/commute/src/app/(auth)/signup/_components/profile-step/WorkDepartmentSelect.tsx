@@ -7,7 +7,6 @@ import type { WorkDepartment } from '../../../_apis/workDepartments';
 
 type WorkDepartmentSelectProps = {
   workDepartments: WorkDepartment[];
-  // 고른 근무 부서 id. 고르기 전에는 비어 있다
   value: number | undefined;
   onChange: (workDepartmentId: number | undefined) => void;
   onBlur?: () => void;
@@ -15,7 +14,6 @@ type WorkDepartmentSelectProps = {
   labelId: string;
   errorId: string;
   hasError: boolean;
-  // 폼이 오류 칸에 초점을 둘 때 쓴다
   ref?: React.Ref<{ focus: () => void }>;
 };
 

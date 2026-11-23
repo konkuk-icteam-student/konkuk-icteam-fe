@@ -2,20 +2,33 @@
 
 import { useId, useState } from 'react';
 import { Input } from '@konkuk-icteam-fe/design-system/ui';
-import { getSchoolEmailSuggestion } from '../_utils/schoolEmail';
+
+const SCHOOL_EMAIL_DOMAIN = 'konkuk.ac.kr';
+
+// 학교 메일 도메인의 앞부분까지만 입력했으면 나머지를 채운 메일을, 아니면 undefined를 돌려준다
+const getSchoolEmailSuggestion = (input: string) => {
+  const [localPart, domainPart = ''] = input.trim().split('@');
+  if (!localPart) return undefined;
+
+  const typedDomain = domainPart.toLowerCase();
+  const isTypingSchoolDomain =
+    typedDomain !== SCHOOL_EMAIL_DOMAIN && SCHOOL_EMAIL_DOMAIN.startsWith(typedDomain);
+
+  return isTypingSchoolDomain ? `${localPart}@${SCHOOL_EMAIL_DOMAIN}` : undefined;
+};
 
 type SchoolEmailInputProps = Omit<
   React.ComponentProps<typeof Input>,
   'value' | 'onChange' | 'type'
 > & {
   value: string;
-  onValueChange: (value: string) => void;
+  onChange: (value: string) => void;
   ref?: React.Ref<HTMLInputElement>;
 };
 
 export default function SchoolEmailInput({
   value,
-  onValueChange,
+  onChange,
   onKeyDown,
   onBlur,
   ...props
@@ -27,7 +40,7 @@ export default function SchoolEmailInput({
   const isListOpen = isOpen && suggestion !== undefined;
 
   const handleSuggestionSelect = (selectedEmail: string) => {
-    onValueChange(selectedEmail);
+    onChange(selectedEmail);
     setIsOpen(false);
   };
 
@@ -46,7 +59,6 @@ export default function SchoolEmailInput({
   };
 
   return (
-    // 펼친 목록이 아래 칸·버튼에 가려지지 않게 이 칸 전체를 위에 쌓는다
     <div className='relative z-10'>
       <Input
         {...props}
@@ -58,7 +70,7 @@ export default function SchoolEmailInput({
         aria-activedescendant={isListOpen ? optionId : undefined}
         value={value}
         onChange={(event) => {
-          onValueChange(event.target.value);
+          onChange(event.target.value);
           setIsOpen(true);
         }}
         onKeyDown={handleKeyDown}

@@ -12,7 +12,6 @@ const useVerificationTimer = () => {
     const intervalId = setInterval(() => {
       const nextNow = new Date();
       setNow(nextNow);
-      // 만료되면 더 셀 것이 없으니 멈춘다
       if (getRemainingSeconds(expiresAt, nextNow) === 0) clearInterval(intervalId);
     }, 1000);
     return () => clearInterval(intervalId);
