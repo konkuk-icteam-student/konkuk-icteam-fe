@@ -4,7 +4,6 @@ import { formatNumber } from '@konkuk-icteam-fe/design-system/date';
 const getRemainingSeconds = (expiresAt: Date, now: Date) =>
   Math.max(0, Math.ceil((expiresAt.getTime() - now.getTime()) / 1000));
 
-// 인증번호 시간 관리 훅
 const useVerificationTimer = () => {
   const [expiresAt, setExpiresAt] = useState<Date | null>(null);
   const [now, setNow] = useState(() => new Date());

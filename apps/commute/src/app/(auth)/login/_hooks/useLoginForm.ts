@@ -56,7 +56,6 @@ const useLoginForm = () => {
     setError('password', { message: INVALID_CREDENTIALS_MESSAGE });
   };
 
-  // 스키마로 검사한 뒤 맞으면 로그인한다
   const handleFormSubmit = () => void handleSubmit(submitLogin)();
 
   const formValues = {

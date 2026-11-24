@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import { Button, Input, Message } from '@konkuk-icteam-fe/design-system/ui';
 import { ROUTES } from '@/shared/config/routes';
@@ -9,12 +7,7 @@ import hasEnterKey from '../../../_utils/hasEnterKey';
 import schoolEmailSchema from '../../../_lib/schoolEmailSchema';
 import type { SignupFormState } from '../../_hooks/useSignupForm';
 
-type CodeMessageState = {
-  codeError?: string;
-  isVerified: boolean;
-};
-
-const getCodeMessage = ({ codeError, isVerified }: CodeMessageState) => {
+const getCodeMessage = ({ codeError, isVerified }: { codeError?: string; isVerified: boolean }) => {
   if (codeError) return { message: codeError, variant: 'error' } as const;
   if (isVerified) return { message: '메일 인증을 마쳤어요.', variant: 'success' } as const;
   return {
@@ -35,6 +28,7 @@ export default function EmailStep({
   verification,
 }: EmailStepProps) {
   const isEmailReady = schoolEmailSchema.safeParse(formValues.email).success;
+  const hasEmailError = formErrors.email !== undefined || verification.isAlreadyRegistered;
   const codeMessage = getCodeMessage(verification);
 
   return (
@@ -49,21 +43,23 @@ export default function EmailStep({
               onChange={formHandlers.updateEmail}
               autoComplete='email'
               placeholder='아이디@konkuk.ac.kr'
-              hasError={formErrors.email !== undefined || verification.isAlreadyRegistered}
-              aria-invalid={formErrors.email !== undefined || verification.isAlreadyRegistered}
+              hasError={hasEmailError}
+              aria-invalid={hasEmailError}
               aria-describedby='email-message'
             />
           </div>
-          <Button
-            display='inline'
-            size='medium'
-            tone={isEmailReady ? 'solid' : 'subtle_2'}
-            color={isEmailReady ? 'blue' : 'gray'}
-            className='w-auto shrink-0 px-[1.6rem]'
-            onClick={formHandlers.sendCode}
-          >
-            {verification.isSent ? '다시 받기' : '인증번호 받기'}
-          </Button>
+          {!verification.isVerified && (
+            <Button
+              display='inline'
+              size='medium'
+              tone={isEmailReady ? 'solid' : 'subtle_2'}
+              color={isEmailReady ? 'blue' : 'gray'}
+              className='w-auto shrink-0 px-[1.6rem]'
+              onClick={formHandlers.sendCode}
+            >
+              {verification.isSent ? '다시 받기' : '인증번호 받기'}
+            </Button>
+          )}
         </div>
         <div id='email-message'>
           <Message id='email-error' message={formErrors.email} variant='error' />

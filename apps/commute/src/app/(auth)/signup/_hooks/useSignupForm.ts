@@ -25,8 +25,6 @@ type UseSignupFormParams = {
   goNextStep: () => void;
 };
 
-// 단계는 useSignupStep이 갖고, 각 단계에서 관리하는 폼 상태는 useSignupForm이 갖는다.
-// 단계와 폼 상태를 분리하여, 단계는 화면 전환과 관련된 로직만 갖고, 폼 상태는 각 단계에서 필요한 값과 검증만 갖게 한다
 const useSignupForm = ({ step, goNextStep }: UseSignupFormParams) => {
   const router = useRouter();
   const [isNavigating, startNavigation] = useTransition();
@@ -89,7 +87,6 @@ const useSignupForm = ({ step, goNextStep }: UseSignupFormParams) => {
 
     if (send(schoolEmailSchema.parse(getValues('email')))) focusField('verificationCode');
   };
-  const requestCode = () => void sendCode();
 
   // 두 칸의 오류를 함께 보이도록 둘 다 검사한 뒤 넘어간다
   const goToProfileStep = async () => {
@@ -117,7 +114,7 @@ const useSignupForm = ({ step, goNextStep }: UseSignupFormParams) => {
   };
 
   const submitByStep: Record<SignupStep, () => void> = {
-    [SIGNUP_STEP.EMAIL]: () => (verificationToken ? goNextStep() : requestCode()),
+    [SIGNUP_STEP.EMAIL]: () => (verificationToken ? goNextStep() : void sendCode()),
     [SIGNUP_STEP.PASSWORD]: () => void goToProfileStep(),
     [SIGNUP_STEP.PROFILE]: () => void handleSubmit(submitSignup, focusFirstProfileError)(),
   };
@@ -148,7 +145,7 @@ const useSignupForm = ({ step, goNextStep }: UseSignupFormParams) => {
     checkPasswordConfirm,
     updateName,
     updateWorkDepartment,
-    sendCode: requestCode,
+    sendCode,
     confirmCode: confirm,
   };
 

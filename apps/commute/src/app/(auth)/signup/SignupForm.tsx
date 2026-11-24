@@ -29,7 +29,7 @@ export default function SignupForm({ workDepartments }: SignupFormProps) {
         <div
           role='progressbar'
           aria-label='회원가입 진행'
-          aria-valuemin={1}
+          aria-valuemin={0}
           aria-valuemax={SIGNUP_STEP_COUNT}
           aria-valuenow={step + 1}
           className='h-[0.4rem] w-full overflow-hidden rounded-full bg-gray-50'

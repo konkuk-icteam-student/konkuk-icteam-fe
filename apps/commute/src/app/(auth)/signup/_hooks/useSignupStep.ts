@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { SIGNUP_STEP, type SignupStep } from '../_constants/signupSteps';
 
-// 회원가입 단계 관리 훅
 const useSignupStep = () => {
   const [step, setStep] = useState<SignupStep>(SIGNUP_STEP.EMAIL);
   const stepPanelsRef = useRef<HTMLDivElement>(null);
@@ -14,8 +13,7 @@ const useSignupStep = () => {
       ?.focus({ preventScroll: true });
   }, [step]);
 
-  const goNextStep = () =>
-    setStep((prevStep) => Math.min(prevStep + 1, SIGNUP_STEP.PROFILE) as SignupStep);
+  const goNextStep = () => setStep((prevStep) => (prevStep + 1) as SignupStep);
 
   return { step, stepPanelsRef, goNextStep };
 };

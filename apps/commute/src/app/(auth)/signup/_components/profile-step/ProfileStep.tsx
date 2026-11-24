@@ -1,5 +1,3 @@
-'use client';
-
 import { Button, Input, Message, Dropdown } from '@konkuk-icteam-fe/design-system/ui';
 import type { WorkDepartment } from '../../../_apis/workDepartments';
 import FormField from '../../../_components/FormField';
