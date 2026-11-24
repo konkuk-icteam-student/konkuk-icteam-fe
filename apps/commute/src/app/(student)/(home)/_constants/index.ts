@@ -1,1 +1,1 @@
-export { WORK_SHIFT_LABEL, WORK_STATUS_LABEL, WORK_STATUS_TONE } from './workStatus';
+export { WORK_SHIFT_LABEL } from './workStatus';
