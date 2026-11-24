@@ -61,3 +61,10 @@ export type SignupResult = { isSuccess: true } | { isSuccess: false; errorCode: 
  * 근로장학생 계정을 만든다. 가입한 계정은 관리자가 승인할 때까지 승인 대기 상태다
  */
 export const signup: (request: SignupRequest) => SignupResult = () => ({ isSuccess: true });
+
+/**
+ * POST /auth/logout
+ * 로그아웃한다. 서버가 로그인 상태를 지우고, 응답 본문은 없다
+ * 서버가 없고 로그인 상태도 저장하지 않아서 지금은 할 일이 없다
+ */
+export const logout = (): void => undefined;
