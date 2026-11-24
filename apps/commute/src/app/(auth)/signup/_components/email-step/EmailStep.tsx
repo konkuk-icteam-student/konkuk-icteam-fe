@@ -84,8 +84,8 @@ export default function EmailStep({
                 value={verification.code}
                 onChange={(event) => verification.updateCode(event.target.value)}
                 onKeyDown={(event) => {
-                  // 인증번호 칸의 Enter는 폼 제출(인증번호 받기)이 아니라 확인이다
-                  if (!hasEnterKey(event)) return;
+                  // 인증 전 Enter는 폼 제출(인증번호 받기)이 아니라 확인이다. 인증 뒤에는 폼 제출([다음])로 둔다
+                  if (verification.isVerified || !hasEnterKey(event)) return;
 
                   event.preventDefault();
                   formHandlers.confirmCode();
