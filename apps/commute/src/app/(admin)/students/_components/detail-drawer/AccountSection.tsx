@@ -48,7 +48,7 @@ export default function AccountSection({ email, onPasswordReset, onDelete }: Acc
         open={isResetConfirmOpen}
         handleOpenChange={setIsResetConfirmOpen}
         title='비밀번호를 초기화 하시겠습니까?'
-        description={`학교 메일(${email})로 비밀번호 재설정 링크를 보냅니다.`}
+        description='기존의 비밀번호가 삭제되며 새로운 비밀번호가 발급됩니다.'
         buttons={[
           { label: '이전', tone: 'subtle_2', color: 'gray', size: 'medium' },
           { label: '초기화하기', color: 'blue', size: 'medium', onClick: onPasswordReset },
