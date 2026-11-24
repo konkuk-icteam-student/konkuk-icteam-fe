@@ -1,8 +1,7 @@
 import type { DailyTodo, TodoPeriod } from '@/app/(student)/_apis/todos';
 import CollapsibleSection from '../CollapsibleSection';
+import { PERIOD_LABELS } from '../../_utils/period';
 import TodoItem from './TodoItem';
-
-const PERIOD_LABELS: Record<TodoPeriod, string> = { MORNING: '오전', AFTERNOON: '오후' };
 
 type TodoSectionProps = {
   period: TodoPeriod;

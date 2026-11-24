@@ -2,12 +2,7 @@ import Link from 'next/link';
 import { Tabs } from '@konkuk-icteam-fe/design-system/ui';
 import type { TodoPeriod } from '@/app/(student)/_apis/todos';
 import { ROUTES } from '@/shared/config/routes';
-import { PERIOD_PARAMS } from '../_utils/period';
-
-const PERIOD_TABS: { period: TodoPeriod; label: string }[] = [
-  { period: 'MORNING', label: '오전' },
-  { period: 'AFTERNOON', label: '오후' },
-];
+import { PERIOD_LABELS, PERIOD_PARAMS, TODO_PERIODS } from '../_utils/period';
 
 type PeriodTabsProps = {
   period: TodoPeriod;
@@ -18,17 +13,17 @@ export default function PeriodTabs({ period }: PeriodTabsProps) {
   return (
     <Tabs className='bg-transparent'>
       <Tabs.List activeValue={period} className='px-0' aria-label='업무 시간대'>
-        {PERIOD_TABS.map((tab) => (
+        {TODO_PERIODS.map((tabPeriod) => (
           <Tabs.Item
-            key={tab.period}
+            key={tabPeriod}
             as={Link}
-            value={tab.period}
+            value={tabPeriod}
             activeValue={period}
-            href={`${ROUTES.TODOS}?period=${PERIOD_PARAMS[tab.period]}`}
+            href={`${ROUTES.TODOS}?period=${PERIOD_PARAMS[tabPeriod]}`}
             replace
             scroll={false}
           >
-            {tab.label}
+            {PERIOD_LABELS[tabPeriod]}
           </Tabs.Item>
         ))}
       </Tabs.List>

@@ -10,7 +10,7 @@ import { getWorkSchedules } from '@/app/(student)/_apis/workSchedules';
 import { checkLunchSlot } from '@/shared/utils/slot';
 import { getSlotPeriod } from '../_utils/period';
 
-export const useTodayTodos = (today: Date, period: TodoPeriod) => {
+const useTodayTodos = (today: Date, period: TodoPeriod) => {
   const [me] = useState(() => getMe());
 
   const [slots] = useState(() =>
@@ -42,3 +42,5 @@ export const useTodayTodos = (today: Date, period: TodoPeriod) => {
 
   return { myUserId: me.userId, todos, periodSlots, isOnDuty, handleToggleTodo };
 };
+
+export default useTodayTodos;

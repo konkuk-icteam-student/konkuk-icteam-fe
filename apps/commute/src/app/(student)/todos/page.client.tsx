@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { formatMonthDayWithWeekday } from '@/shared/utils/formatDate';
 import { PeriodTabs, TodoSection, WorkTimeSection } from './_components';
-import { useTodayTodos } from './_hooks/useTodayTodos';
+import useTodayTodos from './_hooks/useTodayTodos';
 import { getPeriodFromParam } from './_utils/period';
 
 type PageClientProps = {
