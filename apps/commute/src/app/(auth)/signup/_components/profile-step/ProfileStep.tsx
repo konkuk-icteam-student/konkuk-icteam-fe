@@ -1,75 +1,111 @@
 'use client';
 
-import { useId } from 'react';
-import { useController, useFormContext } from 'react-hook-form';
-import { Button, Input, Message } from '@konkuk-icteam-fe/design-system/ui';
+import { Button, Input, Message, Dropdown } from '@konkuk-icteam-fe/design-system/ui';
 import type { WorkDepartment } from '../../../_apis/workDepartments';
 import FormField from '../../../_components/FormField';
-import type { SignupFormValues } from '../../_lib/signupSchema';
-import WorkDepartmentSelect from './WorkDepartmentSelect';
+import type { SignupFormState } from '../../_hooks/useSignupForm';
+import { cn } from '@konkuk-icteam-fe/design-system/cn';
 
-type ProfileStepProps = {
+type ProfileStepProps = Pick<SignupFormState, 'formValues' | 'formErrors' | 'formHandlers'> & {
   workDepartments: WorkDepartment[];
   isSubmitting: boolean;
 };
 
-export default function ProfileStep({ workDepartments, isSubmitting }: ProfileStepProps) {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext<SignupFormValues>();
-  // 화면 순서대로 등록해야 둘 다 틀렸을 때 이름 칸에 먼저 초점이 간다
-  const nameField = register('name');
-  // 근무 부서 고르기는 입력칸이 아니라 ref를 따로 꺼내 넘긴다. 같은 객체에서 ref와 값을 함께 읽으면 렌더 중에 ref를 읽는 것으로 본다
-  const {
-    field: { ref: workDepartmentRef, ...workDepartmentField },
-  } = useController<SignupFormValues, 'workDepartmentId'>({ name: 'workDepartmentId' });
-  const fieldIdPrefix = useId();
-  const nameId = `${fieldIdPrefix}-name`;
-  // Dropdown 펼침 버튼에 id를 줄 수 없어 label 대신 이름 글자를 두고 묶음에 잇는다
-  const workDepartmentLabelId = `${fieldIdPrefix}-work-department-label`;
-  const workDepartmentErrorId = `${fieldIdPrefix}-work-department-error`;
-  const nameError = errors.name?.message;
-  const workDepartmentError = errors.workDepartmentId?.message;
-
+export default function ProfileStep({
+  formValues,
+  formErrors,
+  formHandlers,
+  workDepartments,
+  isSubmitting,
+}: ProfileStepProps) {
   return (
-    <div className='flex flex-col gap-[2.4rem]'>
-      <div className='flex flex-col gap-[1.6rem]'>
-        <FormField label='이름' htmlFor={nameId} error={nameError}>
-          <Input
-            id={nameId}
-            {...nameField}
-            autoComplete='name'
-            placeholder='이름을 입력해 주세요'
-            hasError={nameError !== undefined}
-            aria-invalid={nameError !== undefined}
-            aria-describedby={`${nameId}-error`}
-          />
-        </FormField>
+    <>
+      <FormField label='이름' htmlFor='name' error={formErrors.name}>
+        <Input
+          id='name'
+          name='name'
+          value={formValues.name}
+          onChange={(event) => formHandlers.updateName(event.target.value)}
+          autoComplete='name'
+          placeholder='이름을 입력해 주세요'
+          hasError={formErrors.name !== undefined}
+          aria-invalid={formErrors.name !== undefined}
+          aria-describedby='name-error'
+        />
+      </FormField>
 
-        <div className='flex flex-col gap-[0.8rem]'>
-          <span id={workDepartmentLabelId} className='font-14-bd text-black'>
-            근무 부서
-          </span>
-          <div className='flex flex-col'>
-            <WorkDepartmentSelect
-              ref={workDepartmentRef}
-              workDepartments={workDepartments}
-              value={workDepartmentField.value}
-              onChange={workDepartmentField.onChange}
-              onBlur={workDepartmentField.onBlur}
-              labelId={workDepartmentLabelId}
-              errorId={workDepartmentErrorId}
-              hasError={workDepartmentError !== undefined}
-            />
-            <Message id={workDepartmentErrorId} message={workDepartmentError} variant='error' />
-          </div>
+      <div className='flex flex-col gap-[0.8rem]'>
+        <span id='work-department-label' className='font-14-bd text-black'>
+          근무 부서
+        </span>
+        <div className='flex flex-col'>
+          <WorkDepartmentSelect
+            id='work-department'
+            workDepartments={workDepartments}
+            value={formValues.workDepartmentId}
+            onChange={formHandlers.updateWorkDepartment}
+            labelId='work-department-label'
+            errorId='work-department-error'
+            hasError={formErrors.workDepartmentId !== undefined}
+          />
+          <Message
+            id='work-department-error'
+            message={formErrors.workDepartmentId}
+            variant='error'
+          />
         </div>
       </div>
 
       <Button type='submit' color='blue' isLoading={isSubmitting}>
         가입하기
       </Button>
-    </div>
+    </>
   );
 }
+
+type WorkDepartmentSelectProps = {
+  id: string;
+  workDepartments: WorkDepartment[];
+  value: number | undefined;
+  onChange: (workDepartmentId: number) => void;
+  labelId: string;
+  errorId: string;
+  hasError: boolean;
+};
+
+const WorkDepartmentSelect = ({
+  id,
+  workDepartments,
+  value,
+  onChange,
+  labelId,
+  errorId,
+  hasError,
+}: WorkDepartmentSelectProps) => {
+  const selectedName =
+    workDepartments.find(({ workDepartmentId }) => workDepartmentId === value)?.name ?? '';
+
+  const handleNameChange = (name: string) => {
+    const selected = workDepartments.find((workDepartment) => workDepartment.name === name);
+    if (selected) onChange(selected.workDepartmentId);
+  };
+
+  return (
+    <div
+      id={id}
+      role='group'
+      aria-labelledby={labelId}
+      aria-describedby={errorId}
+      className='relative z-10'
+    >
+      <Dropdown
+        options={workDepartments.map(({ name }) => name)}
+        value={selectedName}
+        onChange={handleNameChange}
+        placeholder='근무 부서를 골라 주세요'
+        triggerClassName={cn(hasError && 'border-red focus:border-red')}
+        optionWrapperClassName='max-h-[16.8rem]'
+      />
+    </div>
+  );
+};

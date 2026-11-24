@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
-import { formatRemainingTime, getRemainingSeconds } from '../_utils/verificationTimer';
+import { formatNumber } from '@konkuk-icteam-fe/design-system/date';
 
-// 인증번호 남은 시간. 인증번호를 보낸 때 start로 시작하고, 만료될 때까지 1초마다 다시 센다
+const getRemainingSeconds = (expiresAt: Date, now: Date) =>
+  Math.max(0, Math.ceil((expiresAt.getTime() - now.getTime()) / 1000));
+
+// 인증번호 시간 관리 훅
 const useVerificationTimer = () => {
   const [expiresAt, setExpiresAt] = useState<Date | null>(null);
   const [now, setNow] = useState(() => new Date());
@@ -19,7 +22,6 @@ const useVerificationTimer = () => {
 
   const remainingSeconds = expiresAt ? getRemainingSeconds(expiresAt, now) : 0;
 
-  // 만료 시각과 지금을 함께 정해 첫 화면부터 남은 시간이 맞게 보인다
   const start = (nextExpiresAt: Date) => {
     setExpiresAt(nextExpiresAt);
     setNow(new Date());
@@ -29,7 +31,7 @@ const useVerificationTimer = () => {
 
   return {
     isExpired: expiresAt !== null && remainingSeconds === 0,
-    remainingTimeLabel: formatRemainingTime(remainingSeconds),
+    remainingTimeLabel: `${formatNumber(Math.floor(remainingSeconds / 60))}:${formatNumber(remainingSeconds % 60)}`,
     start,
     stop,
   };

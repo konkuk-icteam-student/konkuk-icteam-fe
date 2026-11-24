@@ -21,28 +21,15 @@ const useLoginForm = () => {
   const {
     handleSubmit,
     setValue,
-    reset,
-    trigger,
     setError,
     formState: { errors },
     control,
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
-    mode: 'onChange',
   });
 
   const formData = useWatch({ control });
-
-  const formValues = {
-    email: formData.email ?? '',
-    password: formData.password ?? '',
-  };
-
-  const formErrors = {
-    email: errors.email,
-    password: errors.password,
-  };
 
   const updateEmail = (value: string) => {
     setValue('email', value, { shouldValidate: true });
@@ -52,15 +39,10 @@ const useLoginForm = () => {
     setValue('password', value, { shouldValidate: true });
   };
 
-  const formHandler = {
-    updateEmail,
-    updatePassword,
-    reset,
-    trigger,
-  };
-
   const submitLogin = (values: LoginFormValues) => {
+    // TODO: 로그인 API 호출 후 성공하면 role에 맞는 홈으로, 승인 대기 중이면 승인 대기 페이지로, 실패하면 오류 메시지 표시
     const result = login(values);
+
     if (result.isSuccess) {
       startNavigation(() => router.push(HOME_ROUTE_BY_ROLE[result.user.role]));
       return;
@@ -77,9 +59,24 @@ const useLoginForm = () => {
   // 스키마로 검사한 뒤 맞으면 로그인한다
   const handleFormSubmit = () => void handleSubmit(submitLogin)();
 
+  const formValues = {
+    email: formData.email ?? '',
+    password: formData.password ?? '',
+  };
+
+  const formErrors = {
+    email: errors.email?.message,
+    password: errors.password?.message,
+  };
+
+  const formHandlers = {
+    updateEmail,
+    updatePassword,
+  };
+
   return {
     formValues,
-    formHandler,
+    formHandlers,
     formErrors,
     handleFormSubmit,
     isSubmitting: isNavigating,

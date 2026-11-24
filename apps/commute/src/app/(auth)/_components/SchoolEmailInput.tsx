@@ -2,6 +2,7 @@
 
 import { useId, useState } from 'react';
 import { Input } from '@konkuk-icteam-fe/design-system/ui';
+import hasEnterKey from '../_utils/hasEnterKey';
 
 const SCHOOL_EMAIL_DOMAIN = 'konkuk.ac.kr';
 
@@ -44,18 +45,20 @@ export default function SchoolEmailInput({
     setIsOpen(false);
   };
 
+  // 후보 고르기에 쓴 키는 바깥 onKeyDown으로 넘기지 않는다
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    onKeyDown?.(event);
-    // 한글 조합 중에 누른 키는 조합을 끝내는 키라 후보 고르기로 쓰지 않는다
-    if (!isListOpen || event.nativeEvent.isComposing) return;
-
     // 후보가 열려 있을 때 Enter는 폼 제출이 아니라 후보 고르기다
-    if (event.key === 'Enter') {
+    if (isListOpen && hasEnterKey(event)) {
       event.preventDefault();
       handleSuggestionSelect(suggestion);
       return;
     }
-    if (event.key === 'Escape') setIsOpen(false);
+    if (isListOpen && event.key === 'Escape') {
+      setIsOpen(false);
+      return;
+    }
+
+    onKeyDown?.(event);
   };
 
   return (

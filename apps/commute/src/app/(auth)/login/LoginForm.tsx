@@ -1,6 +1,5 @@
 'use client';
 
-import { useId } from 'react';
 import Link from 'next/link';
 import { Button } from '@konkuk-icteam-fe/design-system/ui';
 import { ROUTES } from '@/shared/config/routes';
@@ -10,10 +9,7 @@ import SchoolEmailInput from '../_components/SchoolEmailInput';
 import useLoginForm from './_hooks/useLoginForm';
 
 export default function LoginForm() {
-  const { formValues, formHandler, formErrors, handleFormSubmit, isSubmitting } = useLoginForm();
-  const fieldIdPrefix = useId();
-  const emailId = `${fieldIdPrefix}-email`;
-  const passwordId = `${fieldIdPrefix}-password`;
+  const { formValues, formHandlers, formErrors, handleFormSubmit, isSubmitting } = useLoginForm();
 
   return (
     <form
@@ -25,31 +21,31 @@ export default function LoginForm() {
       }}
     >
       <div className='flex flex-col gap-[1.6rem]'>
-        <FormField label='학교 메일' htmlFor={emailId} error={formErrors.email?.message}>
+        <FormField label='학교 메일' htmlFor='email' error={formErrors.email}>
           <SchoolEmailInput
-            id={emailId}
+            id='email'
             name='email'
             value={formValues.email}
-            onChange={formHandler.updateEmail}
+            onChange={formHandlers.updateEmail}
             autoComplete='username'
             placeholder='아이디@konkuk.ac.kr'
             hasError={formErrors.email !== undefined}
             aria-invalid={formErrors.email !== undefined}
-            aria-describedby={`${emailId}-error`}
+            aria-describedby='email-error'
           />
         </FormField>
 
-        <FormField label='비밀번호' htmlFor={passwordId} error={formErrors.password?.message}>
+        <FormField label='비밀번호' htmlFor='password' error={formErrors.password}>
           <PasswordInput
-            id={passwordId}
+            id='password'
             name='password'
             value={formValues.password}
-            onChange={(event) => formHandler.updatePassword(event.target.value)}
+            onChange={(event) => formHandlers.updatePassword(event.target.value)}
             autoComplete='current-password'
             placeholder='비밀번호를 입력해 주세요'
             hasError={formErrors.password !== undefined}
             aria-invalid={formErrors.password !== undefined}
-            aria-describedby={`${passwordId}-error`}
+            aria-describedby='password-error'
           />
         </FormField>
       </div>

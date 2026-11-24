@@ -3,7 +3,6 @@ import { Message } from '@konkuk-icteam-fe/design-system/ui';
 type FormFieldProps = {
   label: string;
   htmlFor: string;
-  // 오류 문구의 id는 `${htmlFor}-error`다. 입력칸의 aria-describedby에 같은 id를 넣는다
   error?: string;
   children: React.ReactNode;
 };
