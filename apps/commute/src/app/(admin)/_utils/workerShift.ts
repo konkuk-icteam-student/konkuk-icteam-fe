@@ -11,7 +11,7 @@ import { PERIODS } from '../_constants/period';
 
 const MILLISECONDS_PER_MINUTE = 60 * 1000;
 
-// 지각 기록 한 건. 출근한 근무만 담으므로 출근 시각이 늘 있고, 늦은 분이 붙는다
+// 출근한 근무만 담으므로 출근 시각이 늘 있다
 export type LateRecord = WorkerShift & {
   checkedInAt: Date;
   lateMinutes: number;
@@ -23,7 +23,7 @@ export type AttendanceSummary = {
   absentCount: number;
 };
 
-// 근로대장 한 줄. 시간은 배정된 시간이다 (퇴근 기록이 없다)
+// 시간은 배정된 시간이다 (퇴근 기록이 없다)
 export type WorkLedgerRow = {
   date: Date;
   period: TodoPeriod;

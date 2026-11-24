@@ -8,7 +8,6 @@ import StudentDetailDrawer from './_components/detail-drawer/StudentDetailDrawer
 import StudentsTable from './_components/student-list/StudentsTable';
 import { useStudents } from './_hooks/useStudents';
 
-// 근로장학생. 근무 인원 목록을 이름으로 찾고 페이지로 넘겨 보며, 줄을 누르면 오른쪽에서 상세 정보가 열린다
 export default function PageClient() {
   const students = useStudents();
   const { showToast, toast } = useToast();
@@ -18,7 +17,6 @@ export default function PageClient() {
     showToast('근로장학생 정보를 수정했어요.');
   };
 
-  // 학교 메일로 비밀번호 재설정 링크를 보낸다. 근로장학생이 링크를 눌러 새 비밀번호를 정한다
   const handlePasswordReset = ({ userId, name }: Worker) => {
     students.handlePasswordReset(userId);
     showToast(`${name}님 학교 메일로 비밀번호 재설정 링크를 보냈어요.`);

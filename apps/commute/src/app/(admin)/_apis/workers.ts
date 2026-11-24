@@ -19,7 +19,6 @@ export type Worker = {
   phoneNumber: string | null;
   // 로그인 아이디로 쓰는 학교 메일
   email: string | null;
-  // 근로를 시작한 날
   workStartDate: Date;
 };
 
@@ -67,7 +66,6 @@ export type GetWorkerListResponse = {
   last: boolean;
 };
 
-// 근무 인원 상세
 export type WorkerDetail = Worker &
   WorkerWorkRecord & {
     date: Date;

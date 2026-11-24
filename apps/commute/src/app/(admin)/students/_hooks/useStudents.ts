@@ -37,7 +37,6 @@ const loadWorkerList = ({ date, keyword, page }: WorkerListQuery): GetWorkerList
   return page > lastPage ? getWorkerList({ ...request, page: lastPage }) : response;
 };
 
-// 근로장학생 목록. 이름 검색과 페이지 나누기는 서버가 하고, 줄을 누르면 상세 정보를 불러온다
 export const useStudents = () => {
   // 화면을 연 날을 기준일로 이번 주·이번 달 근무 기록을 받는다
   const [today] = useState(() => new Date());
@@ -79,7 +78,6 @@ export const useStudents = () => {
     resetWorkerPassword({ userId });
   };
 
-  // 지운 근로장학생은 목록에서 빠지고 상세 화면도 닫힌다
   const handleDelete = (userId: number) => {
     deleteWorker({ userId });
     setSelectedStudent(null);

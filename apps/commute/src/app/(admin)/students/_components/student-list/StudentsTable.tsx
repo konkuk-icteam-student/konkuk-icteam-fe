@@ -36,7 +36,6 @@ const PROFILE_COLUMNS: Column[] = [
   },
 ];
 
-// 이번 달 근무 기록 열. 이번 달 근로학생이 아니면 기록이 없어 -로 채운다
 const RECORD_COLUMNS: Column[] = [
   {
     label: '이번달 누적 근로시간',
@@ -75,7 +74,6 @@ type StudentsTableProps = {
   onDetailOpen: (userId: number) => void;
 };
 
-// 근무 인원 목록 표. 이번 달 근로학생에게만 근무 기록이 채워진다
 export default function StudentsTable({ students, startNumber, onDetailOpen }: StudentsTableProps) {
   return (
     <div className='w-full overflow-x-auto'>

@@ -10,7 +10,6 @@ type AccountSectionProps = {
   onDelete: () => void;
 };
 
-// 계정. 로그인 ID와 비밀번호 초기화·계정 삭제. 둘 다 한 번 더 묻고 실행한다.
 // 비밀번호 초기화는 학교 메일로 재설정 링크를 보내는 것이라, 메일이 없으면 할 수 없다
 export default function AccountSection({ email, onPasswordReset, onDelete }: AccountSectionProps) {
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);

@@ -37,7 +37,6 @@ type WorkLedgerTabProps = {
   student: Pick<Worker, 'userId' | 'name' | 'workStartDate'>;
 };
 
-// 상세보기 근로대장 탭. 고른 달의 근무 완료 건을 배정된 시간 기준으로 적는다
 export default function WorkLedgerTab({ student }: WorkLedgerTabProps) {
   const ledger = useWorkLedger(student);
 

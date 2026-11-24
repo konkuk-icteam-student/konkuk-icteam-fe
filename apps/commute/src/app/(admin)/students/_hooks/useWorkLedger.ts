@@ -9,7 +9,6 @@ import {
 import { createWorkLedgerRows, getTotalWorkedMinutes } from '../../_utils/workerShift';
 import { getLedgerDate, getLedgerMonthBounds } from '../_utils/ledgerMonth';
 
-// 근로대장 탭. 근로 시작 달부터 이번 달까지 넘겨 보고, 카드는 고른 달 기준이다 (주 카드는 이번 달만).
 // 카드 숫자는 상세 API에서, 근로대장 표는 상세 API에 없어서 근무 구간에서 만든다
 export const useWorkLedger = ({
   userId,

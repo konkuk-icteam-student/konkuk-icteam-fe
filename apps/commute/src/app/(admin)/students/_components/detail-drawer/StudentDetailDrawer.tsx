@@ -32,8 +32,6 @@ type StudentDetailDrawerProps = {
   onDelete: (student: Worker) => void;
 };
 
-// 근로장학생 상세 정보. 화면 오른쪽에서 열리고 기본 정보·근로대장 탭으로 나뉜다.
-// 정보 수정을 누르면 탭 대신 같은 자리에서 수정 화면으로 바뀐다
 export default function StudentDetailDrawer({
   student,
   onClose,
@@ -65,14 +63,12 @@ export default function StudentDetailDrawer({
 
   return (
     <div className='fixed inset-0 z-50 flex justify-end'>
-      {/* 바깥 어두운 곳을 누르면 닫힌다 */}
       <button
         type='button'
         aria-label='상세보기 닫기'
         className='absolute inset-0 cursor-default bg-gray-900/30'
         onClick={onClose}
       />
-      {/* 머리글·프로필·탭은 고정하고, 그 아래 내용만 PANEL_CLASS_NAME 영역 안에서 스크롤한다 */}
       <section
         role='dialog'
         aria-modal='true'

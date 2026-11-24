@@ -33,7 +33,6 @@ type WorkerRecordMock = {
   attendanceIssues: Pick<WorkerListItem, 'lateCount' | 'lateMinutes' | 'totalAttendanceIssueCount'>;
 };
 
-// 그 달 근로학생이 아니면 근무 기록이 모두 0이다 (최대 근로시간도 0)
 const EMPTY_RECORD: WorkerRecordMock = {
   record: {
     weeklyWorkedMinutes: 0,

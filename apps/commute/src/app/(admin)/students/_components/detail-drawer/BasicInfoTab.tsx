@@ -23,7 +23,6 @@ type BasicInfoTabProps = {
   student: WorkerDetail;
 };
 
-// 상세보기 기본 정보 탭. 연락처, 이번 달 근태 요약과 지각 기록 (계정은 상세보기가 이 아래에 붙인다).
 // 지각·결근과 지각 기록은 상세 API에 없어서 근무 구간으로 계산한다
 export default function BasicInfoTab({ student }: BasicInfoTabProps) {
   const { summary, lateRecords } = useMonthlyAttendance(student.userId);
