@@ -237,7 +237,7 @@ export const resetWorkerPassword = ({ userId }: ResetWorkerPasswordRequest) => {
 
 /**
  * DELETE /admin/workers/{userId}
- * 계정과 시간표·근로대장·개인정보 등 관련 정보를 모두 지운다 (응답 본문 없음, ADR 0001)
+ * 계정과 시간표·근로대장·개인정보 등 관련 정보를 모두 지운다 (응답 본문 없음)
  */
 export const deleteWorker = ({ userId }: DeleteWorkerRequest) => {
   WORKERS_MOCK.splice(findWorkerMock(userId).index, 1);
