@@ -131,15 +131,14 @@ export const getWorkApplicationMock = (year: number, month: number) =>
   SAVED_APPLICATIONS[createMonthKey(year, month)];
 
 /**
- * 그 달 근무 불가 시간대 목업을 얻습니다. 근로신청을 저장하지 않은 지난 달은 기본 시간대(점심시간)로 둡니다.
+ * 그 달 근무 불가 시간대 목업을 얻습니다. 근로신청을 저장하지 않은 달은 화면과 같이 막힌 칸이 없습니다.
  * @param year 연도
  * @param month 월 (1~12)
  * @returns 근무 불가 시간대 목록
  * @example getUnavailableTimeRangesMock(2026, 10); // [{ start: '11:30', end: '13:00' }]
  */
 export const getUnavailableTimeRangesMock = (year: number, month: number) =>
-  getWorkApplicationMock(year, month)?.settings.unavailableTimeRanges ??
-  DEFAULT_UNAVAILABLE_TIME_RANGES;
+  getWorkApplicationMock(year, month)?.settings.unavailableTimeRanges ?? [];
 
 /**
  * 근로신청 기준을 저장합니다. 처음 열면 화면 확인용 데모 제출을 채우고, 이미 연 달을 다시 저장하면 들어온 제출을 모두 지웁니다.

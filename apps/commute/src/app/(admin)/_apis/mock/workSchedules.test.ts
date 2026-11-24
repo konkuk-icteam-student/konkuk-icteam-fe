@@ -6,6 +6,7 @@ import { checkUnavailableSlot } from '@/shared/utils/slot';
 import { getUnavailableTimeRangesMock } from './workApplications';
 import { convertTimeToMinutes } from '@/shared/utils/time';
 import { createWorkScheduleMock, getDaySlotsMock } from './workSchedules';
+import { getCurrentMonthKey, parseMonthKey } from '@/app/(admin)/_utils/monthKey';
 
 const MIN_SHIFT_MINUTES = MIN_WORK_HOURS_PER_SHIFT * 60;
 
@@ -31,10 +32,13 @@ const getShiftLengths = (startTimes: string[]) =>
     .map(({ length }) => length);
 
 describe('관리자 근무 시간표 목업', () => {
-  const dateKeys = getMonthDates(new Date(2026, 9, 1));
+  // 근로신청을 저장해 둔 이번 달로 본다 (저장 안 한 달은 막힌 칸이 없다)
+  const monthKey = getCurrentMonthKey();
+  const { year, month } = parseMonthKey(monthKey);
+  const dateKeys = getMonthDates(new Date(year, month - 1, 1));
 
   it('그 달 근무 불가 시간대 칸에는 아무도 근무하지 않는다', () => {
-    const unavailableTimeRanges = getUnavailableTimeRangesMock(2026, 10);
+    const unavailableTimeRanges = getUnavailableTimeRangesMock(year, month);
 
     dateKeys.forEach((dateKey) => {
       getDaySlotsMock(dateKey)
@@ -62,7 +66,7 @@ describe('관리자 근무 시간표 목업', () => {
 
   it('근무 불가 시간대 칸에 근무를 넣으려 하면 거부한다', () => {
     expect(() =>
-      createWorkScheduleMock({ userId: 1, date: '2026-10-27', start: '12:00', end: '12:30' }),
+      createWorkScheduleMock({ userId: 1, date: `${monthKey}-15`, start: '12:00', end: '12:30' }),
     ).toThrow();
   });
 });
