@@ -135,7 +135,7 @@ export const getWorkApplicationMock = (year: number, month: number) =>
  * @param year 연도
  * @param month 월 (1~12)
  * @returns 근무 불가 시간대 목록
- * @example getUnavailableTimeRangesMock(2026, 10); // [{ start: '11:30', end: '13:00' }]
+ * @example getUnavailableTimeRangesMock(2026, 10); // 저장 안 한 달이면 []
  */
 export const getUnavailableTimeRangesMock = (year: number, month: number) =>
   getWorkApplicationMock(year, month)?.settings.unavailableTimeRanges ?? [];

@@ -6,7 +6,7 @@ import {
 } from '@/app/(student)/_apis/common';
 import { getDayAttendanceShiftsMock } from './mock/attendances';
 
-// 그날 한 사람의 이어진 근무 한 구간과 출근 기록. 점심시간으로 끊기면 두 구간이 된다
+// 그날 한 사람의 이어진 근무 한 구간과 출근 기록. 근무 불가 시간대로 끊기면 두 구간이 된다
 export type AttendanceShift = {
   userId: number;
   userName: string;

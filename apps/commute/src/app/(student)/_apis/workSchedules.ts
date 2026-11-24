@@ -24,7 +24,7 @@ export type WorkScheduleSlot = {
 
 export type WorkScheduleDay = {
   date: Date;
-  // 09:00부터 18:00까지 18칸. 점심시간(11:30~13:00) 칸도 온다
+  // 09:00부터 18:00까지 18칸. 근무 불가 시간대 칸도 온다
   slots: WorkScheduleSlot[];
 };
 
