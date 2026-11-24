@@ -1,4 +1,4 @@
-import type { TodoPeriod } from '@/app/(student)/_apis/todos';
+import { TODO_PERIODS, type TodoPeriod } from '@/app/(student)/_apis/todos';
 import { convertDateToTime } from '@/shared/utils/time';
 
 // 시간대 이름. 탭과 빈 상태 문구가 같이 쓴다
@@ -6,9 +6,6 @@ export const PERIOD_LABELS: Record<TodoPeriod, string> = {
   MORNING: '오전',
   AFTERNOON: '오후',
 };
-
-// 화면에 놓는 시간대 순서
-export const TODO_PERIODS: TodoPeriod[] = ['MORNING', 'AFTERNOON'];
 
 // 주소 쿼리(?period=)
 export const PERIOD_PARAMS: Record<TodoPeriod, string> = {
