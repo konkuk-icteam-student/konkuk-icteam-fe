@@ -1,7 +1,7 @@
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
-import { formatNumber } from '@konkuk-icteam-fe/design-system/date';
 import { CheckBox } from '@konkuk-icteam-fe/design-system/ui';
 import type { DailyTodo } from '@/app/(student)/_apis/todos';
+import { convertDateToTime } from '@/shared/utils/time';
 
 type DailyTaskPanelProps = {
   todos: DailyTodo[];
@@ -36,9 +36,6 @@ type TodoItemProps = {
   onToggle: (todo: DailyTodo) => void;
 };
 
-const formatTime = (date: Date) =>
-  `${formatNumber(date.getHours())}:${formatNumber(date.getMinutes())}`;
-
 // 업무 한 줄. 완료했으면 완료한 사람과 시각을 함께 보여 준다 (같은 업무를 여러 명이 맡을 수 있다)
 const TodoItem = ({ todo, onToggle }: TodoItemProps) => (
   <li className='border-b border-gray-400/20 py-[1rem] last:border-b-0'>
@@ -54,7 +51,7 @@ const TodoItem = ({ todo, onToggle }: TodoItemProps) => (
         </span>
         {todo.isCompleted && todo.completedBy && todo.completedAt && (
           <span className='caption-11-md text-gray-500'>
-            {`${todo.completedBy.userName} ${formatTime(todo.completedAt)} 완료`}
+            {`${todo.completedBy.userName} ${convertDateToTime(todo.completedAt)} 완료`}
           </span>
         )}
       </span>

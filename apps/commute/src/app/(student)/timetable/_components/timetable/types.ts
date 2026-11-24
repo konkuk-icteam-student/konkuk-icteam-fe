@@ -1,4 +1,4 @@
-import type { TimeRange } from '@/shared/utils/timeRange';
+import type { TimeRange } from '@/shared/utils/time';
 // 표 전체의 상태
 // - read: 보기 전용. 슬롯을 클릭할 수 없다.
 // - detail: 보기 전용 + 슬롯마다 신청 인원을 보여주고, 마우스를 올리면 근무자 명단을 띄운다.

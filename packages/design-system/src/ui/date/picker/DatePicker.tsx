@@ -22,7 +22,7 @@ import { createNextDateRange, getDateRangePosition } from './utils/date';
  * 날짜 선택 컴포넌트
  * - 하루 선택(mode='single', 기본값), 기간 선택(mode='range'), 여러 날짜 선택(mode='multiple') 지원
  * - 여러 날짜 선택: 누를 때마다 그 날짜를 넣고 빼며, 고른 날짜는 날짜순으로 넘긴다
- * - 기간 선택: 첫 클릭이 시작일, 이후 클릭이 종료일. 시작일보다 이전이거나 사이에 disabledDates가 있으면 새 시작일로 다시 시작
+ * - 기간 선택: 첫 클릭이 시작일, 이후 클릭이 종료일. 시작일보다 이전을 누르면 두 날짜를 바꾸고, 사이에 disabledDates가 있으면 새 시작일로 다시 시작
  * - 월은 제어형/비제어형 모두 지원
  * - minDate/maxDate 범위와 disabledDates로 선택 가능한 날짜 제한 지원
  * - color로 선택된 날짜와 기간 띠의 색 변경 지원 (기본값 'black')
