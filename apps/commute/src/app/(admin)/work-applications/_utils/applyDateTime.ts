@@ -1,13 +1,5 @@
-import { formatNumber, parseISO } from '@konkuk-icteam-fe/design-system/date';
-
-/**
- * 날짜·시각에서 시각만 HH:mm 글자로 얻습니다. 시각 입력칸에 넣는 모양입니다.
- * @param date 날짜·시각
- * @returns HH:mm
- * @example getTimeOfDay(new Date(2026, 9, 20, 9, 5)); // '09:05'
- */
-export const getTimeOfDay = (date: Date) =>
-  `${formatNumber(date.getHours())}:${formatNumber(date.getMinutes())}`;
+import { parseISO } from '@konkuk-icteam-fe/design-system/date';
+import { convertDateToTime } from '@/shared/utils/time';
 
 /**
  * 날짜는 그대로 두고 시각만 바꾼 새 날짜·시각을 만듭니다.
@@ -32,4 +24,4 @@ export const createDateWithTime = (date: Date, time: string) => {
  * @example createDateKeepingTime('2026-10-22', new Date(2026, 9, 20, 9)); // 2026-10-22 09:00
  */
 export const createDateKeepingTime = (dateKey: string, time: Date) =>
-  createDateWithTime(parseISO(dateKey), getTimeOfDay(time));
+  createDateWithTime(parseISO(dateKey), convertDateToTime(time));
