@@ -1,4 +1,4 @@
-import type { ChipTone } from '@/shared/ui';
+import { SLOT_ATTENDANCE_STATUS_THEME, type StatusTheme } from './attendanceStatus';
 
 // 근무 상태 코드. 서버가 주는 값 그대로다
 export const WORK_STATUS = {
@@ -10,10 +10,10 @@ export const WORK_STATUS = {
 
 export type WorkStatusCode = (typeof WORK_STATUS)[keyof typeof WORK_STATUS];
 
-// 근무 상태별 문구와 상태 칩 색
-export const WORK_STATUS_THEME: Record<WorkStatusCode, { label: string; tone: ChipTone }> = {
-  [WORK_STATUS.SCHEDULED]: { label: '예정', tone: 'gray' },
-  [WORK_STATUS.WORKING]: { label: '근무중', tone: 'blue' },
-  [WORK_STATUS.DONE]: { label: '근무 완료', tone: 'green' },
-  [WORK_STATUS.ABSENT]: { label: '결근', tone: 'red' },
+// 근무 상태별 문구와 상태 칩 색. 관리자 근태 칩과 같은 표를 쓴다
+export const WORK_STATUS_THEME: Record<WorkStatusCode, StatusTheme> = {
+  [WORK_STATUS.SCHEDULED]: SLOT_ATTENDANCE_STATUS_THEME.SCHEDULED,
+  [WORK_STATUS.WORKING]: SLOT_ATTENDANCE_STATUS_THEME.WORKING,
+  [WORK_STATUS.DONE]: SLOT_ATTENDANCE_STATUS_THEME.DONE,
+  [WORK_STATUS.ABSENT]: SLOT_ATTENDANCE_STATUS_THEME.ABSENT,
 };

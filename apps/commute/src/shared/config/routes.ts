@@ -9,6 +9,9 @@ export const ROUTES = {
   TIMETABLE: '/timetable',
   TIMETABLE_APPLY: '/timetable/apply',
   TIMETABLE_EDIT: '/timetable/edit',
+  TODOS: '/todos',
+  // 아직 화면이 없다. 하단 탭만 먼저 걸어 둔다
+  PROFILE: '/profile',
   // 관리자 화면 ((admin) 그룹). 주소에 /admin을 붙이지 않는다
   ADMIN_HOME: '/dashboard',
   ADMIN_WORKTIME: '/worktime',
