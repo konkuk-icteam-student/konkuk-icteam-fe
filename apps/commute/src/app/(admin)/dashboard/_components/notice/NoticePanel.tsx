@@ -56,7 +56,6 @@ export default function NoticePanel({ onNotify }: NoticePanelProps) {
       <div className='mx-[2.1rem] mb-[2rem] grid grid-cols-2 items-start gap-[2.4rem]'>
         <section className='bg-black-1 flex flex-col gap-[1.6rem] rounded-[1.2rem] border border-gray-50 p-[1.6rem]'>
           <h3 className='font-16-bd text-black'>{editingNotice ? '공지 수정' : '공지 등록'}</h3>
-          {/* 고치는 공지가 바뀌면 그 값으로 폼을 새로 연다 */}
           <NoticeForm
             key={editingNotice?.noticeId ?? 'new'}
             notice={editingNotice ?? undefined}
