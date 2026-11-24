@@ -11,6 +11,6 @@ export const SLOT_ATTENDANCE_STATUS_THEME: Record<
   WORKING: { label: '근무중', tone: 'blue' },
   DONE: { label: '근무 완료', tone: 'green' },
   SCHEDULED: { label: '근무 예정', tone: 'gray' },
-  LATE: { label: '지각', tone: 'purple' },
+  LATE: { label: '지각', tone: 'gold' },
   ABSENT: { label: '결근', tone: 'red' },
 };
