@@ -5,10 +5,8 @@ import { IconEye, IconEyeOff } from '@konkuk-icteam-fe/design-system/assets';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { IconButton, Input } from '@konkuk-icteam-fe/design-system/ui';
 
-// 보이기·숨기기는 이 칸이 정하므로 type은 받지 않는다
 type PasswordInputProps = Omit<React.ComponentProps<typeof Input>, 'type'>;
 
-// 비밀번호 칸. 오른쪽 눈 버튼으로 입력한 비밀번호를 보였다 숨긴다
 export default function PasswordInput({ className, ...props }: PasswordInputProps) {
   const [isVisible, setIsVisible] = useState(false);
 

@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
 import { IconInfo } from '@konkuk-icteam-fe/design-system/assets';
-import BackToLoginButton from './_components/BackToLoginButton';
+import BackToLoginButton from './_components/BackToLoginButton.client';
 
 export const metadata: Metadata = {
   title: '승인 대기 | Commute',
 };
 
-// 가입 승인을 기다리는 계정이 로그인하면 오는 화면. 관리자가 승인하면 다시 로그인하면 된다
 export default function PendingApprovalPage() {
   return (
     <div className='flex flex-col gap-[3.2rem]'>
