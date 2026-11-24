@@ -6,7 +6,8 @@ import { getMe } from '@/app/(student)/_apis/me';
 import type { TodoPeriod } from '@/app/(student)/_apis/todos';
 import type { WorkShift } from '@/app/(student)/_apis/workShifts';
 import { LATE_LIMIT_MINUTES } from '@/shared/config/workHours';
-import { WORK_SHIFT_LABEL, WORK_STATUS_LABEL, WORK_STATUS_TONE } from '../_constants';
+import { WORK_STATUS, WORK_STATUS_THEME } from '@/shared/constants/workStatus';
+import { WORK_SHIFT_LABEL } from '../_constants';
 import { useDailyTodos } from '../_hooks';
 import type { WorkShiftView } from '../_types';
 import DailyTaskPanel from './DailyTaskPanel';
@@ -81,7 +82,7 @@ const WorkShiftItem = ({
   children,
 }: WorkShiftItemProps) => {
   // 근무중인 근무만 펼칠 수 있다. 출근 버튼은 출근 전 근무에만 나와서 펼치기 버튼과 겹치지 않는다
-  const isExpandable = shift.workStatusCode === 'WK02';
+  const isExpandable = shift.workStatusCode === WORK_STATUS.WORKING;
   const rowClassName = 'flex w-full items-center justify-between gap-[1.2rem]';
 
   const rowContent = (
@@ -97,8 +98,8 @@ const WorkShiftItem = ({
           </Button>
         ) : (
           <StateChip
-            label={WORK_STATUS_LABEL[shift.workStatusCode]}
-            tone={WORK_STATUS_TONE[shift.workStatusCode]}
+            label={WORK_STATUS_THEME[shift.workStatusCode].label}
+            tone={WORK_STATUS_THEME[shift.workStatusCode].tone}
           />
         )}
         {isExpandable && (

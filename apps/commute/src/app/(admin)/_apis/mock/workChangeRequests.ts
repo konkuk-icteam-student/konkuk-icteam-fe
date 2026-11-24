@@ -1,4 +1,5 @@
 import { formatNumber } from '@konkuk-icteam-fe/design-system/date';
+import { WORK_CHANGE_REQUEST_STATUS } from '@/shared/constants/workChangeRequestStatus';
 import type { ApiJson } from '@/app/(student)/_apis/common';
 import type { WorkChangeRequest } from '../workChangeRequests';
 
@@ -26,7 +27,7 @@ const createBaseRequestsMock = (year: number, month: number): ApiJson<WorkChange
       requestId: createId(6),
       userId: 1,
       userName: '홍길동',
-      statusCode: 'CS01',
+      statusCode: WORK_CHANGE_REQUEST_STATUS.PENDING,
       requestedAt: `${createDate(22)}T10:12:00`,
       reason: '전공 수업 보강이 잡혀서 오전 근무를 오후로 옮기고 싶습니다.',
       rejectReason: null,
@@ -40,7 +41,7 @@ const createBaseRequestsMock = (year: number, month: number): ApiJson<WorkChange
       requestId: createId(5),
       userId: 5,
       userName: '최유나',
-      statusCode: 'CS01',
+      statusCode: WORK_CHANGE_REQUEST_STATUS.PENDING,
       requestedAt: `${createDate(21)}T15:40:00`,
       reason: '이번 주 근무 시간이 부족해서 추가 근무를 신청합니다.',
       rejectReason: null,
@@ -51,7 +52,7 @@ const createBaseRequestsMock = (year: number, month: number): ApiJson<WorkChange
       requestId: createId(4),
       userId: 6,
       userName: '정하준',
-      statusCode: 'CS01',
+      statusCode: WORK_CHANGE_REQUEST_STATUS.PENDING,
       requestedAt: `${createDate(20)}T09:05:00`,
       reason: '시험 기간이라 이틀 근무를 빼고 싶습니다.',
       rejectReason: null,
@@ -65,7 +66,7 @@ const createBaseRequestsMock = (year: number, month: number): ApiJson<WorkChange
       requestId: createId(3),
       userId: 2,
       userName: '김민지',
-      statusCode: 'CS02',
+      statusCode: WORK_CHANGE_REQUEST_STATUS.APPROVED,
       requestedAt: `${createDate(14)}T11:20:00`,
       reason: '병원 진료가 있어 근무 시간을 바꾸고 싶습니다.',
       rejectReason: null,
@@ -76,7 +77,7 @@ const createBaseRequestsMock = (year: number, month: number): ApiJson<WorkChange
       requestId: createId(2),
       userId: 3,
       userName: '이서준',
-      statusCode: 'CS03',
+      statusCode: WORK_CHANGE_REQUEST_STATUS.REJECTED,
       requestedAt: `${createDate(10)}T17:45:00`,
       reason: '동아리 행사 준비로 금요일 근무를 빼고 싶습니다.',
       rejectReason: '해당 시간에 근무 인원이 부족해 바꾸기 어렵습니다.',
@@ -87,7 +88,7 @@ const createBaseRequestsMock = (year: number, month: number): ApiJson<WorkChange
       requestId: createId(1),
       userId: 7,
       userName: '강서연',
-      statusCode: 'CS02',
+      statusCode: WORK_CHANGE_REQUEST_STATUS.APPROVED,
       requestedAt: `${createDate(3)}T08:55:00`,
       reason: '처음 배정된 시간이 수업과 겹칩니다.',
       rejectReason: null,
@@ -124,7 +125,7 @@ export const addWorkChangeRequestMock = (
   const added: ApiJson<WorkChangeRequest> = {
     ...request,
     requestId: year * 10000 + month * 100 + order,
-    statusCode: 'CS01',
+    statusCode: WORK_CHANGE_REQUEST_STATUS.PENDING,
     rejectReason: null,
   };
   ADDED_REQUESTS.push(added);

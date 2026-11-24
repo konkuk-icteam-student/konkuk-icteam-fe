@@ -1,5 +1,6 @@
 import { StateChip } from '@konkuk-icteam-fe/design-system/ui';
-import { formatMonthDayWithWeekday, formatTime, formatYearMonth } from '@/shared/utils/formatDate';
+import { formatMonthDayWithWeekday, formatYearMonth } from '@/shared/utils/formatDate';
+import { convertDateToTime } from '@/shared/utils/time';
 import type { WorkerDetail } from '../../../_apis/workers';
 import { EMPTY_STUDENT_TEXT } from '../../_constants/student';
 import { useMonthlyAttendance } from '../../_hooks/useMonthlyAttendance';
@@ -74,7 +75,7 @@ export default function BasicInfoTab({ student }: BasicInfoTabProps) {
                   {formatMonthDayWithWeekday(date)}
                 </span>
                 <span className='caption-14-rg min-w-0 flex-1 text-gray-700'>
-                  {`근무 시작 ${start} · ${formatTime(checkedInAt)} 출근`}
+                  {`근무 시작 ${start} · ${convertDateToTime(checkedInAt)} 출근`}
                 </span>
                 <StateChip label={`${lateMinutes}분 지각`} tone='purple' />
               </li>

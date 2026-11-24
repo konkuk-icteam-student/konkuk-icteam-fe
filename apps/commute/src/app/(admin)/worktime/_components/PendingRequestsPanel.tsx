@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { IconArrowRight } from '@konkuk-icteam-fe/design-system/assets';
 import { ROUTES } from '@/shared/config/routes';
+import { WORK_CHANGE_REQUEST_STATUS } from '@/shared/constants/workChangeRequestStatus';
 import { getWorkChangeRequests } from '../../_apis/workChangeRequests';
 import { getCurrentMonthKey, parseMonthKey } from '../../_utils/monthKey';
 import { formatMonthDayTime } from '@/shared/utils/formatDate';
@@ -15,7 +16,7 @@ const PREVIEW_COUNT = 3;
 export default function PendingRequestsPanel() {
   const [currentMonth] = useState(() => parseMonthKey(getCurrentMonthKey()));
   const pendingRequests = getWorkChangeRequests(currentMonth).requests.filter(
-    ({ statusCode }) => statusCode === 'CS01',
+    ({ statusCode }) => statusCode === WORK_CHANGE_REQUEST_STATUS.PENDING,
   );
 
   return (

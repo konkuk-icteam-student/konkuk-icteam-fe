@@ -3,13 +3,23 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { IconHome, IconHomeFill, IconWorktime } from '@konkuk-icteam-fe/design-system/assets';
+import {
+  IconHome,
+  IconHomeFill,
+  IconProfile,
+  IconProfileFill,
+  IconTask,
+  IconWorktime,
+} from '@konkuk-icteam-fe/design-system/assets';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { ROUTES } from '@/shared/config/routes';
 
 const NAV_ITEMS = [
   { href: ROUTES.HOME, label: '홈', Icon: IconHome, ActiveIcon: IconHomeFill },
   { href: ROUTES.TIMETABLE, label: '시간표', Icon: IconWorktime, ActiveIcon: IconWorktime },
+  { href: ROUTES.TODOS, label: '오늘의 업무', Icon: IconTask, ActiveIcon: IconTask },
+  // 프로필 화면은 아직 없다
+  { href: ROUTES.PROFILE, label: '프로필', Icon: IconProfile, ActiveIcon: IconProfileFill },
 ] as const;
 
 // 탭 한 칸의 너비와 칸 사이 간격. 알약을 옮길 거리 계산에 같이 쓴다.

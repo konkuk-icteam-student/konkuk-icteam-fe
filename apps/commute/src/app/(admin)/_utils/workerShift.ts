@@ -1,6 +1,6 @@
 import type { TimeString } from '@/app/(student)/_apis/common';
 import { LATE_GRACE_MINUTES } from '@/shared/config/workHours';
-import { convertTimeToMinutes, MINUTES_PER_HOUR } from '@/shared/utils/time';
+import { convertTimeToMinutes } from '@/shared/utils/time';
 import type { DayRange } from '@/shared/utils/week';
 import type { TodoPeriod } from '../_apis/todos';
 import type { WorkerShift } from '../_apis/workers';
@@ -92,12 +92,9 @@ const checkShiftEnded = ({ date, end }: WorkerShift, now: Date) =>
  * @returns 오전·오후
  * @example getShiftPeriod('13:00'); // 'AFTERNOON'
  */
-const getShiftPeriod = (start: TimeString): TodoPeriod => {
-  const startHour = Math.floor(convertTimeToMinutes(start) / MINUTES_PER_HOUR);
-
-  // PERIODS의 두 시간대가 하루의 모든 시를 나눠 가져서 늘 하나가 맞는다
-  return PERIODS.find(({ checkHour }) => checkHour(startHour))?.period ?? 'AFTERNOON';
-};
+const getShiftPeriod = (start: TimeString): TodoPeriod =>
+  // PERIODS의 두 시간대가 하루의 모든 시각을 나눠 가져서 늘 하나가 맞는다
+  PERIODS.find(({ includesStart }) => includesStart(start))?.period ?? 'AFTERNOON';
 
 /**
  * 지각한 근무를 늦은 분과 함께 모읍니다.

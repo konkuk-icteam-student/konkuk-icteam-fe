@@ -3,7 +3,8 @@ import { parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
 import { DatePicker, Input, Message, TagChip } from '@konkuk-icteam-fe/design-system/ui';
 import DateRangeField from '../../_components/DateRangeField';
 import type { WorkApplicationSettings } from '../../_apis/workApplications';
-import { createDateKeepingTime, createDateWithTime, getTimeOfDay } from '../_utils/applyDateTime';
+import { convertDateToTime } from '@/shared/utils/time';
+import { createDateKeepingTime, createDateWithTime } from '../_utils/applyDateTime';
 import { getNonWorkingDates } from '../_utils/getNonWorkingDates';
 import { formatMonthDay } from '@/shared/utils/formatDate';
 import { IconEllipse } from '@konkuk-icteam-fe/design-system/assets';
@@ -98,7 +99,7 @@ export default function SettingsPanel({
               <Input
                 type='time'
                 disabled={!isEditable}
-                value={getTimeOfDay(settings.applyStartDate)}
+                value={convertDateToTime(settings.applyStartDate)}
                 onChange={(event) =>
                   updateSetting(
                     'applyStartDate',
@@ -114,7 +115,7 @@ export default function SettingsPanel({
                 disabled={!isEditable}
                 hasError={errors.applyEndDate !== undefined}
                 aria-invalid={errors.applyEndDate !== undefined}
-                value={getTimeOfDay(settings.applyEndDate)}
+                value={convertDateToTime(settings.applyEndDate)}
                 onChange={(event) =>
                   updateSetting(
                     'applyEndDate',
