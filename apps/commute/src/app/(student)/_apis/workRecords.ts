@@ -1,7 +1,7 @@
 import { parseApiDate, toApiDate } from './common';
 import { getMyWorkRecordMock } from './mock/workRecords';
 
-// 내 근무 기록. 시간은 관리자 근무 기록(MonthlyWorkRecord)처럼 분 단위다
+// 내 근무 기록. 시간은 관리자 근무 기록(WorkerWorkRecord)처럼 분 단위다
 export type GetMyWorkRecordRequest = {
   // 이 날이 속한 주·달을 센다
   date: Date;

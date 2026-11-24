@@ -1,4 +1,5 @@
 import { formatNumber } from '@konkuk-icteam-fe/design-system/date';
+import type { DayRange } from '@/shared/utils/week';
 
 /**
  * 년·월 키를 만듭니다.
@@ -8,6 +9,15 @@ import { formatNumber } from '@konkuk-icteam-fe/design-system/date';
  * @example createMonthKey(2026, 10); // '2026-10'
  */
 export const createMonthKey = (year: number, month: number) => `${year}-${formatNumber(month)}`;
+
+/**
+ * 날짜가 속한 달의 년·월 키를 얻습니다.
+ * @param date 날짜
+ * @returns YYYY-MM
+ * @example getMonthKeyOfDate(new Date(2025, 2, 1)); // '2025-03'
+ */
+export const getMonthKeyOfDate = (date: Date) =>
+  createMonthKey(date.getFullYear(), date.getMonth() + 1);
 
 /**
  * 이번 달 년·월 키를 얻습니다.
@@ -28,6 +38,18 @@ export const getCurrentMonthKey = () => {
 export const parseMonthKey = (monthKey: string) => {
   const [year = 0, month = 1] = monthKey.split('-').map(Number);
   return { year, month };
+};
+
+/**
+ * 그 달의 첫날과 마지막 날을 얻습니다.
+ * @param monthKey YYYY-MM
+ * @returns 첫날과 마지막 날 (0시)
+ * @example getMonthDateRange('2026-02'); // { startDate: 2026-02-01, endDate: 2026-02-28 }
+ */
+export const getMonthDateRange = (monthKey: string): DayRange => {
+  const { year, month } = parseMonthKey(monthKey);
+
+  return { startDate: new Date(year, month - 1, 1), endDate: new Date(year, month, 0) };
 };
 
 /**

@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { Button, ConfirmModal, Dropdown, Input } from '@konkuk-icteam-fe/design-system/ui';
-import type { Worker } from '../../_apis/workers';
-import { GRADE_OPTIONS, NO_GRADE_LABEL } from '../_constants/student';
-import { formatGrade, parseGradeLabel } from '../_utils/studentFormat';
+import type { Worker } from '../../../_apis/workers';
+import { GRADE_OPTIONS, NO_GRADE_LABEL } from '../../_constants/student';
+import { formatGrade, parseGradeLabel } from '../../_utils/studentFormat';
 
 type StudentEditFormProps = {
   profile: Worker;
