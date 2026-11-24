@@ -2,7 +2,8 @@ import { IconClose } from '@konkuk-icteam-fe/design-system/assets';
 import { IconButton } from '@konkuk-icteam-fe/design-system/ui';
 import type { Worker } from '../../_apis/workers';
 import type { ScheduleDay } from '../_hooks/useWeekSchedule';
-import { formatWorkDuration, getWorkerTimeRanges } from '../_utils/workerTimeRanges';
+import { formatWorkDuration } from '@/shared/utils/time';
+import { getWorkerTimeRanges } from '../_utils/workerTimeRanges';
 import { formatMonthDayWithWeekday } from '@/shared/utils/formatDate';
 
 type WorkerTimePanelProps = {

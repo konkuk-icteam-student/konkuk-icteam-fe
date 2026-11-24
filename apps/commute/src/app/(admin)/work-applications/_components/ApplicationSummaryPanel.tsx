@@ -6,6 +6,7 @@ import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { Dropdown, StateChip } from '@konkuk-icteam-fe/design-system/ui';
 import { ROUTES } from '@/shared/config/routes';
 import { formatMonthDayTime } from '@/shared/utils/formatDate';
+import { formatWorkDuration } from '@/shared/utils/time';
 import AdminPanel from '../../_layouts/AdminPanel';
 import {
   getWorkApplicationSubmissions,
@@ -15,7 +16,6 @@ import { parseMonthKey } from '../../_utils/monthKey';
 import {
   checkMonthlyHoursMet,
   createSortedSubmissions,
-  formatSubmittedHours,
   getSubmissionCounts,
   SUBMISSION_SORT_LABELS,
   type SubmissionSortKey,
@@ -85,7 +85,7 @@ type SubmissionListProps = {
 };
 
 // 제출 집계와 근로장학생별 제출 카드
-function SubmissionList({ monthKey, settings, sortKey, onSortChange }: SubmissionListProps) {
+const SubmissionList = ({ monthKey, settings, sortKey, onSortChange }: SubmissionListProps) => {
   const { submissions } = getWorkApplicationSubmissions(parseMonthKey(monthKey));
   const { submittedCount, metCount, unmetCount } = getSubmissionCounts(submissions, settings);
   const sortedSubmissions = createSortedSubmissions(submissions, sortKey, settings);
@@ -140,7 +140,7 @@ function SubmissionList({ monthKey, settings, sortKey, onSortChange }: Submissio
                     <span>
                       총 제출시간{' '}
                       <span className={cn('caption-12-md', isMet ? 'text-black' : 'text-red')}>
-                        {formatSubmittedHours(submittedMinutes)}
+                        {formatWorkDuration(submittedMinutes)}
                       </span>
                     </span>
                     <span>
@@ -157,4 +157,4 @@ function SubmissionList({ monthKey, settings, sortKey, onSortChange }: Submissio
       )}
     </>
   );
-}
+};

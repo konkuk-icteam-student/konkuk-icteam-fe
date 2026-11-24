@@ -3,7 +3,6 @@ import type { WorkApplicationSubmission } from '../../_apis/workApplications';
 import {
   checkMonthlyHoursMet,
   createSortedSubmissions,
-  formatSubmittedHours,
   getSubmissionCounts,
 } from './applicationSummary';
 
@@ -90,13 +89,5 @@ describe('createSortedSubmissions', () => {
     createSortedSubmissions(SUBMISSIONS, 'NAME', RANGE);
 
     expect(SUBMISSIONS).toEqual(original);
-  });
-});
-
-describe('formatSubmittedHours', () => {
-  it('정시간이면 시간만, 30분이 남으면 분까지 적는다', () => {
-    expect(formatSubmittedHours(24 * 60)).toBe('24시간');
-    expect(formatSubmittedHours(0)).toBe('0시간');
-    expect(formatSubmittedHours(90)).toBe('1시간 30분');
   });
 });

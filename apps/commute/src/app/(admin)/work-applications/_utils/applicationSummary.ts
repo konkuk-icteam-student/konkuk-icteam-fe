@@ -1,3 +1,4 @@
+import { MINUTES_PER_HOUR } from '@/shared/utils/time';
 import type {
   WorkApplicationSettings,
   WorkApplicationSubmission,
@@ -26,7 +27,9 @@ type MonthlyHoursRange = Pick<WorkApplicationSettings, 'monthlyMinHours' | 'mont
 export const checkMonthlyHoursMet = (
   submittedMinutes: number,
   { monthlyMinHours, monthlyMaxHours }: MonthlyHoursRange,
-) => submittedMinutes >= monthlyMinHours * 60 && submittedMinutes <= monthlyMaxHours * 60;
+) =>
+  submittedMinutes >= monthlyMinHours * MINUTES_PER_HOUR &&
+  submittedMinutes <= monthlyMaxHours * MINUTES_PER_HOUR;
 
 /**
  * 제출 현황을 셉니다. 미제출은 미충족에 함께 세서 충족 + 미충족 = 전체 근로장학생입니다.
@@ -87,18 +90,4 @@ export const createSortedSubmissions = (
 
     return order !== 0 ? order : compareName(a, b);
   });
-};
-
-/**
- * 분을 시간 글자로 바꿉니다. 30분 단위가 남으면 분까지 적습니다.
- * @param minutes 분
- * @returns N시간 또는 N시간 M분
- * @example formatSubmittedHours(24 * 60); // '24시간'
- * @example formatSubmittedHours(90); // '1시간 30분'
- */
-export const formatSubmittedHours = (minutes: number) => {
-  const hours = Math.floor(minutes / 60);
-  const restMinutes = minutes % 60;
-
-  return restMinutes === 0 ? `${hours}시간` : `${hours}시간 ${restMinutes}분`;
 };

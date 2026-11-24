@@ -1,9 +1,4 @@
-import {
-  convertTimeToMinutes,
-  MINUTES_PER_HOUR,
-  mergeContinuousSlots,
-  type TimeRange,
-} from '@/shared/utils/time';
+import { convertTimeToMinutes, mergeContinuousSlots, type TimeRange } from '@/shared/utils/time';
 
 // 한 사람의 하루 안의 이어진 근무 한 구간
 export type WorkerTimeRange = TimeRange & {
@@ -35,18 +30,3 @@ export const getWorkerTimeRanges = (days: WorkerScheduleDay[], userId: number) =
       minutes: convertTimeToMinutes(end) - convertTimeToMinutes(start),
     })),
   );
-
-/**
- * 근무 길이를 글자로 만듭니다.
- * @param minutes 근무 길이 (분)
- * @returns '1시간', '1시간 30분', '30분'
- * @example formatWorkDuration(90); // '1시간 30분'
- */
-export const formatWorkDuration = (minutes: number) => {
-  const hours = Math.floor(minutes / MINUTES_PER_HOUR);
-  const restMinutes = minutes % MINUTES_PER_HOUR;
-
-  if (hours === 0) return `${restMinutes}분`;
-
-  return restMinutes === 0 ? `${hours}시간` : `${hours}시간 ${restMinutes}분`;
-};

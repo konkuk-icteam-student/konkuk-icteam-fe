@@ -4,6 +4,21 @@ import { formatNumber } from '@konkuk-icteam-fe/design-system/date';
 export const MINUTES_PER_HOUR = 60;
 
 /**
+ * 근무 길이를 글자로 만듭니다. 1시간이 안 되면 분만, 0분이면 0시간으로 적습니다.
+ * @param minutes 근무 길이 (분)
+ * @returns '1시간', '1시간 30분', '30분', '0시간'
+ * @example formatWorkDuration(90); // '1시간 30분'
+ */
+export const formatWorkDuration = (minutes: number) => {
+  const hours = Math.floor(minutes / MINUTES_PER_HOUR);
+  const restMinutes = minutes % MINUTES_PER_HOUR;
+
+  if (hours === 0 && restMinutes !== 0) return `${restMinutes}분`;
+
+  return restMinutes === 0 ? `${hours}시간` : `${hours}시간 ${restMinutes}분`;
+};
+
+/**
  * 'HH:mm' 형식의 시각을 자정부터 지난 분으로 바꿉니다.
  * @param time 'HH:mm' 형식의 시각
  * @returns 자정부터 지난 분
