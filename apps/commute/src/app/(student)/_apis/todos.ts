@@ -2,7 +2,10 @@ import { parseApiDate, parseApiDateTime, toApiDate, type ApiJson } from './commo
 import { getDailyTodosMock, updateTodoCompletionMock } from './mock/todos';
 
 // 업무 시간대. 12시 전에 시작하는 근무는 오전, 나머지는 오후 (관리자 TodoPeriod와 같다)
-export type TodoPeriod = 'MORNING' | 'AFTERNOON';
+// 배열에서 타입을 만들어서, 시간대를 차례로 돌 때도 이 배열을 쓴다
+export const TODO_PERIODS = ['MORNING', 'AFTERNOON'] as const;
+
+export type TodoPeriod = (typeof TODO_PERIODS)[number];
 
 export type TodoUser = {
   userId: number;

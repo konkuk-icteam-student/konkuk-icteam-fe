@@ -4,7 +4,8 @@ import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { DatePicker, Input, Message, TagChip } from '@konkuk-icteam-fe/design-system/ui';
 import DateRangeField from '../../_components/DateRangeField';
 import type { WorkApplicationSettings } from '../../_apis/workApplications';
-import { createDateKeepingTime, createDateWithTime, getTimeOfDay } from '../_utils/applyDateTime';
+import { convertDateToTime } from '@/shared/utils/time';
+import { createDateKeepingTime, createDateWithTime } from '../_utils/applyDateTime';
 import { getNonWorkingDates } from '../_utils/getNonWorkingDates';
 import { formatMonthDay } from '@/shared/utils/formatDate';
 import { IconEllipse } from '@konkuk-icteam-fe/design-system/assets';
@@ -123,7 +124,6 @@ export default function SettingsPanel({
                 placeholder='18:00'
                 aria-label='마감 시각'
                 disabled={!isEditable}
-                hasError={errors.applyEndDate !== undefined}
                 value={getTimeOfDay(settings.applyEndDate)}
                 onChange={(time) =>
                   updateSetting('applyEndDate', createDateWithTime(settings.applyEndDate, time))

@@ -13,4 +13,47 @@
   --color-blue: #5b8def;
   --color-green: #77bea4;
   --color-purple: #a78bfa;
+
+  --color-lavender-50: #eae8ff;
+  --color-lavender-200: #cdb4db;
+  --color-lavender-600: #9b59c0;
+
+  --color-cotton-100: #ffc8dd;
+  --color-cotton-200: #ffafcc;
+  --color-cotton-600: #d74278;
+
+  --color-powder-100: #bde0fe;
+  --color-powder-200: #b0d7ff;
+  --color-powder-300: #a2d2ff;
+  --color-powder-600: #428fd7;
+
+  --color-sage: #d8e2dc;
+  --color-sage-600: #568f6d;
+
+  --color-peach-100: #ffe5d9;
+  --color-peach-200: #ffcdb2;
+  --color-peach-300: #ffb4a2;
+  --color-peach-600: #d75f42;
+
+  --color-blush-100: #ffcad4;
+  --color-blush-200: #f4acb7;
+  --color-blush-300: #e5989b;
+  --color-blush-600: #d1484d;
+
+  --color-mauve-300: #b5838d;
+  --color-mauve-400: #9d8189;
+  --color-mauve-600: #c0596d;
+
+  --color-dusk-100: #d8d5db;
+  --color-dusk-300: #adacb5;
+  --color-dusk-500: #6d6875;
+  --color-dusk-900: #2d3142;
+
+  --color-navy-950: #000814;
+  --color-navy-900: #001d3d;
+  --color-navy-700: #003566;
+
+  --color-gold-400: #ffd60a;
+  --color-gold-500: #ffc300;
+  --color-gold-600: #b19025;
 }

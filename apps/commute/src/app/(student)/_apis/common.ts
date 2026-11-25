@@ -1,4 +1,5 @@
-import { formatNumber, parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
+import { parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
+import { convertDateToTime } from '@/shared/utils/time';
 
 /*
  * API 공통 규칙 (관리자·근로학생 화면 공통)
@@ -53,8 +54,7 @@ export const parseApiDate = (value: string) => parseISO(value);
  * @returns YYYY-MM-DDTHH:mm:00 (한국 시간)
  * @example toApiDateTime(new Date(2026, 9, 20, 9, 0)); // '2026-10-20T09:00:00'
  */
-export const toApiDateTime = (date: Date) =>
-  `${toISO(date)}T${formatNumber(date.getHours())}:${formatNumber(date.getMinutes())}:00`;
+export const toApiDateTime = (date: Date) => `${toISO(date)}T${convertDateToTime(date)}:00`;
 
 /**
  * 응답의 날짜·시각 문자열을 Date로 바꿉니다.

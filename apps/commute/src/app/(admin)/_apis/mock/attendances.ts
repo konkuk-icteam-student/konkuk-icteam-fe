@@ -1,8 +1,12 @@
-import { formatNumber, parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
+import { parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
 import type { ApiJson } from '@/app/(student)/_apis/common';
 import { removeDuplicatesBy } from '@/shared/utils/array';
-import { convertMinutesToTime, convertTimeToMinutes } from '@/shared/utils/time';
-import { mergeContinuousSlots } from '@/shared/utils/timeRange';
+import {
+  convertDateToTime,
+  convertMinutesToTime,
+  convertTimeToMinutes,
+  mergeContinuousSlots,
+} from '@/shared/utils/time';
 import type { AttendanceShift } from '../attendances';
 import { getDaySlotsMock } from './workSchedules';
 
@@ -71,7 +75,7 @@ const createCheckedInAt = (
       ? startMinutes + 5 + (seed % 20)
       : startMinutes - 1 - (seed % 8);
   const checkedInAt = `${dateKey}T${convertMinutesToTime(checkedInMinutes)}:00`;
-  const nowAt = `${toISO(now)}T${formatNumber(now.getHours())}:${formatNumber(now.getMinutes())}:00`;
+  const nowAt = `${toISO(now)}T${convertDateToTime(now)}:00`;
 
   return checkedInAt <= nowAt ? checkedInAt : null;
 };
