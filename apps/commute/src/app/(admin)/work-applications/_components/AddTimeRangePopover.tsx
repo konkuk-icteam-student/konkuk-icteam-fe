@@ -2,7 +2,7 @@
 
 import { useId, useState } from 'react';
 import { Button, Input, Message } from '@konkuk-icteam-fe/design-system/ui';
-import type { TimeRange } from '@/shared/utils/timeRange';
+import type { TimeRange } from '@/shared/utils/time';
 import { formatTimeInput } from '../_utils/timeInput';
 import { getTimeRangeError } from '../_utils/unavailableTimeRanges';
 

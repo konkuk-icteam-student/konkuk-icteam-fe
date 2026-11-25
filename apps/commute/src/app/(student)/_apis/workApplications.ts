@@ -5,7 +5,7 @@ import {
   type ApiJson,
   type WorkTimeRange,
 } from './common';
-import type { TimeRange } from '@/shared/utils/timeRange';
+import type { TimeRange } from '@/shared/utils/time';
 import {
   getMyWorkApplicationMock,
   getWorkApplicationSettingsMock,

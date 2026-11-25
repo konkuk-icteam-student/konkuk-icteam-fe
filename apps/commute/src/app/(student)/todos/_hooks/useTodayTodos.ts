@@ -6,18 +6,26 @@ import {
   type DailyTodo,
   type TodoPeriod,
 } from '@/app/(student)/_apis/todos';
+import { getWorkApplicationSettings } from '@/app/(student)/_apis/workApplications';
 import { getWorkSchedules } from '@/app/(student)/_apis/workSchedules';
-import { checkLunchSlot } from '@/shared/utils/slot';
+import { checkUnavailableSlot } from '@/shared/utils/slot';
 import { getSlotPeriod } from '../_utils/period';
 
 const useTodayTodos = (today: Date, period: TodoPeriod) => {
   const [me] = useState(() => getMe());
 
-  const [slots] = useState(() =>
-    (getWorkSchedules({ startDate: today, endDate: today }).days[0]?.slots ?? []).filter(
-      ({ start }) => !checkLunchSlot(start),
-    ),
-  );
+  // 오늘 근무 칸. 그 달 근로신청 기준의 근무 불가 시간대(예: 점심시간) 칸은 뺀다
+  const [slots] = useState(() => {
+    const { settings } = getWorkApplicationSettings({
+      year: today.getFullYear(),
+      month: today.getMonth() + 1,
+    });
+    const unavailableTimeRanges = settings?.unavailableTimeRanges ?? [];
+
+    return (getWorkSchedules({ startDate: today, endDate: today }).days[0]?.slots ?? []).filter(
+      ({ start }) => !checkUnavailableSlot(start, unavailableTimeRanges),
+    );
+  });
 
   const [updatedTodos, setUpdatedTodos] = useState<Record<number, DailyTodo>>({});
 
