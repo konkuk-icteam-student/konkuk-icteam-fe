@@ -10,7 +10,7 @@ import { getWeekDays, getWeekStartKey } from './weekKey';
  * @returns 그 주 월요일 (YYYY-MM-DD)
  * @example getMonthFirstWeekStartKey('2026-12'); // '2026-11-30' (12.01이 화요일)
  */
-export const getMonthFirstWeekStartKey = (monthKey: string) => {
+const getMonthFirstWeekStartKey = (monthKey: string) => {
   const { year, month } = parseMonthKey(monthKey);
   const firstDate = new Date(year, month - 1, 1);
   const weekendDayCount = checkWeekend(firstDate) ? (firstDate.getDay() === 6 ? 2 : 1) : 0;
@@ -24,7 +24,7 @@ export const getMonthFirstWeekStartKey = (monthKey: string) => {
  * @returns 그 주 월요일 (YYYY-MM-DD)
  * @example getMonthLastWeekStartKey('2026-12'); // '2026-12-28'
  */
-export const getMonthLastWeekStartKey = (monthKey: string) => {
+const getMonthLastWeekStartKey = (monthKey: string) => {
   const { year, month } = parseMonthKey(monthKey);
   const lastDate = new Date(year, month, 0);
   const weekendDayCount = checkWeekend(lastDate) ? (lastDate.getDay() === 0 ? 2 : 1) : 0;
@@ -39,7 +39,7 @@ export const getMonthLastWeekStartKey = (monthKey: string) => {
  * @returns 그 달 평일이 있으면 true
  * @example checkWeekInMonth('2026-11-30', '2026-12'); // true (12.01 ~ 12.04)
  */
-export const checkWeekInMonth = (weekStartKey: string, monthKey: string) =>
+const checkWeekInMonth = (weekStartKey: string, monthKey: string) =>
   getWeekDays(weekStartKey).some(({ dateKey }) => dateKey.startsWith(`${monthKey}-`));
 
 /**
