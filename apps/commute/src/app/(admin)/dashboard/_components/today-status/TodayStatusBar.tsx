@@ -3,10 +3,9 @@
 import { toISO } from '@konkuk-icteam-fe/design-system/date';
 import { getAttendances } from '../../../_apis/attendances';
 import { getTodoProgress } from '../../../_apis/todos';
-import { useCurrentTime } from '../../_hooks/useCurrentTime';
+import useCurrentTime from '../../_hooks/useCurrentTime';
 import { getTodayAttendanceSummary, type AttendanceUser } from '../../_utils/attendanceStatus';
 import RequestNoticeCard from './RequestNoticeCard';
-import TodayStatusCard from './TodayStatusCard';
 
 /**
  * 카드 아래에 보여 줄 이름 목록을 만듭니다.
@@ -17,8 +16,25 @@ import TodayStatusCard from './TodayStatusCard';
 const createUserNames = (users: AttendanceUser[]) =>
   users.length > 0 ? users.map(({ userName }) => userName).join(' · ') : '없음';
 
-// 대시보드 맨 위 줄. 오늘 근무중·출근 예정·지각/결근 인원과 업무 완료 현황을 보여 주고, 끝에 처리할 승인 요청을 알린다.
-// 날짜 카드에서 다른 날을 골라도 이 줄은 늘 오늘이다
+type TodayStatusCardProps = {
+  label: string;
+  value: string;
+  detail: string;
+};
+
+const TodayStatusCard = ({ label, value, detail }: TodayStatusCardProps) => {
+  return (
+    <div className='flex min-w-0 flex-col gap-[0.4rem] rounded-[1.2rem] border border-gray-50 px-[2rem] py-[1.4rem]'>
+      <span className='caption-14-md text-gray-500'>{label}</span>
+      <strong className='title-20-bd text-black'>{value}</strong>
+      <span title={detail} className='caption-12-md truncate text-gray-500'>
+        {detail}
+      </span>
+    </div>
+  );
+};
+
+// 오늘 근로 현황 줄. 날짜 카드에서 다른 날을 골라도 늘 오늘을 보여 준다
 export default function TodayStatusBar() {
   const currentTime = useCurrentTime();
   const todayKey = toISO(currentTime);

@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { Button, ConfirmModal } from '@konkuk-icteam-fe/design-system/ui';
 import type { WorkTimeRange } from '@/app/(student)/_apis/common';
 import { useToast } from '@/shared/hooks/useToast';
+import {
+  WORK_CHANGE_REQUEST_STATUS,
+  WORK_CHANGE_REQUEST_STATUS_THEME,
+} from '@/shared/constants/workChangeRequestStatus';
 import { ArrowButton } from '@/shared/ui';
 import type { WorkChangeRequest } from '../../_apis/workChangeRequests';
 import type { Worker } from '../../_apis/workers';
@@ -12,10 +16,9 @@ import { getCurrentMonthKey, parseMonthKey, shiftMonthKey } from '../../_utils/m
 import RejectModal from './_components/RejectModal';
 import RequestTimeTablePanel from './_components/RequestTimeTablePanel';
 import StatusFilterTabs from './_components/StatusFilterTabs';
+import { STATUS_FILTER_ALL, type StatusFilter } from './_utils/statusFilter';
 import WorkChangeRequestCard from './_components/WorkChangeRequestCard';
-import { REQUEST_STATUS_CHIP } from './_constants/requestStatusChip';
 import { useWorkChangeRequests } from './_hooks/useWorkChangeRequests';
-import type { StatusFilter } from './_utils/statusFilter';
 
 // 다음 달 요청까지 볼 수 있다 (근무 신청은 다음 달 것까지 받는다)
 const MAX_MONTH_OFFSET = 1;
@@ -43,7 +46,9 @@ const getRequestWeekStartKey = ({ addSchedules, deleteSchedules }: WorkChangeReq
  * @example createPendingChanges(requests).addSchedules.length; // 3
  */
 const createPendingChanges = (requests: WorkChangeRequest[]) => {
-  const pendingRequests = requests.filter(({ statusCode }) => statusCode === 'CS01');
+  const pendingRequests = requests.filter(
+    ({ statusCode }) => statusCode === WORK_CHANGE_REQUEST_STATUS.PENDING,
+  );
 
   return {
     addSchedules: pendingRequests.flatMap(({ addSchedules }) => addSchedules),
@@ -73,9 +78,11 @@ export default function PageClient({ statusFilter }: PageClientProps) {
   const maxMonthKey = shiftMonthKey(currentMonthKey, MAX_MONTH_OFFSET);
   const { summary, requests, handleApprove, handleReject } = useWorkChangeRequests(year, month);
   const visibleRequests = requests.filter(
-    ({ statusCode }) => statusCode === statusFilter || statusFilter === 'ALL',
+    ({ statusCode }) => statusFilter === STATUS_FILTER_ALL || statusCode === statusFilter,
   );
-  const pendingRequests = requests.filter(({ statusCode }) => statusCode === 'CS01');
+  const pendingRequests = requests.filter(
+    ({ statusCode }) => statusCode === WORK_CHANGE_REQUEST_STATUS.PENDING,
+  );
   // 승인·반려하면 상태가 바뀌므로 고른 요청은 최신 목록에서 다시 찾는다
   const activeRequest = selectedRequest
     ? (requests.find(({ requestId }) => requestId === selectedRequest.requestId) ?? null)
@@ -191,7 +198,7 @@ export default function PageClient({ statusFilter }: PageClientProps) {
             focusedUser={focusedUser}
             statusChip={
               !searchedWorker && activeRequest
-                ? REQUEST_STATUS_CHIP[activeRequest.statusCode]
+                ? WORK_CHANGE_REQUEST_STATUS_THEME[activeRequest.statusCode]
                 : null
             }
             pendingChanges={pendingChanges}

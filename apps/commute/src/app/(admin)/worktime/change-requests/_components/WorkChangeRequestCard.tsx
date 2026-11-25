@@ -3,7 +3,10 @@ import { toISO } from '@konkuk-icteam-fe/design-system/date';
 import { Button, StateChip } from '@konkuk-icteam-fe/design-system/ui';
 import type { WorkTimeRange } from '@/app/(student)/_apis/common';
 import type { WorkChangeRequest } from '../../../_apis/workChangeRequests';
-import { REQUEST_STATUS_CHIP } from '../_constants/requestStatusChip';
+import {
+  WORK_CHANGE_REQUEST_STATUS,
+  WORK_CHANGE_REQUEST_STATUS_THEME,
+} from '@/shared/constants/workChangeRequestStatus';
 import { formatMonthDay, formatMonthDayTime } from '@/shared/utils/formatDate';
 
 type WorkChangeRequestCardProps = {
@@ -48,7 +51,7 @@ export default function WorkChangeRequestCard({
   onApprove,
   onReject,
 }: WorkChangeRequestCardProps) {
-  const status = REQUEST_STATUS_CHIP[request.statusCode];
+  const status = WORK_CHANGE_REQUEST_STATUS_THEME[request.statusCode];
 
   return (
     <article
@@ -94,7 +97,7 @@ export default function WorkChangeRequestCard({
       ) : null}
 
       {/* 카드 높이가 같아도 버튼은 늘 맨 아래에 붙는다 */}
-      {request.statusCode === 'CS01' ? (
+      {request.statusCode === WORK_CHANGE_REQUEST_STATUS.PENDING ? (
         <div className='relative z-10 mt-auto flex justify-end gap-[0.8rem] pt-[0.4rem]'>
           <Button display='inline' size='small' tone='subtle_2' color='black' onClick={onReject}>
             반려

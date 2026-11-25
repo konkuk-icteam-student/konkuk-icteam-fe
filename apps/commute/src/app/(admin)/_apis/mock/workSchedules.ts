@@ -4,8 +4,12 @@ import { SLOT_MINUTES, SLOT_TIMES } from '@/shared/config/slot';
 import { MIN_WORK_HOURS_PER_SHIFT } from '@/shared/config/workHours';
 import { checkWeekend, getMonthDates } from '@/shared/utils/calendar';
 import { checkUnavailableSlot } from '@/shared/utils/slot';
-import { convertMinutesToTime, convertTimeToMinutes } from '@/shared/utils/time';
-import { mergeContinuousSlots, type TimeRange } from '@/shared/utils/timeRange';
+import {
+  convertMinutesToTime,
+  convertTimeToMinutes,
+  mergeContinuousSlots,
+  type TimeRange,
+} from '@/shared/utils/time';
 import type { MonthlyWorkRecord } from '../workers';
 import type { CreateWorkScheduleResponse, WorkScheduleSlot } from '../workSchedules';
 import {

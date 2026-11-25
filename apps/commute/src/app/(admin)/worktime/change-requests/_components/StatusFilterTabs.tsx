@@ -1,8 +1,15 @@
 import Link from 'next/link';
 import { Tabs } from '@konkuk-icteam-fe/design-system/ui';
-import { ROUTES } from '@/shared/config/routes';
+import {
+  WORK_CHANGE_REQUEST_STATUS,
+  WORK_CHANGE_REQUEST_STATUS_THEME,
+} from '@/shared/constants/workChangeRequestStatus';
 import type { WorkChangeRequestSummary } from '../../../_apis/workChangeRequests';
-import type { StatusFilter } from '../_utils/statusFilter';
+import {
+  createStatusFilterHref,
+  STATUS_FILTER_ALL,
+  type StatusFilter,
+} from '../_utils/statusFilter';
 
 // 탭마다 보여 줄 건수는 응답 summary의 어느 값인지
 const STATUS_FILTERS: {
@@ -10,10 +17,22 @@ const STATUS_FILTERS: {
   label: string;
   countKey: keyof WorkChangeRequestSummary;
 }[] = [
-  { value: 'ALL', label: '전체', countKey: 'totalCount' },
-  { value: 'CS01', label: '승인 대기', countKey: 'pendingCount' },
-  { value: 'CS02', label: '승인', countKey: 'approvedCount' },
-  { value: 'CS03', label: '반려', countKey: 'rejectedCount' },
+  { value: STATUS_FILTER_ALL, label: '전체', countKey: 'totalCount' },
+  {
+    value: WORK_CHANGE_REQUEST_STATUS.PENDING,
+    label: WORK_CHANGE_REQUEST_STATUS_THEME[WORK_CHANGE_REQUEST_STATUS.PENDING].label,
+    countKey: 'pendingCount',
+  },
+  {
+    value: WORK_CHANGE_REQUEST_STATUS.APPROVED,
+    label: WORK_CHANGE_REQUEST_STATUS_THEME[WORK_CHANGE_REQUEST_STATUS.APPROVED].label,
+    countKey: 'approvedCount',
+  },
+  {
+    value: WORK_CHANGE_REQUEST_STATUS.REJECTED,
+    label: WORK_CHANGE_REQUEST_STATUS_THEME[WORK_CHANGE_REQUEST_STATUS.REJECTED].label,
+    countKey: 'rejectedCount',
+  },
 ];
 
 type StatusFilterTabsProps = {
@@ -32,7 +51,7 @@ export default function StatusFilterTabs({ summary, selected }: StatusFilterTabs
             as={Link}
             value={value}
             activeValue={selected}
-            href={`${ROUTES.ADMIN_WORKTIME_CHANGE_REQUESTS}?status=${value}`}
+            href={createStatusFilterHref(value)}
             scroll={false}
           >
             {summary[countKey] > 0 ? `${label} (${summary[countKey]})` : label}
