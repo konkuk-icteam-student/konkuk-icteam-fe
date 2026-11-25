@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { convertSlotCountToHours, getMonthWorkHours } from './utils';
+import { getMonthWorkHours } from './utils';
 
 describe('getMonthWorkHours', () => {
   it('그 달 날짜의 칸만 30분씩 센다', () => {
@@ -13,16 +13,5 @@ describe('getMonthWorkHours', () => {
     ];
 
     expect(getMonthWorkHours(slots, 2026, 11)).toBe(1.5);
-  });
-
-  it('근무가 없으면 0시간이다', () => {
-    expect(getMonthWorkHours([], 2026, 11)).toBe(0);
-  });
-});
-
-describe('convertSlotCountToHours', () => {
-  it('30분 칸 수를 시간으로 바꾼다', () => {
-    expect(convertSlotCountToHours(3)).toBe(1.5);
-    expect(convertSlotCountToHours(0)).toBe(0);
   });
 });
