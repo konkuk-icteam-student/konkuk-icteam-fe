@@ -3,6 +3,10 @@ import { toISO } from '@konkuk-icteam-fe/design-system/date';
 import { Button, StateChip } from '@konkuk-icteam-fe/design-system/ui';
 import type { WorkTimeRange } from '@/app/(student)/_apis/common';
 import type { WorkChangeRequest } from '../../../_apis/workChangeRequests';
+import {
+  WORK_CHANGE_REQUEST_STATUS,
+  WORK_CHANGE_REQUEST_STATUS_THEME,
+} from '@/shared/constants/workChangeRequestStatus';
 import { formatMonthDay, formatMonthDayTime } from '@/shared/utils/formatDate';
 
 type WorkChangeRequestCardProps = {
@@ -10,12 +14,6 @@ type WorkChangeRequestCardProps = {
   onApprove: () => void;
   onReject: () => void;
 };
-
-const STATUS_CHIP = {
-  CS01: { label: '승인 대기', tone: 'gray' },
-  CS02: { label: '승인', tone: 'blue' },
-  CS03: { label: '반려', tone: 'red' },
-} as const;
 
 const formatSchedule = ({ date, start, end }: WorkTimeRange) =>
   `${formatMonthDay(date)} ${start}-${end}`;
@@ -47,7 +45,7 @@ export default function WorkChangeRequestCard({
   onApprove,
   onReject,
 }: WorkChangeRequestCardProps) {
-  const status = STATUS_CHIP[request.statusCode];
+  const status = WORK_CHANGE_REQUEST_STATUS_THEME[request.statusCode];
 
   return (
     <article className='bg-black-1 flex flex-col gap-[1.2rem] rounded-[1.2rem] border border-gray-50 p-[2rem]'>
@@ -77,7 +75,7 @@ export default function WorkChangeRequestCard({
       ) : null}
 
       {/* 카드 높이가 같아도 버튼은 늘 맨 아래에 붙는다 */}
-      {request.statusCode === 'CS01' ? (
+      {request.statusCode === WORK_CHANGE_REQUEST_STATUS.PENDING ? (
         <div className='mt-auto flex justify-end gap-[0.8rem] pt-[0.4rem]'>
           <Button display='inline' size='small' tone='subtle_2' color='black' onClick={onReject}>
             반려

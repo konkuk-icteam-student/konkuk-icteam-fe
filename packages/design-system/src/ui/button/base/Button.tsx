@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { ButtonAccent, ButtonDisplay, ButtonSize, ButtonTone } from './types/variant';
 import {
@@ -9,7 +9,7 @@ import {
   BUTTON_SIZE,
 } from './constants/theme';
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = ComponentPropsWithRef<'button'> & {
   children: React.ReactNode;
   display?: ButtonDisplay;
   size?: ButtonSize;

@@ -1,4 +1,5 @@
 import { formatNumber, parseISO } from '@konkuk-icteam-fe/design-system/date';
+import { convertDateToTime } from './time';
 
 // 화면에 보이는 날짜 모양. 날짜는 MM.DD, 기간은 MM.DD - MM.DD로 통일한다
 
@@ -47,7 +48,7 @@ export const formatMonthDayWithWeekday = (date: DateInput) =>
  * @example formatMonthDayTime(new Date(2026, 9, 22, 10, 12)); // '10.22 10:12'
  */
 export const formatMonthDayTime = (date: Date) =>
-  `${formatMonthDay(date)} ${formatNumber(date.getHours())}:${formatNumber(date.getMinutes())}`;
+  `${formatMonthDay(date)} ${convertDateToTime(date)}`;
 
 /**
  * 날짜의 연·월을 YYYY.MM으로 바꿉니다. 근로 시작 달처럼 날짜가 아니라 달을 보여 줄 때 씁니다.

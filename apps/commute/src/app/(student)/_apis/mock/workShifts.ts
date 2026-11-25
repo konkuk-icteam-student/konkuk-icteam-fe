@@ -2,7 +2,8 @@ import { toISO } from '@konkuk-icteam-fe/design-system/date';
 import { getMonthDates } from '@/shared/utils/calendar';
 import type { ApiJson } from '../common';
 import type { TodoPeriod } from '../todos';
-import type { WorkShift, WorkStatusCode } from '../workShifts';
+import { WORK_STATUS, type WorkStatusCode } from '@/shared/constants/workStatus';
+import type { WorkShift } from '../workShifts';
 import { DEMO_MORNING_SLOT_STARTS, getMyDaySlotsMock } from './workSchedules';
 
 // 출근 체크한 시각 (첫 배치 id → YYYY-MM-DDTHH:mm:ss). 새로 고침하면 처음으로 돌아간다
@@ -46,9 +47,9 @@ const getWorkStatusCode = (
   const todayKey = toISO(now);
   const isEnded = dateKey < todayKey || (dateKey === todayKey && end <= getNowTime(now));
 
-  if (isEnded) return checkedInAt ? 'WK03' : 'WK04';
+  if (isEnded) return checkedInAt ? WORK_STATUS.DONE : WORK_STATUS.ABSENT;
 
-  return checkedInAt ? 'WK02' : 'WK01';
+  return checkedInAt ? WORK_STATUS.WORKING : WORK_STATUS.SCHEDULED;
 };
 
 /**
