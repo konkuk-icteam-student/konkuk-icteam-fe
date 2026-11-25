@@ -21,7 +21,7 @@ export type RequestTimeTableDay = {
 };
 
 // 시간표에서 보고 있는 학생과, 승인되면 그 학생에게 더해지거나 빠질 칸 (createSlotKey로 만든 key)
-export type RequestTimeTableFocus = {
+type RequestTimeTableFocus = {
   userId: number;
   userName: string;
   addSlotKeys: Set<string>;

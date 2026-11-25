@@ -4,7 +4,7 @@ import TimeColumn from './TimeColumn';
 
 type TimeTableProps = {
   days: TimeTableDay[];
-  // 요일별 칸 목록. useTimeTable이 계산한 값을 그대로 넘긴다.
+  // 요일별 칸 목록. 화면이 칸 상태를 계산해 넘긴다 (근로학생은 useTimeTable, 관리자 수정요청은 createRequestTimeTableCells)
   cells: TimeTableCell[][];
   // 시간 열 표기. 기본은 근로학생 화면의 시만 쓰는 표기
   timeLabelFormat?: TimeLabelFormat;
