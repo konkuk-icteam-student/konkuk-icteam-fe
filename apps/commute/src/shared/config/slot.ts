@@ -1,4 +1,5 @@
 import { convertMinutesToTime } from '@/shared/utils/time';
+import type { TimeRange } from '@/shared/utils/timeRange';
 
 // 근무 칸은 30분 단위이고 09:00 ~ 18:00 까지 하루 18칸이다 (관리자·근로학생 화면 공통)
 const FIRST_SLOT_HOUR = 9;
@@ -18,5 +19,8 @@ export const SLOT_TIMES = Array.from({ length: SLOTS_PER_DAY }, (_, index) => {
   };
 });
 
-// 점심시간. 이 시간 칸은 언제나 근무할 수 없다 (시작 포함, 끝 미포함). 판정은 shared/utils/slot의 checkLunchSlot
-export const LUNCH_BREAK = { start: '11:30', end: '13:00' } as const;
+// 새 달 근로신청에 기본으로 넣어 두는 근무 불가 시간대 (점심시간). 고정이 아니라 관리자가 빼거나 바꿀 수 있다.
+// 칸이 근무 불가인지는 그 달 근로신청 기준의 unavailableTimeRanges로 판정한다 (shared/utils/slot의 checkUnavailableSlot)
+export const DEFAULT_UNAVAILABLE_TIME_RANGES: readonly TimeRange[] = [
+  { start: '11:30', end: '13:00' },
+];

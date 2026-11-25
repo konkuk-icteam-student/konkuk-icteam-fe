@@ -67,6 +67,7 @@ export const createScheduleSource = ({
     ),
     maxConcurrentWorkers,
     unavailableDates: getUnavailableDateKeys(settings),
+    unavailableTimeRanges: settings?.unavailableTimeRanges ?? [],
     weeklyMaxHours: settings?.weeklyMaxHours ?? Number.POSITIVE_INFINITY,
     editableFrom,
   };
@@ -107,6 +108,7 @@ export const createApplySource = ({
     workersBySlot: {},
     maxConcurrentWorkers: settings?.maxConcurrentWorkers ?? 0,
     unavailableDates: getUnavailableDateKeys(settings),
+    unavailableTimeRanges: settings?.unavailableTimeRanges ?? [],
     weeklyMaxHours: settings?.weeklyMaxHours ?? Number.POSITIVE_INFINITY,
     editableFrom,
   };
