@@ -1,38 +1,12 @@
-import { formatNumber, parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
+import { formatNumber, parseISO } from '@konkuk-icteam-fe/design-system/date';
 import { getWorkApplicationMock } from '@/app/(admin)/_apis/mock/workApplications';
-import { DEFAULT_UNAVAILABLE_TIME_RANGES } from '@/shared/config/slot';
 import { getMonthDates } from '@/shared/utils/calendar';
 import type { ApiJson, WorkTimeRange } from '../common';
-import type { WorkApplicationSettings } from '../workApplications';
 
 const createMonthKey = (year: number, month: number) => `${year}-${formatNumber(month)}`;
 
 /**
- * 관리자가 아직 다음 달 신청을 열지 않았을 때 쓰는 데모 기준을 만듭니다. 신청 기간이 오늘을 포함해서 신청 화면을 확인할 수 있습니다.
- * @param today 기준일
- * @returns 신청 기준 JSON
- * @example createDemoSettings(new Date()).maxConcurrentWorkers; // 4
- */
-const createDemoSettings = (today: Date): ApiJson<WorkApplicationSettings> => {
-  const applyStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 3);
-  const applyEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7);
-
-  return {
-    applyStartDate: `${toISO(applyStart)}T09:00:00`,
-    applyEndDate: `${toISO(applyEnd)}T18:00:00`,
-    maxConcurrentWorkers: 4,
-    weeklyMinHours: 6,
-    weeklyMaxHours: 15,
-    monthlyMinHours: 30,
-    monthlyMaxHours: 60,
-    unavailableDates: [],
-    unavailableTimeRanges: DEFAULT_UNAVAILABLE_TIME_RANGES.map((range) => ({ ...range })),
-  };
-};
-
-/**
- * 그 달 근로신청 기준 목업을 얻습니다. 관리자가 저장한 기준을 그대로 쓰고,
- * 관리자가 아직 열지 않은 다음 달은 신청 흐름을 볼 수 있게 데모 기준으로 연 것으로 둡니다.
+ * 그 달 근로신청 기준 목업을 얻습니다. 관리자가 신청을 연(기준을 저장한) 달만 있습니다.
  * @param year 연도
  * @param month 월 (1~12)
  * @returns 기준 JSON. 열지 않은 달이면 undefined
@@ -40,13 +14,8 @@ const createDemoSettings = (today: Date): ApiJson<WorkApplicationSettings> => {
  */
 export const getWorkApplicationSettingsMock = (year: number, month: number) => {
   const saved = getWorkApplicationMock(year, month);
-  if (saved) return { settings: saved.settings };
 
-  const today = new Date();
-  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-  const isNextMonth = nextMonth.getFullYear() === year && nextMonth.getMonth() + 1 === month;
-
-  return isNextMonth ? { settings: createDemoSettings(today) } : undefined;
+  return saved ? { settings: saved.settings } : undefined;
 };
 
 /**
