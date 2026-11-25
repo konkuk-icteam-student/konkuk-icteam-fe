@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import {
   BottomCTAButton,
   Button,
@@ -26,7 +25,8 @@ import { useApplyPeriod } from '@/shared/hooks/useApplyPeriod';
 import { formatMonthDay, formatMonthDayTime } from '@/shared/utils/formatDate';
 
 import BackHeader from '../_components/BackHeader';
-import MonthWeekNavigator from '../_components/MonthWeekNavigator';
+import RefreshableInfo from '../_components/RefreshableInfo';
+import TimeTableToolbar from '../_components/TimeTableToolbar';
 import WorkRuleNotice from '../_components/WorkRuleNotice';
 import { APPLY_LEGEND_ITEMS } from '../_constants/slotLegend';
 import { useLeaveGuard } from '../_hooks/useLeaveGuard';
@@ -39,24 +39,19 @@ export default function PageClient() {
   // 다음 달 1주차 월요일. 주차 이동이 다음 달 안에서만 되도록 이 날짜를 기준으로 삼는다.
   const [baseDate] = useState(() => getFirstWeekMonday(applyPeriod.year, applyPeriod.month));
   const tableWeek = useTimeTableWeek(baseDate);
-  // 다음 달 내가 신청해 둔 근무와 관리자가 정한 기준
-  const [source] = useState(() =>
+  // '자세히보기'를 켜면 칸마다 지금까지 들어온 팀 신청 인원을 보여 준다
+  const [isDetailVisible, setIsDetailVisible] = useState(false);
+  // 다음 달 내가 신청해 둔 근무와 관리자가 정한 기준, 팀 신청 인원.
+  // 새로고침하면 다시 불러온다 (고른 칸은 useTimeTable이 들고 있어 그대로 남는다)
+  const loadSource = () =>
     createApplySource({
       year: applyPeriod.year,
       month: applyPeriod.month,
       editableFrom: new Date(),
-    }),
-  );
-  const {
-    days,
-    cells,
-    changedSlots,
-    resetEdits,
-    weekHours,
-    isWeekFull,
-    getShortShiftDates,
-    getWorkingSlots,
-  } = useTimeTable('apply', tableWeek.dates, source);
+    });
+  const [source, setSource] = useState(loadSource);
+  const { days, cells, changedSlots, resetEdits, weekHours, getShortShiftDates, getWorkingSlots } =
+    useTimeTable('apply', tableWeek.dates, source, { isOccupancyVisible: isDetailVisible });
   const { settings } = applyPeriod;
 
   const hasChangedSlots = changedSlots.length > 0;
@@ -90,11 +85,11 @@ export default function PageClient() {
     setIsApplyDoneModalOpen(true);
   };
 
-  // 확인 버튼·바깥 클릭·ESC 어느 쪽으로 닫아도 메인으로 돌아간다
+  // 확인 버튼·바깥 클릭·ESC 어느 쪽으로 닫아도 근로 시간표로 돌아간다
   const handleApplyDoneModalOpenChange = (open: boolean) => {
     setIsApplyDoneModalOpen(open);
 
-    if (!open) router.replace(ROUTES.HOME);
+    if (!open) router.replace(ROUTES.TIMETABLE);
   };
 
   return (
@@ -106,25 +101,20 @@ export default function PageClient() {
         onBack={handleBack}
       />
 
-      <div className='flex flex-col items-center gap-[0.6rem]'>
-        <MonthWeekNavigator
-          week={tableWeek.week}
-          isPrevWeekDisabled={tableWeek.isPrevWeekDisabled}
-          isNextWeekDisabled={tableWeek.isNextWeekDisabled}
-          onPrevWeek={tableWeek.handlePrevWeek}
-          onNextWeek={tableWeek.handleNextWeek}
-        />
-        {settings && (
-          <p
-            className={cn(
-              'caption-12-md',
-              isWeekFull || weekHours < settings.weeklyMinHours ? 'text-red' : 'text-gray-500',
-            )}
-          >
-            {`이번 주 ${weekHours}시간 · 주 ${settings.weeklyMinHours}~${settings.weeklyMaxHours}시간`}
-          </p>
-        )}
-      </div>
+      <TimeTableToolbar
+        week={tableWeek.week}
+        isPrevWeekDisabled={tableWeek.isPrevWeekDisabled}
+        isNextWeekDisabled={tableWeek.isNextWeekDisabled}
+        onPrevWeek={tableWeek.handlePrevWeek}
+        onNextWeek={tableWeek.handleNextWeek}
+        isDetailVisible={isDetailVisible}
+        onDetailVisibleChange={setIsDetailVisible}
+      />
+      <RefreshableInfo onRefresh={() => setSource(loadSource())}>
+        {settings
+          ? `이번 주 ${weekHours}시간 · 주 ${settings.weeklyMinHours}~${settings.weeklyMaxHours}시간`
+          : `이번 주 ${weekHours}시간`}
+      </RefreshableInfo>
 
       <TimeTable days={days} cells={cells} />
 

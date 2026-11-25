@@ -33,7 +33,14 @@ export type SlotCellData =
   // 슬롯에 마우스를 올리면 workers(근무자 이름) 명단을 보여준다. 신청 인원은 workers.length.
   | { mode: 'detail'; status: SlotStatus; workers: string[]; maxCount: number }
   // edit·apply는 칸을 눌러 바꾼다. disabled: 바꿀 수 없는 칸이거나 규칙(주 최대 시간 등)으로 막힌 칸
-  | { mode: 'edit' | 'apply'; status: SlotStatus; onClick: () => void; disabled: boolean };
+  // occupancy: '자세히보기'를 켰을 때 칸에 보여 줄 인원/최대 인원. 누르는 동작은 그대로다
+  | {
+      mode: 'edit' | 'apply';
+      status: SlotStatus;
+      onClick: () => void;
+      disabled: boolean;
+      occupancy?: { count: number; maxCount: number };
+    };
 
 // 표가 그릴 셀 하나. 렌더링용 key만 덧붙인다.
 export type TimeTableCell = SlotCellData & { key: string };

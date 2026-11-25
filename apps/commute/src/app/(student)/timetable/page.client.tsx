@@ -3,16 +3,18 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { BottomCTAButton, Toggle } from '@konkuk-icteam-fe/design-system/ui';
+import { BottomCTAButton } from '@konkuk-icteam-fe/design-system/ui';
 
 import { getWorkApplicationSettings } from '@/app/(student)/_apis/workApplications';
 import { TimeTable } from '@/shared/ui';
 import { useTimeTable } from './_components/timetable/hooks/useTimeTable';
 import { useTimeTableWeek } from './_components/timetable/hooks/useTimeTableWeek';
+import { getMonthWorkHours } from './_components/timetable/utils';
 import { getMonthWeekInfo } from '@/shared/utils/week';
 import { ROUTES } from '@/shared/config/routes';
 
-import MonthWeekNavigator from './_components/MonthWeekNavigator';
+import TimeTableToolbar from './_components/TimeTableToolbar';
+import WorkHoursCard from './_components/WorkHoursCard';
 import WorkRuleNotice from './_components/WorkRuleNotice';
 import { createScheduleSource } from './_lib/createTimeTableSource';
 
@@ -31,7 +33,7 @@ export default function PageClient() {
       settings: getWorkApplicationSettings({ year, month }).settings,
     };
   });
-  const { days, cells } = useTimeTable(
+  const { days, cells, weekHours, getWorkingSlots } = useTimeTable(
     isDetailVisible ? 'detail' : 'read',
     tableWeek.dates,
     source,
@@ -49,24 +51,34 @@ export default function PageClient() {
         <h1 className='title-20-bd text-black'>근로 시간표</h1>
       </div>
 
-      <div className='grid grid-cols-[1fr_auto_1fr] items-center'>
-        <div />
-        <MonthWeekNavigator
-          week={tableWeek.week}
-          isPrevWeekDisabled={tableWeek.isPrevWeekDisabled}
-          isNextWeekDisabled={tableWeek.isNextWeekDisabled}
-          onPrevWeek={tableWeek.handlePrevWeek}
-          onNextWeek={tableWeek.handleNextWeek}
-        />
-        <Toggle
-          className='justify-self-end'
-          aria-label='자세히'
-          checked={isDetailVisible}
-          onCheckedChange={setIsDetailVisible}
-        />
-      </div>
+      <TimeTableToolbar
+        week={tableWeek.week}
+        isPrevWeekDisabled={tableWeek.isPrevWeekDisabled}
+        isNextWeekDisabled={tableWeek.isNextWeekDisabled}
+        onPrevWeek={tableWeek.handlePrevWeek}
+        onNextWeek={tableWeek.handleNextWeek}
+        isDetailVisible={isDetailVisible}
+        onDetailVisibleChange={setIsDetailVisible}
+      />
       <TimeTable days={days} cells={cells} />
       <WorkRuleNotice settings={settings} />
+      {/* 기준이 있는 달만 주·월 근무시간을 기준과 견주어 보여 준다 */}
+      {settings && (
+        <div className='grid grid-cols-2 gap-[1.2rem]'>
+          <WorkHoursCard
+            title={`${tableWeek.week}주차 근무시간`}
+            hours={weekHours}
+            maxHours={settings.weeklyMaxHours}
+            minHours={settings.weeklyMinHours}
+          />
+          <WorkHoursCard
+            title={`${tableWeek.month}월 근무시간`}
+            hours={getMonthWorkHours(getWorkingSlots(), tableWeek.year, tableWeek.month)}
+            maxHours={settings.monthlyMaxHours}
+            minHours={settings.monthlyMinHours}
+          />
+        </div>
+      )}
       <BottomCTAButton>
         <BottomCTAButton.Single color='black' onClick={handleEditClick}>
           수정 요청
