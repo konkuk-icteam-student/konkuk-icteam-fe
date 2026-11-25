@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { ComboBox } from '@konkuk-icteam-fe/design-system/ui';
 import type { Worker } from '../../_apis/workers';
 import { findWorkerByOptionLabel, getWorkerOptionLabels } from './lib/workerSearch';
@@ -10,6 +11,9 @@ type WorkerSearchProps = {
   onSelect: (worker: Worker) => void;
   autoFocus?: boolean;
   className?: string;
+  // 입력칸 모양을 덮어쓴다. transparent면 바깥 배경이 보이도록 입력칸과 그 상자를 투명하게 한다
+  inputClassName?: string;
+  isTransparent?: boolean;
 };
 
 // 이름으로 근로학생을 찾아 고르는 입력칸. 디자인 시스템 ComboBox를 쓰고, 고르면 입력칸을 비운다
@@ -18,6 +22,8 @@ export default function WorkerSearch({
   onSelect,
   autoFocus = false,
   className,
+  inputClassName,
+  isTransparent = false,
 }: WorkerSearchProps) {
   const [keyword, setKeyword] = useState('');
 
@@ -43,6 +49,8 @@ export default function WorkerSearch({
         options={getWorkerOptionLabels().filter((label) => label.includes(keyword.trim()))}
         value={keyword}
         onChange={handleChange}
+        className={isTransparent ? 'bg-transparent' : undefined}
+        inputClassName={cn(isTransparent && 'border-0 bg-transparent', inputClassName)}
         optionWrapperClassName='relative z-30'
       />
     </div>
