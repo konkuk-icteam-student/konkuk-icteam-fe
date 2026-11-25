@@ -1,9 +1,13 @@
-import { formatNumber, parseISO } from '@konkuk-icteam-fe/design-system/date';
-import { getWorkApplicationMock } from '@/app/(admin)/_apis/mock/workApplications';
-import { getMonthDates } from '@/shared/utils/calendar';
+import {
+  getWorkApplicationMock,
+  recordSubmissionMock,
+} from '@/app/(admin)/_apis/mock/workApplications';
+import {
+  getUserMonthRangesMock,
+  replaceUserMonthSchedulesMock,
+} from '@/app/(admin)/_apis/mock/workSchedules';
+import { MY_USER_ID } from './me';
 import type { ApiJson, WorkTimeRange } from '../common';
-
-const createMonthKey = (year: number, month: number) => `${year}-${formatNumber(month)}`;
 
 /**
  * 그 달 근로신청 기준 목업을 얻습니다. 관리자가 신청을 연(기준을 저장한) 달만 있습니다.
@@ -19,31 +23,28 @@ export const getWorkApplicationSettingsMock = (year: number, month: number) => {
 };
 
 /**
- * 처음 보여 줄 내 신청 목업을 만듭니다. 화요일 오전 09~11시, 목요일 오후 13~15시에 신청해 둔 상태입니다.
+ * 그 달 내 신청 목업을 얻습니다. 신청은 곧 그 달 근무표이므로 관리자 근무표 목업에서 내 칸을 읽습니다.
  * @param year 연도
  * @param month 월 (1~12)
- * @returns 신청 근무 JSON
- * @example createBaseApplication(2026, 11).length; // 화·목 수만큼
+ * @returns 신청 근무 JSON (이어진 칸은 한 구간)
+ * @example getMyWorkApplicationMock(2026, 12)[0]; // { date: '2026-12-01', start: '09:00', end: '11:00' }
  */
-const createBaseApplication = (year: number, month: number): ApiJson<WorkTimeRange>[] =>
-  getMonthDates(new Date(year, month - 1, 1)).flatMap((dateKey) => {
-    const day = parseISO(dateKey).getDay();
-    if (day === 2) return [{ date: dateKey, start: '09:00', end: '11:00' }];
-    if (day === 4) return [{ date: dateKey, start: '13:00', end: '15:00' }];
+export const getMyWorkApplicationMock = (year: number, month: number): ApiJson<WorkTimeRange>[] =>
+  getUserMonthRangesMock(MY_USER_ID, year, month);
 
-    return [];
-  });
-
-// 저장한 내 신청 (YYYY-MM → 신청 근무). 새로 고침하면 처음으로 돌아간다
-const SAVED_APPLICATIONS: Record<string, ApiJson<WorkTimeRange>[]> = {};
-
-export const getMyWorkApplicationMock = (year: number, month: number) =>
-  SAVED_APPLICATIONS[createMonthKey(year, month)] ?? createBaseApplication(year, month);
-
+/**
+ * 내 신청을 저장합니다. 관리자 근무표 목업의 내 그 달 칸을 통째로 바꾸고, 관리자 근로신청 요약에 제출을 기록합니다.
+ * @param year 연도
+ * @param month 월 (1~12)
+ * @param schedules 신청 근무 JSON
+ * @example saveMyWorkApplicationMock(2026, 12, [{ date: '2026-12-01', start: '09:00', end: '11:00' }]);
+ */
 export const saveMyWorkApplicationMock = (
   year: number,
   month: number,
   schedules: ApiJson<WorkTimeRange>[],
 ) => {
-  SAVED_APPLICATIONS[createMonthKey(year, month)] = schedules;
+  // 제출을 먼저 기록해야 그 달 근로학생 명단에 들어가 근무표에서 내 칸을 다룰 수 있다
+  recordSubmissionMock(year, month, MY_USER_ID, new Date());
+  replaceUserMonthSchedulesMock(MY_USER_ID, year, month, schedules);
 };

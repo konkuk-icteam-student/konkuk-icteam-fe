@@ -200,3 +200,27 @@ export const getMonthlyUserIdsMock = (year: number, month: number) => {
 
   return isPastMonth ? createPastRosterMock(year, month) : [];
 };
+
+/**
+ * 근로학생 한 명의 제출을 기록합니다. 신청 기간 안에 다시 내면 최근 신청 시각만 바뀝니다.
+ * 신청을 연 달에만 기록하고, 근무 칸은 근무표 목업(replaceUserMonthSchedulesMock)에 담깁니다.
+ * @param year 연도
+ * @param month 월 (1~12)
+ * @param userId 근로학생 id
+ * @param submittedAt 제출 시각
+ * @example recordSubmissionMock(2026, 12, 1, new Date());
+ */
+export const recordSubmissionMock = (
+  year: number,
+  month: number,
+  userId: number,
+  submittedAt: Date,
+) => {
+  const monthKey = createMonthKey(year, month);
+  if (!SAVED_APPLICATIONS[monthKey]) return;
+
+  SAVED_SUBMISSIONS[monthKey] = {
+    ...SAVED_SUBMISSIONS[monthKey],
+    [userId]: { lastSubmittedAt: toApiDateTime(submittedAt) },
+  };
+};
