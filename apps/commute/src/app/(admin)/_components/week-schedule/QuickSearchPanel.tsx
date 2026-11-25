@@ -5,7 +5,7 @@ import type { Worker } from '../../_apis/workers';
 import WorkerSearch from './WorkerSearch';
 
 type QuickSearchPanelProps = {
-  // 고른 근무자를 알린다. 시간표는 이 사람이 있는 칸을 강조하고 없는 칸을 흐리게 한다
+  // 고른 근무자를 알린다. 시간표는 이 사람이 있는 칸과 라벨을 파랗게 강조한다
   onSelectedWorkerChange: (worker: Worker | null) => void;
 };
 

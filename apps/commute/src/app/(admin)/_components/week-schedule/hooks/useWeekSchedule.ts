@@ -5,10 +5,11 @@ import {
   deleteWorkSchedule,
   getWorkSchedules,
   type WorkScheduleUser,
-} from '../../_apis/workSchedules';
+} from '../../../_apis/workSchedules';
 import { checkUnavailableSlot } from '@/shared/utils/slot';
-import { getWorkApplication } from '../../_apis/workApplications';
-import { getWeekDays, type WeekDay } from '../_utils/weekKey';
+import { getWorkApplication } from '../../../_apis/workApplications';
+import { checkDateBeyondMonth } from '../utils/viewableWeeks';
+import { getWeekDays, type WeekDay } from '../utils/weekKey';
 
 // 칸에 넣을 사람. 배치 id는 넣은 뒤에 서버가 정한다
 export type ScheduleCellWorker = Pick<WorkScheduleUser, 'userId' | 'userName'>;
@@ -20,13 +21,16 @@ export type ScheduleCell = {
   users: WorkScheduleUser[];
   // 그 달 근무 불가 시간대 칸. 아무도 넣을 수 없다
   isUnavailable: boolean;
+  // 볼 수 있는 마지막 달보다 뒤인 칸 (신청을 열기 전 다음 달). 회색으로 막아 둔다
+  isBeyondViewableMonth: boolean;
 };
 
 // 시간표 한 열 (하루). 요일·날짜 글자와 30분 단위 칸
 export type ScheduleDay = WeekDay & { cells: ScheduleCell[] };
 
 // 한 주(월~금)의 30분 단위 근무 칸. 사람을 넣고 빼면 바로 저장하고 다시 불러온다
-export const useWeekSchedule = (weekStartKey: string) => {
+// lastViewableMonthKey: 볼 수 있는 마지막 달 (YYYY-MM). 그 뒤 날짜 칸은 막아 둔다
+export const useWeekSchedule = (weekStartKey: string, lastViewableMonthKey: string) => {
   const [, refresh] = useReducer((count: number) => count + 1, 0);
 
   const weekDays = getWeekDays(weekStartKey);
@@ -49,13 +53,19 @@ export const useWeekSchedule = (weekStartKey: string) => {
         end,
         users,
         isUnavailable: checkUnavailableSlot(start, unavailableTimeRanges),
+        isBeyondViewableMonth: checkDateBeyondMonth(day.dateKey, lastViewableMonthKey),
       })),
     };
   });
 
-  // 칸에 사람을 넣는다. 근무 불가 칸이거나 이미 그 칸에 있으면 넣지 않고 false를 돌려준다
+  // 칸에 사람을 넣는다. 막힌 칸이거나 이미 그 칸에 있으면 넣지 않고 false를 돌려준다
   const handleUserAdd = (cell: ScheduleCell, { userId }: ScheduleCellWorker) => {
-    if (cell.isUnavailable || cell.users.some((user) => user.userId === userId)) return false;
+    if (
+      cell.isUnavailable ||
+      cell.isBeyondViewableMonth ||
+      cell.users.some((user) => user.userId === userId)
+    )
+      return false;
 
     createWorkSchedule({ userId, date: parseISO(cell.dateKey), start: cell.start, end: cell.end });
     refresh();

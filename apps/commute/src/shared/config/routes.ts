@@ -17,6 +17,8 @@ export const ROUTES = {
   ADMIN_WORKTIME: '/worktime',
   ADMIN_WORKTIME_CHANGE_REQUESTS: '/worktime/change-requests',
   ADMIN_WORK_APPLICATIONS: '/work-applications',
+  // 신청 받는 달의 근로신청 시간표. 근로시간 관리 시간표를 신청 달만 보이게 띄운다
+  ADMIN_WORK_APPLICATIONS_TIMETABLE: '/work-applications/timetable',
   ADMIN_STUDENTS: '/students',
   ADMIN_TASKS: '/tasks',
 } as const;

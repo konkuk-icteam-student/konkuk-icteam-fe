@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getWorkers } from '../../_apis/workers';
+import { getWorkers } from '../../../_apis/workers';
 import { createWorkerOptionLabel, formatWorkerDetail } from './workerLabel';
 
 describe('workerLabel', () => {

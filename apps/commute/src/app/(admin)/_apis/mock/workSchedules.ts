@@ -1,8 +1,8 @@
-import { parseISO } from '@konkuk-icteam-fe/design-system/date';
+import { parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
 import type { ApiJson } from '@/app/(student)/_apis/common';
 import { SLOT_MINUTES, SLOT_TIMES } from '@/shared/config/slot';
 import { MIN_WORK_HOURS_PER_SHIFT } from '@/shared/config/workHours';
-import { checkWeekend } from '@/shared/utils/calendar';
+import { checkWeekend, getMonthDates } from '@/shared/utils/calendar';
 import { checkUnavailableSlot } from '@/shared/utils/slot';
 import {
   convertMinutesToTime,
@@ -80,7 +80,7 @@ const checkShiftLongEnough = (startTimes: string[]) =>
   );
 
 /**
- * 한 사람의 그날 근무 칸을 얻습니다. 주말은 쉬고, 평일에도 사람마다 쉬는 요일이 하루씩 있습니다.
+ * 한 사람의 그날 근무 칸을 얻습니다. 주말과 그 달 근무 불가 날짜는 쉬고, 평일에도 사람마다 쉬는 요일이 하루씩 있습니다.
  * 근무는 30분 단위로 시작하고 끝나며, 그 달 근무 불가 시간대 칸에는 넣지 않습니다. 끊긴 구간도 최소 근무 시간 이상입니다.
  * @param userId 근로학생 id
  * @param date 날짜
@@ -88,7 +88,10 @@ const checkShiftLongEnough = (startTimes: string[]) =>
  * @example getDailyShiftStartTimes(1, new Date(2026, 9, 23)); // ['14:00', '14:30', ..., '16:30']
  */
 const getDailyShiftStartTimes = (userId: number, date: Date) => {
-  if (checkWeekend(date)) return [];
+  const unavailableDates =
+    getWorkApplicationMock(date.getFullYear(), date.getMonth() + 1)?.settings.unavailableDates ??
+    [];
+  if (checkWeekend(date) || unavailableDates.includes(toISO(date))) return [];
 
   const seed = createSeed(userId - 1, date.getDay());
   if (seed % 5 === 0) return [];
@@ -159,6 +162,22 @@ export const getDaySlotsMock = (dateKey: string): WorkScheduleSlot[] => {
     };
   });
 };
+
+/**
+ * 그 달 근무 시간표에 든 근로장학생별 근무 시간을 셉니다. 관리자가 넣고 뺀 칸도 반영됩니다.
+ * @param year 연도
+ * @param month 월 (1~12)
+ * @returns 근로장학생 id → 근무 시간 (분)
+ * @example getMonthlyScheduledMinutesMock(2026, 12)[1]; // 2400
+ */
+export const getMonthlyScheduledMinutesMock = (year: number, month: number) =>
+  getMonthDates(new Date(year, month - 1, 1))
+    .flatMap((dateKey) => getDaySlotsMock(dateKey))
+    .flatMap(({ users }) => users)
+    .reduce<Record<number, number>>(
+      (minutes, { userId }) => ({ ...minutes, [userId]: (minutes[userId] ?? 0) + SLOT_MINUTES }),
+      {},
+    );
 
 export const getMaxConcurrentWorkersMock = (year: number, month: number) =>
   getWorkApplicationMock(year, month)?.settings.maxConcurrentWorkers ??
