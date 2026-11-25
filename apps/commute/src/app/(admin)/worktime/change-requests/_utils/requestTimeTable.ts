@@ -3,8 +3,12 @@ import type { WorkTimeRange } from '@/app/(student)/_apis/common';
 import { SLOT_MINUTES } from '@/shared/config/slot';
 import type { SlotStatus, TimeTableCell } from '@/shared/ui';
 import { checkUnavailableSlot } from '@/shared/utils/slot';
-import { convertMinutesToTime, convertTimeToMinutes } from '@/shared/utils/time';
-import { mergeContinuousSlots, type TimeRange } from '@/shared/utils/timeRange';
+import {
+  convertMinutesToTime,
+  convertTimeToMinutes,
+  mergeContinuousSlots,
+  type TimeRange,
+} from '@/shared/utils/time';
 
 // 시간표 하루치 입력. 칸마다 그 칸에 근무하는 사람이 들어 있다
 export type RequestTimeTableDay = {
@@ -17,7 +21,7 @@ export type RequestTimeTableDay = {
 };
 
 // 시간표에서 보고 있는 학생과, 승인되면 그 학생에게 더해지거나 빠질 칸 (createSlotKey로 만든 key)
-export type RequestTimeTableFocus = {
+type RequestTimeTableFocus = {
   userId: number;
   userName: string;
   addSlotKeys: Set<string>;

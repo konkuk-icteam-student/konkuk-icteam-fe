@@ -23,6 +23,7 @@ export { default as IconInfo } from './components/IconInfo';
 export { default as IconMember } from './components/IconMember';
 export { default as IconMessage } from './components/IconMessage';
 export { default as IconMessageFill } from './components/IconMessageFill';
+export { default as IconMore } from './components/IconMore';
 export { default as IconPencil } from './components/IconPencil';
 export { default as IconProfile } from './components/IconProfile';
 export { default as IconProfileFill } from './components/IconProfileFill';

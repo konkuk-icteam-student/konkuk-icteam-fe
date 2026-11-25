@@ -1,5 +1,4 @@
-import { convertMinutesToTime } from '@/shared/utils/time';
-import type { TimeRange } from '@/shared/utils/timeRange';
+import { convertMinutesToTime, type TimeRange } from '@/shared/utils/time';
 
 // 근무 칸은 30분 단위이고 09:00 ~ 18:00 까지 하루 18칸이다 (관리자·근로학생 화면 공통)
 const FIRST_SLOT_HOUR = 9;

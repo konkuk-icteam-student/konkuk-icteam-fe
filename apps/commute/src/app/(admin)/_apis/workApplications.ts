@@ -5,7 +5,7 @@ import {
   toApiDateTime,
   type ApiJson,
 } from '@/app/(student)/_apis/common';
-import type { TimeRange } from '@/shared/utils/timeRange';
+import type { TimeRange } from '@/shared/utils/time';
 import {
   getWorkApplicationMock,
   getWorkApplicationSubmissionsMock,

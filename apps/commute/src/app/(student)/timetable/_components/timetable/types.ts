@@ -1,5 +1,5 @@
 import type { SlotStatus } from '@/shared/ui';
-import type { TimeRange } from '@/shared/utils/timeRange';
+import type { TimeRange } from '@/shared/utils/time';
 
 // 근로학생 시간표 화면만 쓰는 타입. 표 모양(칸 상태·칸 데이터·요일)은 공통 컴포넌트 shared/ui/timetable에 있다
 

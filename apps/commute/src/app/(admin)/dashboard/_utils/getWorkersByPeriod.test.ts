@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { WorkScheduleSlot } from '../../_apis/workSchedules';
-import { getWorkersByPeriod } from './getWorkersByPeriod';
+import { getDailyWorkers, getWorkersByPeriod } from './getWorkersByPeriod';
 
 const createSlot = (start: string, users: [number, string][]): WorkScheduleSlot => ({
   start,
@@ -68,5 +68,30 @@ describe('getWorkersByPeriod', () => {
 
   it('근무자가 없으면 빈 배열이다', () => {
     expect(getWorkersByPeriod([])).toEqual({ MORNING: [], AFTERNOON: [] });
+  });
+});
+
+describe('getDailyWorkers', () => {
+  it('오전·오후 구분 없이 그날 근무 칸이 많은 사람부터 한 번씩 놓고, 같으면 먼저 시작하는 사람이 앞이다', () => {
+    const workers = getDailyWorkers([
+      createSlot('10:00', [[4, '박지우']]),
+      createSlot('13:00', [
+        [3, '이서준'],
+        [1, '홍길동'],
+      ]),
+      createSlot('14:00', [
+        [1, '홍길동'],
+        [3, '이서준'],
+      ]),
+      createSlot('15:00', [[3, '이서준']]),
+    ]);
+
+    // 하루 합계: 이서준 3칸, 홍길동 2칸, 박지우 1칸
+    expect(workers.map(({ userId }) => userId)).toEqual([3, 1, 4]);
+    expect(workers[2]?.workSlots.map(({ start }) => start)).toEqual(['10:00']);
+  });
+
+  it('근무자가 없으면 빈 배열이다', () => {
+    expect(getDailyWorkers([])).toEqual([]);
   });
 });

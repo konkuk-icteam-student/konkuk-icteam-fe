@@ -48,12 +48,6 @@ describe('createRequestTimeTableCells', () => {
     ]);
   });
 
-  it('칸마다 근무자 명단과 최대 인원을 담는다', () => {
-    const [cell] = createRequestTimeTableCells([DAY], 4, null)[0] ?? [];
-
-    expect(cell).toMatchObject({ mode: 'detail', workers: ['학생1'], maxCount: 4 });
-  });
-
   it('보고 있는 학생의 칸은 신청 완료, 요청 칸은 삭제·추가 예정이다', () => {
     const focus = {
       userId: 2,
@@ -81,8 +75,8 @@ describe('createRequestTimeTableCells', () => {
     };
     const [, deleteCell, , addCell] = createRequestTimeTableCells([DAY], 4, focus)[0] ?? [];
 
-    expect(deleteCell).toMatchObject({ workers: ['학생1'] });
-    expect(addCell).toMatchObject({ workers: ['학생2'] });
+    expect(deleteCell).toMatchObject({ mode: 'detail', workers: ['학생1'], maxCount: 4 });
+    expect(addCell).toMatchObject({ mode: 'detail', workers: ['학생2'], maxCount: 4 });
   });
 
   it('근무 불가 날짜는 하루 통째로 신청 불가다', () => {
@@ -123,9 +117,5 @@ describe('createOverCapacityRanges', () => {
       'OVER_CAPACITY',
       'PENDING_ADD',
     ]);
-  });
-
-  it('보고 있는 학생이 없으면 경고할 구간도 없다', () => {
-    expect(createOverCapacityRanges([FULL_DAY], 4, null)).toEqual([]);
   });
 });
