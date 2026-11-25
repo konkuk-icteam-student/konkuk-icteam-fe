@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import { createSlotKey } from '@/shared/utils/slot';
 import {
   createOverCapacityRanges,
   createRequestTimeTableCells,
-  createSlotKey,
   createSlotKeys,
   type RequestTimeTableDay,
 } from './requestTimeTable';

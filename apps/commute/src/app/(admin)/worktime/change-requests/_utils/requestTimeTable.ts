@@ -2,7 +2,7 @@ import { toISO } from '@konkuk-icteam-fe/design-system/date';
 import type { WorkTimeRange } from '@/app/(student)/_apis/common';
 import { SLOT_MINUTES } from '@/shared/config/slot';
 import type { SlotStatus, TimeTableCell } from '@/shared/ui';
-import { checkUnavailableSlot } from '@/shared/utils/slot';
+import { checkUnavailableSlot, createSlotKey } from '@/shared/utils/slot';
 import {
   convertMinutesToTime,
   convertTimeToMinutes,
@@ -27,15 +27,6 @@ type RequestTimeTableFocus = {
   addSlotKeys: Set<string>;
   deleteSlotKeys: Set<string>;
 };
-
-/**
- * 칸 하나를 가리키는 key를 만듭니다.
- * @param dateKey 날짜 (YYYY-MM-DD)
- * @param start 칸 시작 시각 (HH:mm)
- * @returns 'YYYY-MM-DD HH:mm'
- * @example createSlotKey('2026-11-25', '11:00'); // '2026-11-25 11:00'
- */
-export const createSlotKey = (dateKey: string, start: string) => `${dateKey} ${start}`;
 
 /**
  * 근무 구간들을 30분 칸 key로 펼칩니다.

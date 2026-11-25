@@ -5,7 +5,7 @@ import { parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
 import { SLOT_MINUTES } from '@/shared/config/slot';
 import { MIN_WORK_HOURS_PER_SHIFT } from '@/shared/config/workHours';
 import { formatMonthDay } from '@/shared/utils/formatDate';
-import { checkUnavailableSlot } from '@/shared/utils/slot';
+import { checkUnavailableSlot, createSlotKey } from '@/shared/utils/slot';
 import { convertTimeToMinutes, MINUTES_PER_HOUR } from '@/shared/utils/time';
 
 import {
@@ -19,7 +19,7 @@ import {
 
 import { APPLY_NEXT_STATUS, EDIT_NEXT_STATUS, WEEKDAY_LABELS } from '../constants';
 import type { SlotEdit, TimeTableSource } from '../types';
-import { convertSlotCountToHours, createSlotKey } from '../utils';
+import { convertSlotCountToHours } from '../utils';
 
 // 근무로 치는 상태. 삭제 예정은 빠질 칸이라 넣지 않는다.
 const WORKING_STATUSES: SlotStatus[] = ['APPLIED', 'PENDING_ADD'];

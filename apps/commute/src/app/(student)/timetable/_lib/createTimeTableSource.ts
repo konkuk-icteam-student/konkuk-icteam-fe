@@ -7,7 +7,7 @@ import {
 } from '@/app/(student)/_apis/workApplications';
 import { getWorkSchedules } from '@/app/(student)/_apis/workSchedules';
 import type { TimeTableSource } from '../_components/timetable/types';
-import { createSlotKey } from '../_components/timetable/utils';
+import { createSlotKey } from '@/shared/utils/slot';
 import { PUBLIC_HOLIDAYS } from '@/shared/config/holidays';
 import { SLOT_MINUTES } from '@/shared/config/slot';
 import { convertMinutesToTime, convertTimeToMinutes } from '@/shared/utils/time';
