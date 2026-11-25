@@ -1,4 +1,4 @@
-import type { TimeRange } from '@/shared/utils/timeRange';
+import type { TimeRange } from '@/shared/utils/time';
 
 /**
  * 칸이 근무 불가 시간대에 걸리는지 확인합니다. 시간대의 시작은 포함하고 끝은 포함하지 않습니다.

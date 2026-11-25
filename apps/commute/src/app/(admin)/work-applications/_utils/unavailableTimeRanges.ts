@@ -1,6 +1,5 @@
 import { SLOT_MINUTES, SLOT_TIMES } from '@/shared/config/slot';
-import { convertTimeToMinutes } from '@/shared/utils/time';
-import type { TimeRange } from '@/shared/utils/timeRange';
+import { convertTimeToMinutes, type TimeRange } from '@/shared/utils/time';
 import { checkTimeFormat } from './timeInput';
 
 const DAY_START_MINUTES = convertTimeToMinutes(SLOT_TIMES[0]!.start);

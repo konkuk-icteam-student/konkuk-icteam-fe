@@ -112,7 +112,7 @@ export default function SettingsPanel({
                 placeholder='09:00'
                 aria-label='시작 시각'
                 disabled={!isEditable}
-                value={getTimeOfDay(settings.applyStartDate)}
+                value={convertDateToTime(settings.applyStartDate)}
                 onChange={(time) =>
                   updateSetting('applyStartDate', createDateWithTime(settings.applyStartDate, time))
                 }
@@ -124,7 +124,7 @@ export default function SettingsPanel({
                 placeholder='18:00'
                 aria-label='마감 시각'
                 disabled={!isEditable}
-                value={getTimeOfDay(settings.applyEndDate)}
+                value={convertDateToTime(settings.applyEndDate)}
                 onChange={(time) =>
                   updateSetting('applyEndDate', createDateWithTime(settings.applyEndDate, time))
                 }
