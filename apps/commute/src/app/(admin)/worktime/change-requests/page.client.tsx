@@ -68,7 +68,7 @@ export default function PageClient({ statusFilter }: PageClientProps) {
   const [rejectTarget, setRejectTarget] = useState<WorkChangeRequest | null>(null);
   const [isBulkApproveOpen, setIsBulkApproveOpen] = useState(false);
   // 오른쪽 시간표에서 보고 있는 요청. 처음에는 아무것도 고르지 않는다
-  const [selectedRequest, setSelectedRequest] = useState<WorkChangeRequest | null>(null);
+  const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
   // 이름으로 찾은 학생. 고른 요청보다 먼저 보여 준다
   const [searchedWorker, setSearchedWorker] = useState<Worker | null>(null);
   const [weekStartKey, setWeekStartKey] = useState(() => getWeekStartKey(new Date()));
@@ -83,10 +83,8 @@ export default function PageClient({ statusFilter }: PageClientProps) {
   const pendingRequests = requests.filter(
     ({ statusCode }) => statusCode === WORK_CHANGE_REQUEST_STATUS.PENDING,
   );
-  // 승인·반려하면 상태가 바뀌므로 고른 요청은 최신 목록에서 다시 찾는다
-  const activeRequest = selectedRequest
-    ? (requests.find(({ requestId }) => requestId === selectedRequest.requestId) ?? null)
-    : null;
+  // 고른 요청은 id로 들고 있다가 최신 목록에서 찾는다 (승인·반려하면 상태가 바뀐다)
+  const activeRequest = requests.find(({ requestId }) => requestId === selectedRequestId) ?? null;
 
   const focusedUser = searchedWorker
     ? { userId: searchedWorker.userId, name: searchedWorker.name }
@@ -102,17 +100,17 @@ export default function PageClient({ statusFilter }: PageClientProps) {
 
   const handleMonthMove = (delta: number) => {
     setMonthKey((prev) => shiftMonthKey(prev, delta));
-    setSelectedRequest(null);
+    setSelectedRequestId(null);
   };
 
   const handleRequestSelect = (request: WorkChangeRequest) => {
-    setSelectedRequest(request);
+    setSelectedRequestId(request.requestId);
     setSearchedWorker(null);
     setWeekStartKey(getRequestWeekStartKey(request));
   };
 
   const handleReset = () => {
-    setSelectedRequest(null);
+    setSelectedRequestId(null);
     setSearchedWorker(null);
   };
 
