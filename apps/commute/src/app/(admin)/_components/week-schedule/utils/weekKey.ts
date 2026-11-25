@@ -1,9 +1,6 @@
 import { parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
-import { formatDateRange, formatMonthDay } from '@/shared/utils/formatDate';
-import { addDays, DAYS_PER_WEEK, getMondayOfWeek } from '@/shared/utils/week';
-
-const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'] as const;
-const WORKDAY_COUNT = 5;
+import { formatDateRange, formatMonthDay, formatWeekday } from '@/shared/utils/formatDate';
+import { addDays, DAYS_PER_WEEK, getMondayOfWeek, getWeekdayDates } from '@/shared/utils/week';
 
 export type WeekDay = {
   dateKey: string;
@@ -37,15 +34,11 @@ export const shiftWeek = (weekStartKey: string, delta: number) =>
  * @example getWeekDays('2026-10-19')[0]; // { dateKey: '2026-10-19', dateLabel: '10.19', weekday: '월' }
  */
 export const getWeekDays = (weekStartKey: string): WeekDay[] =>
-  Array.from({ length: WORKDAY_COUNT }, (_, index) => {
-    const date = addDays(parseISO(weekStartKey), index);
-
-    return {
-      dateKey: toISO(date),
-      dateLabel: formatMonthDay(date),
-      weekday: WEEKDAY_LABELS[date.getDay()] ?? '',
-    };
-  });
+  getWeekdayDates(parseISO(weekStartKey)).map((date) => ({
+    dateKey: toISO(date),
+    dateLabel: formatMonthDay(date),
+    weekday: formatWeekday(date),
+  }));
 
 /**
  * 주를 "MM.DD - MM.DD"로 보여 줍니다.

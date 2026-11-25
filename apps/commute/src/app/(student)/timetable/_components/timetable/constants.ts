@@ -13,5 +13,3 @@ export const APPLY_NEXT_STATUS: Partial<Record<SlotStatus, SlotStatus>> = {
   AVAILABLE: 'APPLIED',
   APPLIED: 'AVAILABLE',
 };
-
-export const WEEKDAY_LABELS = ['월', '화', '수', '목', '금'];

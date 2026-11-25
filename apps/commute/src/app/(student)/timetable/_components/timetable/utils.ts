@@ -1,15 +1,7 @@
 import { formatNumber } from '@konkuk-icteam-fe/design-system/date';
 import { SLOT_MINUTES } from '@/shared/config/slot';
+import { createSlotKey } from '@/shared/utils/slot';
 import { convertMinutesToTime, convertTimeToMinutes, MINUTES_PER_HOUR } from '@/shared/utils/time';
-
-/**
- * 칸 하나를 가리키는 key를 만듭니다.
- * @param dateKey 날짜 'YYYY-MM-DD'
- * @param startTime 칸 시작 시각 'HH:mm'
- * @returns 'YYYY-MM-DD HH:mm'
- * @example const key = createSlotKey('2026-10-27', '09:00'); // '2026-10-27 09:00'
- */
-export const createSlotKey = (dateKey: string, startTime: string) => `${dateKey} ${startTime}`;
 
 /**
  * 칸들을 날짜별로 이어진 구간으로 묶습니다. 요청·신청을 보낼 때 씁니다.

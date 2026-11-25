@@ -278,3 +278,42 @@ export const getMonthlyRecordMock = (
     approvedChangeRequestCount: Math.floor(totalChangeRequestCount / 2),
   };
 };
+
+/**
+ * 한 사람의 그 달 근무를 이어진 구간으로 모읍니다. 근로학생의 "내 신청"을 근무표에서 읽을 때 씁니다.
+ * @param userId 근로학생 id
+ * @param year 연도
+ * @param month 월 (1~12)
+ * @returns 날짜·시간순 근무 구간 (JSON 모양)
+ * @example getUserMonthRangesMock(1, 2026, 12)[0]; // { date: '2026-12-01', start: '09:00', end: '11:00' }
+ */
+export const getUserMonthRangesMock = (userId: number, year: number, month: number) =>
+  getMonthDates(new Date(year, month - 1, 1)).flatMap((date) =>
+    mergeContinuousSlots(
+      getDaySlotsMock(date)
+        .filter(({ users }) => users.some((user) => user.userId === userId))
+        .map(({ start, end }) => ({ start, end })),
+    ).map((range) => ({ date, ...range })),
+  );
+
+/**
+ * 한 사람의 그 달 근무를 통째로 바꿉니다. 근로학생이 근로 신청을 저장하면 신청이 곧 그 달 근무표가 됩니다.
+ * @param userId 근로학생 id
+ * @param year 연도
+ * @param month 월 (1~12)
+ * @param ranges 새 근무 구간 (JSON 모양). 근무 불가 시간대 칸은 넣지 않는다
+ * @example replaceUserMonthSchedulesMock(1, 2026, 12, [{ date: '2026-12-01', start: '09:00', end: '11:00' }]);
+ */
+export const replaceUserMonthSchedulesMock = (
+  userId: number,
+  year: number,
+  month: number,
+  ranges: { date: string; start: string; end: string }[],
+) => {
+  getMonthDates(new Date(year, month - 1, 1))
+    .flatMap((date) => getDaySlotsMock(date).flatMap(({ users }) => users))
+    .filter((user) => user.userId === userId)
+    .forEach(({ scheduleId }) => deleteWorkScheduleMock(scheduleId));
+
+  applyWorkChangeMock(userId, { deleteSchedules: [], addSchedules: ranges });
+};
