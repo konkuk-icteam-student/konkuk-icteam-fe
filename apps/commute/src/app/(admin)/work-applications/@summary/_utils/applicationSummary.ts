@@ -2,7 +2,7 @@ import { MINUTES_PER_HOUR } from '@/shared/utils/time';
 import type {
   WorkApplicationSettings,
   WorkApplicationSubmission,
-} from '../../_apis/workApplications';
+} from '../../../_apis/workApplications';
 
 export type SubmissionSortKey = 'STATUS' | 'NAME' | 'RECENT';
 
@@ -30,30 +30,6 @@ export const checkMonthlyHoursMet = (
 ) =>
   submittedMinutes >= monthlyMinHours * MINUTES_PER_HOUR &&
   submittedMinutes <= monthlyMaxHours * MINUTES_PER_HOUR;
-
-/**
- * 제출 현황을 셉니다. 미제출은 미충족에 함께 세서 충족 + 미충족 = 전체 근로장학생입니다.
- * @param submissions 근로장학생별 제출
- * @param range 월간 근로시간 기준
- * @param range.monthlyMinHours 월간 최소 (시간)
- * @param range.monthlyMaxHours 월간 최대 (시간)
- * @returns 제출·충족·미충족 인원
- * @example getSubmissionCounts(submissions, settings); // { submittedCount: 6, metCount: 4, unmetCount: 3 }
- */
-export const getSubmissionCounts = (
-  submissions: WorkApplicationSubmission[],
-  range: MonthlyHoursRange,
-) => {
-  const metCount = submissions.filter(({ submittedMinutes }) =>
-    checkMonthlyHoursMet(submittedMinutes, range),
-  ).length;
-
-  return {
-    submittedCount: submissions.filter(({ lastSubmittedAt }) => lastSubmittedAt !== null).length,
-    metCount,
-    unmetCount: submissions.length - metCount,
-  };
-};
 
 const compareName = (a: WorkApplicationSubmission, b: WorkApplicationSubmission) =>
   a.name.localeCompare(b.name, 'ko');
