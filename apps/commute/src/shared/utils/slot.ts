@@ -9,3 +9,12 @@ import type { TimeRange } from '@/shared/utils/time';
  */
 export const checkUnavailableSlot = (start: string, unavailableTimeRanges: readonly TimeRange[]) =>
   unavailableTimeRanges.some((range) => start >= range.start && start < range.end);
+
+/**
+ * 시간표 칸 하나를 가리키는 key를 만듭니다. 근로학생 시간표와 관리자 수정요청 시간표가 같은 형식을 쓴다.
+ * @param dateKey 날짜 (YYYY-MM-DD)
+ * @param startTime 칸 시작 시각 (HH:mm)
+ * @returns 'YYYY-MM-DD HH:mm'
+ * @example createSlotKey('2026-10-27', '09:00'); // '2026-10-27 09:00'
+ */
+export const createSlotKey = (dateKey: string, startTime: string) => `${dateKey} ${startTime}`;

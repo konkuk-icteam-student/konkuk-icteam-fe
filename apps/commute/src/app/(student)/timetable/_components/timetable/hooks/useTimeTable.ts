@@ -4,30 +4,25 @@ import { parseISO, toISO } from '@konkuk-icteam-fe/design-system/date';
 
 import { SLOT_MINUTES } from '@/shared/config/slot';
 import { MIN_WORK_HOURS_PER_SHIFT } from '@/shared/config/workHours';
-import { formatMonthDay } from '@/shared/utils/formatDate';
-import { checkUnavailableSlot } from '@/shared/utils/slot';
-import { convertTimeToMinutes } from '@/shared/utils/time';
+import { formatMonthDay, formatWeekday } from '@/shared/utils/formatDate';
+import { checkUnavailableSlot, createSlotKey } from '@/shared/utils/slot';
+import { convertTimeToMinutes, MINUTES_PER_HOUR } from '@/shared/utils/time';
 
 import {
-  APPLY_NEXT_STATUS,
-  EDIT_NEXT_STATUS,
   SLOT_START_TIMES,
-  WEEKDAY_LABELS,
-} from '../constants';
-import type {
-  SlotCellData,
-  SlotEdit,
-  SlotStatus,
-  TimeTableCell,
-  TimeTableDay,
-  TimeTableMode,
-  TimeTableSource,
-} from '../types';
-import { createSlotKey } from '../utils';
+  type SlotCellData,
+  type SlotStatus,
+  type TimeTableCell,
+  type TimeTableDay,
+  type TimeTableMode,
+} from '@/shared/ui';
+
+import { APPLY_NEXT_STATUS, EDIT_NEXT_STATUS } from '../constants';
+import type { SlotEdit, TimeTableSource } from '../types';
+import { convertSlotCountToHours } from '../utils';
 
 // 근무로 치는 상태. 삭제 예정은 빠질 칸이라 넣지 않는다.
 const WORKING_STATUSES: SlotStatus[] = ['APPLIED', 'PENDING_ADD'];
-const MINUTES_PER_HOUR = 60;
 const MIN_SLOTS_PER_SHIFT = (MIN_WORK_HOURS_PER_SHIFT * MINUTES_PER_HOUR) / SLOT_MINUTES;
 
 // 칸이 시작하는 시각
@@ -51,18 +46,23 @@ const checkHasShortShift = (statuses: SlotStatus[]) => {
   return shiftLengths.some((length) => length < MIN_SLOTS_PER_SHIFT);
 };
 
-const createDay = (date: Date, index: number): TimeTableDay => ({
+const createDay = (date: Date): TimeTableDay => ({
   date: toISO(date),
-  label: WEEKDAY_LABELS[index] ?? '',
+  label: formatWeekday(date),
   dateLabel: formatMonthDay(date),
 });
 
 // dates: 표에 그릴 월~금 날짜, source: 화면이 조회한 근무·기준 데이터
-export const useTimeTable = (mode: TimeTableMode, dates: Date[], source: TimeTableSource) => {
+// isOccupancyVisible: edit·apply에서 '자세히보기'를 켰는지. 켜면 칸마다 인원/최대 인원을 보여 준다
+export const useTimeTable = (
+  mode: TimeTableMode,
+  dates: Date[],
+  source: TimeTableSource,
+  { isOccupancyVisible = false }: { isOccupancyVisible?: boolean } = {},
+) => {
   // edit·apply 모드에서 사용자가 바꾼 슬롯. key는 createSlotKey로 만든다.
   // 주차를 옮겨도 남아 있어서 여러 주를 한 번에 고칠 수 있다.
   const [editedSlots, setEditedSlots] = useState<Record<string, SlotEdit>>({});
-  const isEditable = mode === 'edit' || mode === 'apply';
   const maxSlotsPerWeek = (source.weeklyMaxHours * MINUTES_PER_HOUR) / SLOT_MINUTES;
 
   // 칸을 눌렀을 때 바뀌는 상태. 수정은 예정 상태를 거치고, 신청은 바로 바뀐다.
@@ -94,11 +94,6 @@ export const useTimeTable = (mode: TimeTableMode, dates: Date[], source: TimeTab
 
   // 한 칸의 지금 상태. 사용자가 바꾼 값이 있으면 그것을, 없으면 원래 상태를 쓴다.
   const getSlotEdit = (dateKey: string, startTime: string): SlotEdit => {
-    // 수정·신청 화면에서 이미 지났거나 마감이 지난 칸은 고칠 수 없으니 신청 불가로 막는다.
-    if (isEditable && getSlotStartDate(dateKey, startTime) < source.editableFrom) {
-      return { date: dateKey, startTime, status: 'UNAVAILABLE' };
-    }
-
     return (
       editedSlots[createSlotKey(dateKey, startTime)] ?? {
         date: dateKey,
@@ -137,7 +132,7 @@ export const useTimeTable = (mode: TimeTableMode, dates: Date[], source: TimeTab
   const weekWorkingSlotCount = dateKeys
     .flatMap((dateKey) => SLOT_START_TIMES.map((startTime) => getSlotEdit(dateKey, startTime)))
     .filter(({ status }) => WORKING_STATUSES.includes(status)).length;
-  const weekHours = (weekWorkingSlotCount * SLOT_MINUTES) / MINUTES_PER_HOUR;
+  const weekHours = convertSlotCountToHours(weekWorkingSlotCount);
   const isWeekFull = weekWorkingSlotCount >= maxSlotsPerWeek;
 
   // 바꾼 칸이 있는 날 중 최소 근무 시간보다 짧은 구간이 생긴 날짜 ('YYYY-MM-DD', 오름차순)
@@ -152,6 +147,8 @@ export const useTimeTable = (mode: TimeTableMode, dates: Date[], source: TimeTab
 
   const createSlotCellData = (key: string, edit: SlotEdit): SlotCellData => {
     const { status } = edit;
+    // 이미 지났거나 바꿀 수 있는 마감이 지난 칸. 상태(신청 완료 등)는 그대로 보여 주고 누르지만 못하게 막는다
+    const isPastDeadline = getSlotStartDate(edit.date, edit.startTime) < source.editableFrom;
 
     if (mode === 'read') return { mode, status };
 
@@ -170,7 +167,16 @@ export const useTimeTable = (mode: TimeTableMode, dates: Date[], source: TimeTab
       onClick: () => handleEditSlot(key, edit),
       // 바꿀 수 없는 칸(신청 불가)은 막는다.
       // 주 최대 시간을 채웠으면 빈 칸은 더 추가할 수 없다. 이미 고른 칸은 되돌릴 수 있다.
-      disabled: nextStatusMap[status] === undefined || (isWeekFull && status === 'AVAILABLE'),
+      disabled:
+        isPastDeadline ||
+        nextStatusMap[status] === undefined ||
+        (isWeekFull && status === 'AVAILABLE'),
+      occupancy: isOccupancyVisible
+        ? {
+            count: source.workersBySlot[key]?.length ?? 0,
+            maxCount: source.maxConcurrentWorkers,
+          }
+        : undefined,
     };
   };
 
@@ -190,7 +196,6 @@ export const useTimeTable = (mode: TimeTableMode, dates: Date[], source: TimeTab
     changedSlots,
     resetEdits,
     weekHours,
-    isWeekFull,
     getShortShiftDates,
     getWorkingSlots,
   };

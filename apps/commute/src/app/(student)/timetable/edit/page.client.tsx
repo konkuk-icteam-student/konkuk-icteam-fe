@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import {
   BottomCTAButton,
   Button,
@@ -18,19 +17,20 @@ import {
   createWorkChangeRequest,
   getMyWorkChangeRequests,
 } from '@/app/(student)/_apis/workChangeRequests';
-import TimeTable from '../_components/timetable/base/Week';
+import { SlotLegend, TimeTable } from '@/shared/ui';
 import { useTimeTable } from '../_components/timetable/hooks/useTimeTable';
 import { useTimeTableWeek } from '../_components/timetable/hooks/useTimeTableWeek';
 import type { SlotEdit } from '../_components/timetable/types';
-import { mergeSlotsToRanges } from '../_components/timetable/utils';
+import { getMonthWorkHours, mergeSlotsToRanges } from '../_components/timetable/utils';
 import { getMonthWeekInfo } from '@/shared/utils/week';
 import { ROUTES } from '@/shared/config/routes';
 import { SLOT_MINUTES } from '@/shared/config/slot';
 import { SCHEDULE_CHANGE_RULES } from '@/shared/config/workHours';
 
 import BackHeader from '../_components/BackHeader';
-import SlotLegend from '../_components/SlotLegend';
-import MonthWeekNavigator from '../_components/MonthWeekNavigator';
+import RefreshableInfo from '../_components/RefreshableInfo';
+import TimeTableToolbar from '../_components/TimeTableToolbar';
+import WorkHoursSummary from '../_components/WorkHoursSummary';
 import WorkRuleNotice from '../_components/WorkRuleNotice';
 import { EDIT_LEGEND_ITEMS } from '../_constants/slotLegend';
 import { useLeaveGuard } from '../_hooks/useLeaveGuard';
@@ -57,8 +57,11 @@ export default function PageClient() {
   const router = useRouter();
   const [today] = useState(() => new Date());
   const tableWeek = useTimeTableWeek(today);
-  // 이번 달 근무와 기준, 이번 달 보낸 변경 요청 수. 근로 시작 몇 시간 전까지만 바꿀 수 있다
-  const [{ source, settings, usedChangeCount }] = useState(() => {
+  // '자세히보기'를 켜면 칸마다 신청 인원을 보여 준다
+  const [isDetailVisible, setIsDetailVisible] = useState(false);
+  // 이번 달 근무와 기준, 이번 달 보낸 변경 요청 수. 근로 시작 몇 시간 전까지만 바꿀 수 있다.
+  // 새로고침하면 다시 불러온다 (바꾼 칸은 useTimeTable이 들고 있어 그대로 남는다)
+  const loadTimeTableData = () => {
     const { year, month } = getMonthWeekInfo(today);
 
     return {
@@ -70,8 +73,14 @@ export default function PageClient() {
       settings: getWorkApplicationSettings({ year, month }).settings,
       usedChangeCount: getMyWorkChangeRequests({ year, month }).requests.length,
     };
-  });
-  const { days, cells, changedSlots, resetEdits } = useTimeTable('edit', tableWeek.dates, source);
+  };
+  const [{ source, settings, usedChangeCount }, setTimeTableData] = useState(loadTimeTableData);
+  const { days, cells, changedSlots, resetEdits, weekHours, getWorkingSlots } = useTimeTable(
+    'edit',
+    tableWeek.dates,
+    source,
+    { isOccupancyVisible: isDetailVisible },
+  );
 
   const hasChangedSlots = changedSlots.length > 0;
   // 한 달 한도를 다 쓰면 더 요청할 수 없다
@@ -90,11 +99,11 @@ export default function PageClient() {
     setIsRequestDoneModalOpen(true);
   };
 
-  // 확인 버튼·바깥 클릭·ESC 어느 쪽으로 닫아도 메인으로 돌아간다
+  // 확인 버튼·바깥 클릭·ESC 어느 쪽으로 닫아도 근로 시간표로 돌아간다
   const handleRequestDoneModalOpenChange = (open: boolean) => {
     setIsRequestDoneModalOpen(open);
 
-    if (!open) router.replace(ROUTES.HOME);
+    if (!open) router.replace(ROUTES.TIMETABLE);
   };
 
   return (
@@ -105,37 +114,39 @@ export default function PageClient() {
         month={tableWeek.month}
         onBack={handleBack}
       />
-      <div className='flex justify-center'>
-        <MonthWeekNavigator
-          week={tableWeek.week}
-          isPrevWeekDisabled={tableWeek.isPrevWeekDisabled}
-          isNextWeekDisabled={tableWeek.isNextWeekDisabled}
-          onPrevWeek={tableWeek.handlePrevWeek}
-          onNextWeek={tableWeek.handleNextWeek}
-        />
-      </div>
-      <p
-        className={cn(
-          'caption-12-md -mt-[1.2rem] text-center',
-          isChangeLimitReached ? 'text-red' : 'text-gray-500',
-        )}
+      <TimeTableToolbar
+        week={tableWeek.week}
+        isPrevWeekDisabled={tableWeek.isPrevWeekDisabled}
+        isNextWeekDisabled={tableWeek.isNextWeekDisabled}
+        onPrevWeek={tableWeek.handlePrevWeek}
+        onNextWeek={tableWeek.handleNextWeek}
+        isDetailVisible={isDetailVisible}
+        onDetailVisibleChange={setIsDetailVisible}
+      />
+      <RefreshableInfo
+        isWarning={isChangeLimitReached}
+        onRefresh={() => setTimeTableData(loadTimeTableData())}
       >
         {isChangeLimitReached
           ? `이번 달 변경 요청 ${SCHEDULE_CHANGE_RULES.maxPerMonth}회를 모두 사용했어요`
           : `이번 달 변경 요청 ${usedChangeCount}/${SCHEDULE_CHANGE_RULES.maxPerMonth}회 사용`}
-      </p>
+      </RefreshableInfo>
 
       <TimeTable days={days} cells={cells} />
 
-      <WorkRuleNotice
-        settings={settings}
-        notices={[
-          `일정 변경은 한 달에 최대 ${SCHEDULE_CHANGE_RULES.maxPerMonth}번, 근로 시작 ${SCHEDULE_CHANGE_RULES.deadlineHours}시간 전까지 요청할 수 있어요.`,
-          `지각·결근 뒤 요청과 ${SCHEDULE_CHANGE_RULES.maxPerMonth}번을 넘는 요청은 반려되고, 대체 근로는 배정되지 않아요.`,
-        ]}
-      >
+      <WorkRuleNotice settings={settings}>
         <SlotLegend items={EDIT_LEGEND_ITEMS} />
       </WorkRuleNotice>
+      {/* 추가·삭제 예정을 반영한 근무시간 */}
+      <WorkHoursSummary
+        items={[
+          { label: `${tableWeek.week}주차 근무시간`, hours: weekHours },
+          {
+            label: `${tableWeek.month}월 근무시간`,
+            hours: getMonthWorkHours(getWorkingSlots(), tableWeek.year, tableWeek.month),
+          },
+        ]}
+      />
       <BottomCTAButton>
         <BottomCTAButton.Double
           leftButton={

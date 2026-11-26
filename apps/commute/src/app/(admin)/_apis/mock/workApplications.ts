@@ -8,14 +8,8 @@ type SavedApplication = {
   settings: ApiJson<WorkApplicationSettings>;
 };
 
-// 근로장학생 한 명의 제출 (서버가 보낼 JSON 모양에서 학생 정보를 뺀 것)
-type SavedSubmission = Pick<
-  ApiJson<WorkApplicationSubmission>,
-  'submittedMinutes' | 'lastSubmittedAt'
->;
-
-// 화면 확인용 데모 제출 시간 (시간 단위). 명단 순서대로 돌려 쓴다. 월간 30~60시간 기준에서 24·18시간은 미충족이다
-const DEMO_SUBMITTED_HOURS = [40, 36, 24, 52, 18, 44, 32, 60];
+// 근로장학생 한 명의 제출. 제출한 근무 칸은 그 달 근무 시간표(workSchedules 목업)에 들어 있다
+type SavedSubmission = Pick<ApiJson<WorkApplicationSubmission>, 'lastSubmittedAt'>;
 
 const createMonthKey = (year: number, month: number) => `${year}-${formatNumber(month)}`;
 
@@ -63,7 +57,7 @@ const createPastRosterMock = (year: number, month: number) => {
  * @param month 월 (1~12)
  * @param settings 그 달 근로신청 기준 JSON
  * @returns 근로장학생 id → 제출. 미제출 학생은 들어 있지 않다
- * @example createDemoSubmissionsMock(2026, 12, settings)[1]?.submittedMinutes; // 2400
+ * @example createDemoSubmissionsMock(2026, 12, settings)[1]?.lastSubmittedAt; // '2026-11-20T09:41:00'
  */
 const createDemoSubmissionsMock = (
   year: number,
@@ -77,13 +71,7 @@ const createDemoSubmissionsMock = (
       const submittedAt = new Date(applyStart);
       submittedAt.setHours(submittedAt.getHours() + index * 5, 41);
 
-      return [
-        userId,
-        {
-          submittedMinutes: DEMO_SUBMITTED_HOURS[index % DEMO_SUBMITTED_HOURS.length]! * 60,
-          lastSubmittedAt: toApiDateTime(submittedAt),
-        },
-      ];
+      return [userId, { lastSubmittedAt: toApiDateTime(submittedAt) }];
     }),
   );
 };
@@ -164,14 +152,18 @@ export const saveWorkApplicationMock = (
 
 /**
  * 그 달 제출 현황 목업을 얻습니다. 신청을 연 달은 신청할 수 있는 모든 근로장학생이 나오고, 미제출이면 0분입니다.
+ * 신청은 그대로 그 달 근무 시간표가 되므로, 총 제출시간은 시간표에 든 그 사람의 칸으로 셉니다.
+ * 근무 시간표 목업이 이 파일을 쓰므로 서로 부르지 않도록 칸 시간은 받아서 씁니다.
  * @param year 연도
  * @param month 월 (1~12)
+ * @param scheduledMinutesByUser 그 달 시간표에 든 근로장학생별 근무 시간 (분)
  * @returns 제출 JSON 목록. 열지 않은 달은 빈 배열
- * @example getWorkApplicationSubmissionsMock(2026, 12)[0]?.name; // '홍길동'
+ * @example getWorkApplicationSubmissionsMock(2026, 12, { 1: 2400 })[0]?.submittedMinutes; // 2400
  */
 export const getWorkApplicationSubmissionsMock = (
   year: number,
   month: number,
+  scheduledMinutesByUser: Record<number, number>,
 ): ApiJson<WorkApplicationSubmission>[] => {
   if (!getWorkApplicationMock(year, month)) return [];
 
@@ -184,7 +176,7 @@ export const getWorkApplicationSubmissionsMock = (
       studentId,
       department,
       grade,
-      submittedMinutes: submissions[userId]?.submittedMinutes ?? 0,
+      submittedMinutes: scheduledMinutesByUser[userId] ?? 0,
       lastSubmittedAt: submissions[userId]?.lastSubmittedAt ?? null,
     }),
   );
@@ -207,4 +199,28 @@ export const getMonthlyUserIdsMock = (year: number, month: number) => {
   const isPastMonth = year * 12 + month < current.year * 12 + current.month;
 
   return isPastMonth ? createPastRosterMock(year, month) : [];
+};
+
+/**
+ * 근로학생 한 명의 제출을 기록합니다. 신청 기간 안에 다시 내면 최근 신청 시각만 바뀝니다.
+ * 신청을 연 달에만 기록하고, 근무 칸은 근무표 목업(replaceUserMonthSchedulesMock)에 담깁니다.
+ * @param year 연도
+ * @param month 월 (1~12)
+ * @param userId 근로학생 id
+ * @param submittedAt 제출 시각
+ * @example recordSubmissionMock(2026, 12, 1, new Date());
+ */
+export const recordSubmissionMock = (
+  year: number,
+  month: number,
+  userId: number,
+  submittedAt: Date,
+) => {
+  const monthKey = createMonthKey(year, month);
+  if (!SAVED_APPLICATIONS[monthKey]) return;
+
+  SAVED_SUBMISSIONS[monthKey] = {
+    ...SAVED_SUBMISSIONS[monthKey],
+    [userId]: { lastSubmittedAt: toApiDateTime(submittedAt) },
+  };
 };

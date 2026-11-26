@@ -12,6 +12,8 @@ type ComboBoxProps = {
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
+  // 입력칸을 감싸는 상자(기본 흰 배경)의 모양을 덮어쓴다. 바깥에 배경을 깔 때 투명하게 한다
+  className?: string;
   inputClassName?: string;
   optionClassName?: string;
   optionWrapperClassName?: string;
@@ -28,6 +30,7 @@ export default function ComboBox({
   value,
   onChange,
   onBlur,
+  className,
   inputClassName,
   optionClassName,
   optionWrapperClassName,
@@ -84,7 +87,7 @@ export default function ComboBox({
       }}
     >
       <Command
-        className='h-[4.2rem] w-full'
+        className={cn('h-[4.2rem] w-full', className)}
         value={activeOption}
         onValueChange={setHighlightedOption}
       >

@@ -14,8 +14,8 @@ import { getSlotPeriod } from '../_utils/period';
 const useTodayTodos = (today: Date, period: TodoPeriod) => {
   const [me] = useState(() => getMe());
 
+  // 오늘 근무 칸. 그 달 근로신청 기준의 근무 불가 시간대(예: 점심시간) 칸은 뺀다
   const [slots] = useState(() => {
-    // 그 달 근무 불가 시간대 칸은 업무 칸으로 보이지 않는다
     const { settings } = getWorkApplicationSettings({
       year: today.getFullYear(),
       month: today.getMonth() + 1,
