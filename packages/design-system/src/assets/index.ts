@@ -33,5 +33,6 @@ export { default as IconRestore } from './components/IconRestore';
 export { default as IconSearch } from './components/IconSearch';
 export { default as IconTask } from './components/IconTask';
 export { default as IconTrash } from './components/IconTrash';
+export { default as IconUser } from './components/IconUser';
 export { default as IconWorkRequest } from './components/IconWorkRequest';
 export { default as IconWorktime } from './components/IconWorktime';

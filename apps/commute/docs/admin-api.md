@@ -23,32 +23,37 @@
 
 ## 한눈에 보기
 
-| 메서드 | 경로                                                | 하는 일                               | 쓰는 화면                                         |
-| ------ | --------------------------------------------------- | ------------------------------------- | ------------------------------------------------- |
-| GET    | `/admin/workers`                                    | 모든 근로장학생                       | 근로장학생(전체 탭), 근로시간 관리(사람 찾기)     |
-| GET    | `/admin/workers/monthly?year=&month=`               | 그 달 근로학생과 근무 기록            | 근로장학생(월별 탭)                               |
-| PATCH  | `/admin/workers/{userId}`                           | 근로장학생 정보 수정                  | 근로장학생                                        |
-| GET    | `/admin/work-schedules?startDate=&endDate=`         | 기간의 근무 시간표                    | 대시보드(하루), 근로시간 관리(월~금)              |
-| GET    | `/admin/attendances?date=`                          | 그날 근무 구간별 출근 기록            | 대시보드(오늘 근로 현황, 시간표 근태 색)          |
-| POST   | `/admin/work-schedules`                             | 근무 칸에 근로학생 넣기               | 근로시간 관리                                     |
-| DELETE | `/admin/work-schedules/{scheduleId}`                | 근무 칸에서 근로학생 빼기             | 근로시간 관리                                     |
-| GET    | `/admin/work-change-requests?year=&month=`          | 한 달 근무 변경 요청과 상태별 건수    | 대시보드(승인 대기 건수), 근로시간 관리, 수정요청 |
-| PATCH  | `/admin/work-change-requests/{requestId}`           | 근무 변경 요청 승인·반려              | 수정요청                                          |
-| GET    | `/admin/work-applications?year=&month=`             | 그 달 근로신청 기준                   | 근로신청 관리                                     |
-| GET    | `/admin/work-applications/submissions?year=&month=` | 그 달 근로장학생별 제출 현황          | 근로신청 관리(근로신청 요약)                      |
-| PUT    | `/admin/work-applications`                          | 그 달 근로신청 열기·수정              | 근로신청 관리                                     |
-| GET    | `/admin/todos`                                      | 반복 업무 목록                        | 대시보드                                          |
-| POST   | `/admin/todos`                                      | 반복 업무 추가                        | 대시보드                                          |
-| PUT    | `/admin/todos/{todoId}`                             | 반복 업무 수정                        | 대시보드                                          |
-| DELETE | `/admin/todos/{todoId}`                             | 반복 업무 삭제                        | 대시보드                                          |
-| GET    | `/admin/todos/{todoId}/assignee-counts`             | 근로학생별 그 업무 누적 횟수          | 대시보드(업무 지정)                               |
-| GET    | `/admin/todo-progress?date=`                        | 그날 업무 수와 완료한 업무            | 대시보드(업무 현황, 완료 업무 취소선)             |
-| GET    | `/admin/todo-assignments?date=`                     | 그날 업무별 시작 시각과 담당 근로학생 | 대시보드                                          |
-| PUT    | `/admin/todo-assignments`                           | 그날 업무 지정 통째로 저장            | 대시보드                                          |
-| GET    | `/admin/notices`                                    | 게시 중·게시 예정 공지                | 대시보드                                          |
-| POST   | `/admin/notices`                                    | 공지 등록                             | 대시보드                                          |
-| PUT    | `/admin/notices/{noticeId}`                         | 공지 수정                             | 대시보드                                          |
-| DELETE | `/admin/notices/{noticeId}`                         | 공지 삭제                             | 대시보드                                          |
+| 메서드 | 경로                                                | 하는 일                               | 쓰는 화면                                                 |
+| ------ | --------------------------------------------------- | ------------------------------------- | --------------------------------------------------------- |
+| GET    | `/admin/workers`                                    | 모든 근로장학생                       | 근로장학생(전체 탭), 근로시간 관리(사람 찾기)             |
+| GET    | `/admin/workers/monthly?year=&month=`               | 그 달 근로학생과 근무 기록            | 근로장학생(월별 탭)                                       |
+| PATCH  | `/admin/workers/{userId}`                           | 근로장학생 정보 수정                  | 근로장학생                                                |
+| GET    | `/admin/work-schedules?startDate=&endDate=`         | 기간의 근무 시간표                    | 대시보드(하루), 근로시간 관리(월~금)                      |
+| GET    | `/admin/attendances?date=`                          | 그날 근무 구간별 출근 기록            | 대시보드(오늘 근로 현황, 시간표 근태 색)                  |
+| POST   | `/admin/work-schedules`                             | 근무 칸에 근로학생 넣기               | 근로시간 관리                                             |
+| DELETE | `/admin/work-schedules/{scheduleId}`                | 근무 칸에서 근로학생 빼기             | 근로시간 관리                                             |
+| GET    | `/admin/work-change-requests?year=&month=`          | 한 달 근무 변경 요청과 상태별 건수    | 대시보드(승인 대기 건수), 근로시간 관리, 수정요청         |
+| PATCH  | `/admin/work-change-requests/{requestId}`           | 근무 변경 요청 승인·반려              | 수정요청                                                  |
+| GET    | `/admin/work-applications?year=&month=`             | 그 달 근로신청 기준                   | 근로신청 관리                                             |
+| GET    | `/admin/work-applications/submissions?year=&month=` | 그 달 근로장학생별 제출 현황          | 근로신청 관리(근로신청 요약)                              |
+| PUT    | `/admin/work-applications`                          | 그 달 근로신청 열기·수정              | 근로신청 관리                                             |
+| GET    | `/admin/todos`                                      | 반복 업무 목록                        | 대시보드                                                  |
+| POST   | `/admin/todos`                                      | 반복 업무 추가                        | 대시보드                                                  |
+| PUT    | `/admin/todos/{todoId}`                             | 반복 업무 수정                        | 대시보드                                                  |
+| DELETE | `/admin/todos/{todoId}`                             | 반복 업무 삭제                        | 대시보드                                                  |
+| GET    | `/admin/todos/{todoId}/assignee-counts`             | 근로학생별 그 업무 누적 횟수          | 대시보드(업무 지정)                                       |
+| GET    | `/admin/todo-progress?date=`                        | 그날 업무 수와 완료한 업무            | 대시보드(업무 현황, 완료 업무 취소선)                     |
+| GET    | `/admin/todo-assignments?date=`                     | 그날 업무별 시작 시각과 담당 근로학생 | 대시보드                                                  |
+| PUT    | `/admin/todo-assignments`                           | 그날 업무 지정 통째로 저장            | 대시보드                                                  |
+| GET    | `/admin/notices`                                    | 게시 중·게시 예정 공지                | 대시보드                                                  |
+| POST   | `/admin/notices`                                    | 공지 등록                             | 대시보드                                                  |
+| PUT    | `/admin/notices/{noticeId}`                         | 공지 수정                             | 대시보드                                                  |
+| DELETE | `/admin/notices/{noticeId}`                         | 공지 삭제                             | 대시보드                                                  |
+| GET    | `/admin/me`                                         | 로그인한 관리자 이름·근무 부서        | 모든 관리자 화면(헤더 내 정보)                            |
+| GET    | `/admin/nateon-webhook`                             | 네이트온 알림 연결 상태               | 모든 관리자 화면(헤더 내 정보 메뉴·네이트온 알림 연결 창) |
+| PUT    | `/admin/nateon-webhook`                             | 웹훅 링크 등록·바꾸기                 | 네이트온 알림 연결 창                                     |
+| POST   | `/admin/nateon-webhook/test`                        | 등록한 링크로 테스트 알림 보내기      | 네이트온 알림 연결 창                                     |
+| DELETE | `/admin/nateon-webhook`                             | 네이트온 알림 연결 해제               | 네이트온 알림 연결 창                                     |
 
 ---
 
@@ -538,6 +543,69 @@
 
 ---
 
+## 내 정보 `me`
+
+### GET `/admin/me`
+
+로그인한 관리자 본인입니다. 모든 관리자 화면 헤더 오른쪽 끝에 `김정보님 (정보운영팀)`으로, 내 정보 메뉴에 `정보운영팀 · 관리자`로 보입니다.
+
+```json
+{
+  "userId": 100,
+  "name": "김정보",
+  "workDepartment": { "workDepartmentId": 1, "name": "정보운영팀" }
+}
+```
+
+`workDepartment`는 회원가입 때 고른 근무 부서로, [근무 부서 목록](auth-api.md)(`GET /auth/work-departments`)의 한 항목과 같은 모양입니다. 근로장학생의 학과(`department`)와 다릅니다.
+
+---
+
+## 네이트온 알림 연결 `nateon-webhook`
+
+네이트온 팀룸에서 발급한 웹훅 링크를 등록하면 출근부 알림을 그 팀룸으로 받습니다. 조직에 링크 하나만 둡니다. 헤더 내 정보 메뉴의 "네이트온 알림 연결"에서 엽니다.
+
+### GET `/admin/nateon-webhook`
+
+```json
+{
+  "maskedWebhookUrl": "https://teamroom.nate.com/api/webhook/••••••••",
+  "lastTest": { "sentAt": "2026-11-06T09:12:00", "isSuccess": true }
+}
+```
+
+- `maskedWebhookUrl`: 등록한 링크. 링크 끝의 토큰은 비밀값이라 서버가 가려서 보냅니다. 연결 전이면 `null`이고, 화면에는 "미연결"로 보입니다
+- `lastTest`: 마지막으로 보낸 테스트 알림의 시각과 성공 여부. 연결한 뒤 아직 보내지 않았으면 `null`
+
+### PUT `/admin/nateon-webhook`
+
+```json
+{ "webhookUrl": "https://teamroom.nate.com/api/webhook/abc123" }
+```
+
+응답은 바뀐 연결 상태(`GET`과 같은 모양)입니다. 링크가 바뀌면 이전 링크로 보낸 테스트 기록은 지우므로 `lastTest`는 `null`입니다.
+
+- 프론트는 비어 있거나 `https://`로 시작하지 않는 링크를 보내지 않습니다. 서버도 같은 규칙으로 검사해야 합니다
+- 화면은 가려진 링크를 그대로 둔 채 저장하면 요청을 보내지 않습니다
+
+### POST `/admin/nateon-webhook/test`
+
+본문 없이 보내면 등록한 링크로 테스트 알림을 보내고, 그 결과를 줍니다. 연결 전에는 화면에서 버튼을 막아 두어 부르지 않습니다.
+
+```json
+{ "sentAt": "2026-11-20T13:36:00", "isSuccess": true }
+```
+
+### DELETE `/admin/nateon-webhook`
+
+응답 본문은 없습니다. 링크를 지워 연결을 해제하고, 그 뒤로는 팀룸으로 알림이 가지 않습니다. 프론트는 해제한 뒤 `GET`으로 상태를 다시 받습니다.
+
+### 목업 동작
+
+처음에는 이미 연결돼 있고 테스트도 한 번 성공한 상태(위 `GET` 예시)로 시작합니다. 저장·테스트·해제는 새로고침 전까지 목업 안에서 이어집니다. 테스트 전송은 늘 성공합니다.
+
+---
+
 ## 백엔드와 정해야 할 것
 
 프론트가 임시로 가정해 둔 부분입니다. 정해지면 이 문서와 `_apis`를 함께 고칩니다.
@@ -550,4 +618,6 @@
 - **업무 누적 횟수 기준**: `assignee-counts`의 "한 번"을 지정된 날로 셀지, 근로학생이 완료 체크한 날로 셀지. 지금 목업은 업무·사람마다 정해 둔 임의의 기본 횟수에, 오늘 전 날짜에 지정한 횟수를 더해서 셉니다
 - **지각 기준**: 지금은 칸 시작 시각보다 1분이라도 늦게 출근하면 지각으로 봅니다. 몇 분까지 봐줄지 정해야 합니다
 - **근로신청 재저장**: 이미 열린 달을 다시 저장할 때 들어온 신청을 초기화하는 처리를 서버에서 할지
+- **네이트온 알림**: 어떤 일(지각, 근무 변경 요청 등)이 생기면 팀룸으로 알림을 보낼지와 알림 문구. 웹훅 링크를 가리는 방식(지금은 마지막 `/` 뒤를 `••••••••`로 가정)과 테스트 전송이 실패했을 때 실패 까닭을 함께 줄지
+- **관리자 정보 출처**: `GET /admin/me`를 따로 둘지, 로그인 응답(`POST /auth/login`)에 근무 부서를 함께 실어 줄지
 - **근로학생 화면 API**: 이 문서는 관리자 화면만 다룹니다. 근로학생 화면(홈·시간표)이 쓰는 API는 [`student-api.md`](student-api.md)에 정리했습니다
