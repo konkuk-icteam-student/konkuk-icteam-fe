@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { getNextYearMonth } from '@/shared/utils/calendar';
 
-export default function PageClient() {
+export default function Header() {
   const [{ month }] = useState(getNextYearMonth);
 
   return (
