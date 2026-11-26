@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { formatWorkDuration, getWorkerTimeRanges } from './workerTimeRanges';
+import { formatWorkDuration } from '@/shared/utils/time';
+import { getWorkerTimeRanges } from './workerTimeRanges';
 
 const createCell = (start: string, end: string, userIds: number[]) => ({
   start,
@@ -37,5 +38,6 @@ describe('formatWorkDuration', () => {
     expect(formatWorkDuration(60)).toBe('1시간');
     expect(formatWorkDuration(90)).toBe('1시간 30분');
     expect(formatWorkDuration(30)).toBe('30분');
+    expect(formatWorkDuration(0)).toBe('0시간');
   });
 });

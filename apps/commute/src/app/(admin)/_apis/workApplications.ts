@@ -31,11 +31,14 @@ export type WorkApplicationSettings = {
   unavailableTimeRanges: TimeRange[];
 };
 
-export type GetWorkApplicationRequest = {
+// 연·월. 근로신청은 달 단위로 연다
+export type YearMonth = {
   year: number;
   // 1~12
   month: number;
 };
+
+export type GetWorkApplicationRequest = YearMonth;
 
 export type GetWorkApplicationResponse = {
   year: number;
@@ -46,7 +49,7 @@ export type GetWorkApplicationResponse = {
 };
 
 // 처음 저장하면 그 달 신청이 열린다. 모든 근로장학생이 신청할 수 있다.
-// 이미 연 달을 다시 저장하면 지금까지 들어온 근로신청은 모두 초기화된다
+// 신청 마감 전까지는 기준을 고쳐 다시 저장할 수 있고, 지금까지 들어온 근로신청은 그대로 남는다
 export type SaveWorkApplicationRequest = {
   year: number;
   month: number;

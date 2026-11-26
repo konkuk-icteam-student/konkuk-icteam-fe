@@ -31,3 +31,15 @@ export const getMonthDates = (month: Date) =>
   Array.from({ length: daysInMonth(month) }, (_, index) =>
     toISO(new Date(month.getFullYear(), month.getMonth(), index + 1)),
   );
+
+/**
+ * 근로신청을 받는 달(기준일의 다음 달)을 얻습니다.
+ * @param today 기준일. 기본은 오늘
+ * @returns 다음 달의 연도와 월 (1~12)
+ * @example getNextYearMonth(new Date(2026, 10, 26)); // { year: 2026, month: 12 }
+ */
+export const getNextYearMonth = (today = new Date()) => {
+  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+
+  return { year: nextMonth.getFullYear(), month: nextMonth.getMonth() + 1 };
+};
