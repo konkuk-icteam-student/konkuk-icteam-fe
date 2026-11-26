@@ -1,5 +1,8 @@
 import Header from './_components/Header.client';
 
+// '다음 달'을 빌드한 날이 아니라 접속한 날 기준으로 그리도록 요청마다 렌더한다
+export const dynamic = 'force-dynamic';
+
 type LayoutProps = {
   // 왼쪽: 근로신청 열기 폼 (@open)
   open: React.ReactNode;
