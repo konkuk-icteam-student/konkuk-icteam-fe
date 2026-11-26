@@ -141,7 +141,7 @@ export const getUnavailableTimeRangesMock = (year: number, month: number) =>
   getWorkApplicationMock(year, month)?.settings.unavailableTimeRanges ?? [];
 
 /**
- * 근로신청 기준을 저장합니다. 처음 열면 화면 확인용 데모 제출을 채우고, 이미 연 달을 다시 저장하면 들어온 제출을 모두 지웁니다.
+ * 근로신청 기준을 저장합니다. 처음 열면 화면 확인용 데모 제출을 채우고, 이미 연 달을 다시 저장하면 기준만 바꾸고 들어온 제출은 그대로 둡니다.
  * @param year 연도
  * @param month 월 (1~12)
  * @param application 저장할 기준 JSON
