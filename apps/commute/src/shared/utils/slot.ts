@@ -1,10 +1,20 @@
-import { LUNCH_BREAK } from '@/shared/config/slot';
+import type { TimeRange } from '@/shared/utils/time';
 
 /**
- * 칸이 점심시간에 걸리는지 확인합니다.
+ * 칸이 근무 불가 시간대에 걸리는지 확인합니다. 시간대의 시작은 포함하고 끝은 포함하지 않습니다.
  * @param start 칸 시작 시각 (HH:mm)
- * @returns 점심시간 칸이면 true
- * @example checkLunchSlot('12:00'); // true
+ * @param unavailableTimeRanges 그 달 근로신청 기준의 근무 불가 시간대
+ * @returns 근무 불가 칸이면 true
+ * @example checkUnavailableSlot('12:00', [{ start: '11:30', end: '13:00' }]); // true
  */
-export const checkLunchSlot = (start: string) =>
-  start >= LUNCH_BREAK.start && start < LUNCH_BREAK.end;
+export const checkUnavailableSlot = (start: string, unavailableTimeRanges: readonly TimeRange[]) =>
+  unavailableTimeRanges.some((range) => start >= range.start && start < range.end);
+
+/**
+ * 시간표 칸 하나를 가리키는 key를 만듭니다. 근로학생 시간표와 관리자 수정요청 시간표가 같은 형식을 쓴다.
+ * @param dateKey 날짜 (YYYY-MM-DD)
+ * @param startTime 칸 시작 시각 (HH:mm)
+ * @returns 'YYYY-MM-DD HH:mm'
+ * @example createSlotKey('2026-10-27', '09:00'); // '2026-10-27 09:00'
+ */
+export const createSlotKey = (dateKey: string, startTime: string) => `${dateKey} ${startTime}`;

@@ -4,7 +4,8 @@ import {
   getMaxConcurrentWorkersMock,
 } from '@/app/(admin)/_apis/mock/workSchedules';
 import { checkWeekend } from '@/shared/utils/calendar';
-import { checkLunchSlot } from '@/shared/utils/slot';
+import { checkUnavailableSlot } from '@/shared/utils/slot';
+import { getUnavailableTimeRangesMock } from '@/app/(admin)/_apis/mock/workApplications';
 import type { ApiJson } from '../common';
 import type { WorkScheduleSlot } from '../workSchedules';
 import { getMyNameMock, MY_USER_ID } from './me';
@@ -14,7 +15,7 @@ export const DEMO_MORNING_SLOT_STARTS = ['09:00', '09:30', '10:00', '10:30'];
 
 /**
  * 오늘 근무 상태를 언제 열어도 볼 수 있게 데모로 나를 넣을 칸인지 확인합니다. 평일 오늘의 09~11시 칸과,
- * 근무 시간 안이면 지금 시각이 속한 시의 두 칸(출근하기 버튼용)입니다. 점심시간 칸에는 넣지 않습니다.
+ * 근무 시간 안이면 지금 시각이 속한 시의 두 칸(출근하기 버튼용)입니다. 그 달 근무 불가 시간대 칸에는 넣지 않습니다.
  * 관리자 목업 저장소는 바꾸지 않습니다. 저장소를 바꾸면 서버·브라우저의 관리자 화면이 서로 달라져 hydration 오류가 납니다.
  * @param dateKey 날짜 (YYYY-MM-DD)
  * @param start 칸 시작 시각 (HH:mm)
@@ -23,7 +24,14 @@ export const DEMO_MORNING_SLOT_STARTS = ['09:00', '09:30', '10:00', '10:30'];
  * @example checkDemoSlot('2026-10-27', '09:00', new Date(2026, 9, 27, 8, 30)); // true
  */
 const checkDemoSlot = (dateKey: string, start: string, now: Date) => {
-  if (checkWeekend(now) || dateKey !== toISO(now) || checkLunchSlot(start)) return false;
+  const unavailableTimeRanges = getUnavailableTimeRangesMock(now.getFullYear(), now.getMonth() + 1);
+  if (
+    checkWeekend(now) ||
+    dateKey !== toISO(now) ||
+    checkUnavailableSlot(start, unavailableTimeRanges)
+  ) {
+    return false;
+  }
 
   return DEMO_MORNING_SLOT_STARTS.includes(start) || Number(start.slice(0, 2)) === now.getHours();
 };

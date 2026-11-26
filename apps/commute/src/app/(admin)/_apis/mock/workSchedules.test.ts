@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { SLOT_MINUTES } from '@/shared/config/slot';
 import { MIN_WORK_HOURS_PER_SHIFT } from '@/shared/config/workHours';
 import { getMonthDates } from '@/shared/utils/calendar';
-import { checkLunchSlot } from '@/shared/utils/slot';
+import { checkUnavailableSlot } from '@/shared/utils/slot';
+import { getUnavailableTimeRangesMock } from './workApplications';
 import { convertTimeToMinutes } from '@/shared/utils/time';
 import { createWorkScheduleMock, getDaySlotsMock } from './workSchedules';
 
@@ -32,10 +33,12 @@ const getShiftLengths = (startTimes: string[]) =>
 describe('관리자 근무 시간표 목업', () => {
   const dateKeys = getMonthDates(new Date(2026, 9, 1));
 
-  it('점심시간 칸에는 아무도 근무하지 않는다', () => {
+  it('그 달 근무 불가 시간대 칸에는 아무도 근무하지 않는다', () => {
+    const unavailableTimeRanges = getUnavailableTimeRangesMock(2026, 10);
+
     dateKeys.forEach((dateKey) => {
       getDaySlotsMock(dateKey)
-        .filter(({ start }) => checkLunchSlot(start))
+        .filter(({ start }) => checkUnavailableSlot(start, unavailableTimeRanges))
         .forEach(({ users }) => expect(users).toEqual([]));
     });
   });
@@ -57,7 +60,7 @@ describe('관리자 근무 시간표 목업', () => {
     });
   });
 
-  it('점심시간 칸에 근무를 넣으려 하면 거부한다', () => {
+  it('근무 불가 시간대 칸에 근무를 넣으려 하면 거부한다', () => {
     expect(() =>
       createWorkScheduleMock({ userId: 1, date: '2026-10-27', start: '12:00', end: '12:30' }),
     ).toThrow();

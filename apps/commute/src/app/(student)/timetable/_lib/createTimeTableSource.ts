@@ -7,7 +7,7 @@ import {
 } from '@/app/(student)/_apis/workApplications';
 import { getWorkSchedules } from '@/app/(student)/_apis/workSchedules';
 import type { TimeTableSource } from '../_components/timetable/types';
-import { createSlotKey } from '../_components/timetable/utils';
+import { createSlotKey } from '@/shared/utils/slot';
 import { PUBLIC_HOLIDAYS } from '@/shared/config/holidays';
 import { SLOT_MINUTES } from '@/shared/config/slot';
 import { convertMinutesToTime, convertTimeToMinutes } from '@/shared/utils/time';
@@ -26,6 +26,37 @@ const getUnavailableDateKeys = (settings: WorkApplicationSettings | null) => [
   ...PUBLIC_HOLIDAYS,
   ...(settings?.unavailableDates.map(toISO) ?? []),
 ];
+
+/**
+ * 그 달 표를 덮는 6주 동안 팀 근무 칸과 칸별 근무자를 얻습니다. 신청 받는 달은 지금까지 들어온 신청이 담겨 온다.
+ * @param year 연도
+ * @param month 월 (1~12)
+ * @returns 칸 key와 근무자 목록, 동시 근무 최대 인원
+ * @example getTeamSlots(2026, 11).slots[0].key; // '2026-10-26 09:00'
+ */
+const getTeamSlots = (year: number, month: number) => {
+  const firstMonday = getFirstWeekMonday(year, month);
+  const { maxConcurrentWorkers, days } = getWorkSchedules({
+    startDate: firstMonday,
+    endDate: addDays(firstMonday, MAX_WEEKS_PER_MONTH * DAYS_PER_WEEK - 1),
+  });
+
+  return {
+    maxConcurrentWorkers,
+    slots: days.flatMap(({ date, slots: daySlots }) =>
+      daySlots.map(({ start, users }) => ({ key: createSlotKey(toISO(date), start), users })),
+    ),
+  };
+};
+
+/**
+ * 칸별 근무자 이름을 모읍니다.
+ * @param slots 칸 key와 근무자 목록
+ * @returns 칸 key → 근무자 이름 목록
+ * @example createWorkersBySlot(slots)['2026-11-02 09:00']; // ['홍길동']
+ */
+const createWorkersBySlot = (slots: ReturnType<typeof getTeamSlots>['slots']) =>
+  Object.fromEntries(slots.map(({ key, users }) => [key, users.map(({ userName }) => userName)]));
 
 /**
  * 이번 달 시간표(조회·수정 요청)에 쓸 데이터를 만듭니다. 팀 근무 시간표에서 내 칸과 칸별 근무자를 고릅니다.
@@ -47,14 +78,7 @@ export const createScheduleSource = ({
 }): TimeTableSource => {
   const { userId } = getMe();
   const { settings } = getWorkApplicationSettings({ year, month });
-  const firstMonday = getFirstWeekMonday(year, month);
-  const { maxConcurrentWorkers, days } = getWorkSchedules({
-    startDate: firstMonday,
-    endDate: addDays(firstMonday, MAX_WEEKS_PER_MONTH * DAYS_PER_WEEK - 1),
-  });
-  const slots = days.flatMap(({ date, slots: daySlots }) =>
-    daySlots.map(({ start, users }) => ({ key: createSlotKey(toISO(date), start), users })),
-  );
+  const { maxConcurrentWorkers, slots } = getTeamSlots(year, month);
 
   return {
     mySlotKeys: new Set(
@@ -62,11 +86,10 @@ export const createScheduleSource = ({
         .filter(({ users }) => users.some((user) => user.userId === userId))
         .map(({ key }) => key),
     ),
-    workersBySlot: Object.fromEntries(
-      slots.map(({ key, users }) => [key, users.map(({ userName }) => userName)]),
-    ),
+    workersBySlot: createWorkersBySlot(slots),
     maxConcurrentWorkers,
     unavailableDates: getUnavailableDateKeys(settings),
+    unavailableTimeRanges: settings?.unavailableTimeRanges ?? [],
     weeklyMaxHours: settings?.weeklyMaxHours ?? Number.POSITIVE_INFINITY,
     editableFrom,
   };
@@ -104,9 +127,11 @@ export const createApplySource = ({
 
   return {
     mySlotKeys: new Set(mySlotKeys),
-    workersBySlot: {},
+    // 자세히보기에서 칸마다 지금까지 들어온 팀 신청 인원을 보여 준다
+    workersBySlot: createWorkersBySlot(getTeamSlots(year, month).slots),
     maxConcurrentWorkers: settings?.maxConcurrentWorkers ?? 0,
     unavailableDates: getUnavailableDateKeys(settings),
+    unavailableTimeRanges: settings?.unavailableTimeRanges ?? [],
     weeklyMaxHours: settings?.weeklyMaxHours ?? Number.POSITIVE_INFINITY,
     editableFrom,
   };

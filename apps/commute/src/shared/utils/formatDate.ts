@@ -33,13 +33,21 @@ export const formatDateRange = (startDate: DateInput, endDate: DateInput) =>
   `${formatMonthDay(startDate)} - ${formatMonthDay(endDate)}`;
 
 /**
+ * 날짜의 요일을 한 글자로 바꿉니다.
+ * @param date 날짜 (Date 또는 YYYY-MM-DD)
+ * @returns 일·월·화·수·목·금·토 중 하나
+ * @example formatWeekday('2026-10-27'); // '화'
+ */
+export const formatWeekday = (date: DateInput) => WEEKDAY_LABELS[toDate(date).getDay()] ?? '';
+
+/**
  * 날짜를 요일과 함께 MM.DD (요일)로 바꿉니다.
  * @param date 날짜 (Date 또는 YYYY-MM-DD)
  * @returns MM.DD (요일)
  * @example formatMonthDayWithWeekday('2026-10-24'); // '10.24 (토)'
  */
 export const formatMonthDayWithWeekday = (date: DateInput) =>
-  `${formatMonthDay(date)} (${WEEKDAY_LABELS[toDate(date).getDay()]})`;
+  `${formatMonthDay(date)} (${formatWeekday(date)})`;
 
 /**
  * 날짜·시각을 MM.DD HH:mm으로 바꿉니다.
