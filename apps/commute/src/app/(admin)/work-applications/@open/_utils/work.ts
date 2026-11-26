@@ -1,5 +1,7 @@
 import type { WorkApplicationSettings } from '../../../_apis/workApplications';
-import type { WorkApplication } from '../_lib/workApplicationSchema';
+import { toISO } from '@konkuk-icteam-fe/design-system/date';
+import { convertDateToTime } from '@/shared/utils/time';
+import type { WorkApplication, WorkApplicationInput } from '../_lib/workApplicationSchema';
 import { combineDateTime } from './date';
 
 /**
@@ -31,4 +33,26 @@ export const toWorkApplicationSettings = ({
   monthlyMaxHours: monthlyHoursLimit.max,
   unavailableDates,
   unavailableTimeRanges,
+});
+
+/**
+ * 저장된 근로신청 기준을 근로신청 열기 폼 값으로 바꿉니다. 이미 연 달의 기준을 폼에 채울 때 씁니다.
+ * @param settings 저장된 근로신청 기준
+ * @returns 폼 값
+ * @example toWorkApplicationInput(settings).applyDate; // { startDate: '2026-11-26', startTime: '09:00', ... }
+ */
+export const toWorkApplicationInput = (
+  settings: WorkApplicationSettings,
+): WorkApplicationInput => ({
+  applyDate: {
+    startDate: toISO(settings.applyStartDate),
+    endDate: toISO(settings.applyEndDate),
+    startTime: convertDateToTime(settings.applyStartDate),
+    endTime: convertDateToTime(settings.applyEndDate),
+  },
+  maxWorkers: settings.maxConcurrentWorkers,
+  weeklyHoursLimit: { min: settings.weeklyMinHours, max: settings.weeklyMaxHours },
+  monthlyHoursLimit: { min: settings.monthlyMinHours, max: settings.monthlyMaxHours },
+  unavailableDates: settings.unavailableDates,
+  unavailableTimeRanges: settings.unavailableTimeRanges,
 });

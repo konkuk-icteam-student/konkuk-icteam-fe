@@ -12,7 +12,8 @@ import {
   type WorkApplication,
   type WorkApplicationInput,
 } from '../_lib/workApplicationSchema';
-import { toWorkApplicationSettings } from '../_utils/work';
+import { toWorkApplicationInput, toWorkApplicationSettings } from '../_utils/work';
+import { useApplicationEditor } from '../../_components/ApplicationEditor';
 
 // 그 달 근로신청 기준 폼. 신청을 열거나, 이미 연 신청의 기준을 고쳐 저장한다
 export default function useWorkApplicationForm(
@@ -21,7 +22,9 @@ export default function useWorkApplicationForm(
 ) {
   const router = useRouter();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  //todo: 해당 달에 근로신청이 이미 열려있다면, 그 신청의 기준을 불러와서 defaultValues로 넣어주기
+  // 이미 연 달은 저장된 기준을 채워 둔다. 고쳐 저장해도 들어온 근로신청은 그대로 남는다
+  const [{ isOpened, settings }] = useState(() => getWorkApplication(yearMonth));
+  const { finishEditing } = useApplicationEditor();
   const {
     handleSubmit,
     setValue,
@@ -30,19 +33,18 @@ export default function useWorkApplicationForm(
     formState: { errors },
   } = useForm<WorkApplicationInput, unknown, WorkApplication>({
     resolver: zodResolver(workApplicationSchema),
-    defaultValues: {
-      applyDate: { startDate: '', endDate: '', startTime: '', endTime: '' },
-      maxWorkers: null,
-      weeklyHoursLimit: { min: null, max: null },
-      monthlyHoursLimit: { min: null, max: null },
-      unavailableDates: [],
-      unavailableTimeRanges: [],
-    },
+    defaultValues: settings
+      ? toWorkApplicationInput(settings)
+      : {
+          applyDate: { startDate: '', endDate: '', startTime: '', endTime: '' },
+          maxWorkers: null,
+          weeklyHoursLimit: { min: null, max: null },
+          monthlyHoursLimit: { min: null, max: null },
+          unavailableDates: [],
+          unavailableTimeRanges: [],
+        },
     mode: 'onChange',
   });
-
-  // 이미 연 달을 다시 열면 들어온 근로신청이 모두 초기화돼서, 모달에서 따로 알린다
-  const { isOpened } = getWorkApplication(yearMonth);
 
   const formData = useWatch({ control, compute: (values: WorkApplicationInput) => values });
 
@@ -62,8 +64,15 @@ export default function useWorkApplicationForm(
     value: string,
   ) => {
     setValue(`${name}.${key}`, toNullableNumber(value));
-    // 묶음 이름만 검증하면 RHF가 하위 칸 에러를 지워서, 묶음(최소 ≤ 최대) 다음에 하위 칸을 검증한다
-    void trigger([name, `${name}.min`, `${name}.max`]);
+    // 묶음 이름만 검증하면 RHF가 하위 칸 에러를 지워서, 묶음(최소 ≤ 최대·주간 ≤ 월간) 다음에 하위 칸을 검증한다
+    // 주간을 고쳐도 월간 에러가 바뀌어서 두 묶음을 다 검증한다
+    void trigger(
+      (['weeklyHoursLimit', 'monthlyHoursLimit'] as const).flatMap((group) => [
+        group,
+        `${group}.min` as const,
+        `${group}.max` as const,
+      ]),
+    );
   };
 
   const updateUnavailableDates = (dates: Date[]) => {
@@ -88,9 +97,17 @@ export default function useWorkApplicationForm(
   // 확인하면 저장하고 모달을 닫는다. 요약 슬롯도 새 기준을 다시 읽게 새로 고친다
   const handleConfirmSubmit = handleSubmit((data) => {
     try {
-      saveWorkApplication({ ...yearMonth, settings: toWorkApplicationSettings(data) });
+      saveWorkApplication({
+        ...yearMonth,
+        settings: toWorkApplicationSettings(data),
+      });
       setIsConfirmOpen(false);
-      onNotify(`${yearMonth.month}월 근로신청을 ${isOpened ? '다시 ' : ''}열었어요.`);
+      // 저장하면 기준 보기로 돌아간다
+      finishEditing(
+        isOpened
+          ? `${yearMonth.month}월 근로신청 기준을 수정했어요.`
+          : `${yearMonth.month}월 근로신청을 열었어요.`,
+      );
       router.refresh();
     } catch {
       onNotify('근로신청을 열지 못했어요. 잠시 후 다시 시도해 주세요.', 'error');
@@ -100,6 +117,7 @@ export default function useWorkApplicationForm(
   return {
     handleSubmitForm,
     handleConfirmSubmit,
+    cancelEditing: () => finishEditing(),
     isConfirmOpen,
     setIsConfirmOpen,
     isOpened,

@@ -17,6 +17,7 @@ export default function OpenApplicationPanel() {
   const {
     handleSubmitForm,
     handleConfirmSubmit,
+    cancelEditing,
     isConfirmOpen,
     setIsConfirmOpen,
     isOpened,
@@ -126,7 +127,19 @@ export default function OpenApplicationPanel() {
         />
       </div>
 
-      <div className='col-span-2 flex justify-end border-t border-gray-50 pt-[2.4rem]'>
+      <div className='col-span-2 flex items-center justify-end gap-[1.6rem] border-t border-gray-50 pt-[2.4rem]'>
+        {isOpened && (
+          <Button
+            display='inline'
+            size='medium'
+            color='gray'
+            tone='subtle_2'
+            className='w-[14rem]'
+            onClick={cancelEditing}
+          >
+            취소
+          </Button>
+        )}
         <Button
           display='inline'
           size='medium'
@@ -134,23 +147,27 @@ export default function OpenApplicationPanel() {
           className='w-[14rem]'
           onClick={() => void handleSubmitForm()}
         >
-          신청 받기
+          {isOpened ? '수정 저장' : '신청 받기'}
         </Button>
       </div>
 
       <ConfirmModal
         open={isConfirmOpen}
         handleOpenChange={setIsConfirmOpen}
-        title={`${yearMonth.month}월 근로신청을 ${isOpened ? '다시 ' : ''}열까요?`}
+        title={
+          isOpened
+            ? `${yearMonth.month}월 근로신청 기준을 수정할까요?`
+            : `${yearMonth.month}월 근로신청을 열까요?`
+        }
         description={
           isOpened
-            ? '이미 연 신청이에요. 다시 열면 지금까지 들어온 근로신청이 모두 초기화돼요.'
+            ? '이미 들어온 근로신청은 그대로 남아요.'
             : '신청 기간 동안 근로장학생이 근무 시간을 신청할 수 있어요.'
         }
         buttons={[
           { label: '이전', tone: 'subtle_2', color: 'gray', size: 'medium' },
           {
-            label: '열기',
+            label: isOpened ? '저장' : '열기',
             color: 'blue',
             size: 'medium',
             onClick: () => void handleConfirmSubmit(),
