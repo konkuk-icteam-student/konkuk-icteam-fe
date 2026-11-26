@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { ROUTES } from '@/shared/config/routes';
 import AdminPanel from '../../../_layouts/AdminPanel';
@@ -9,7 +10,8 @@ import { getNextYearMonth } from '@/shared/utils/calendar';
 
 // 근로신청 요약. 신청을 열기 전에는 빈 상태를, 연 뒤에는 모든 근로장학생의 제출 현황을 보여 준다
 export default function ApplicationSummaryPanel() {
-  const yearMonth = getNextYearMonth();
+  // 처음 그릴 때의 다음 달로 고정한다. 자정을 넘겨도 제목·열기 폼과 같은 달을 쓴다
+  const [yearMonth] = useState(getNextYearMonth);
   const { month, counts, sortedSubmissions, sortOptions, sortLabel, handleSortChange } =
     useApplicationSummary(yearMonth);
 

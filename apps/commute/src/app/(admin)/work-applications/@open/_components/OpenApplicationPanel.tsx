@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { Button, ConfirmModal, Input } from '@konkuk-icteam-fe/design-system/ui';
 import { useToast } from '@/shared/hooks/useToast';
 import useWorkApplicationForm from '../_hooks/useWorkApplicationForm';
@@ -11,13 +11,15 @@ import { getNextYearMonth } from '@/shared/utils/calendar';
 
 // 근로신청 열기
 export default function OpenApplicationPanel() {
-  const yearMonth = getNextYearMonth();
+  // 처음 그릴 때의 다음 달로 고정한다. 자정을 넘겨도 제목·요약과 같은 달을 쓴다
+  const [yearMonth] = useState(getNextYearMonth);
   const { showToast, toast } = useToast();
   const {
     handleSubmitForm,
     handleConfirmSubmit,
     isConfirmOpen,
     setIsConfirmOpen,
+    isOpened,
     errors,
     formData,
     formHandlers,
@@ -25,17 +27,17 @@ export default function OpenApplicationPanel() {
   const hoursLimitRows = [
     {
       label: '주간',
+      name: 'weeklyHoursLimit',
       limit: formData.weeklyHoursLimit,
       error: errors.weeklyHoursLimit,
-      onChange: formHandlers.updateWeeklyHoursLimit,
     },
     {
       label: '월간',
+      name: 'monthlyHoursLimit',
       limit: formData.monthlyHoursLimit,
       error: errors.monthlyHoursLimit,
-      onChange: formHandlers.updateMonthlyHoursLimit,
     },
-  ];
+  ] as const;
 
   return (
     <div className='bg-black-1 mx-[2.1rem] mb-[2rem] grid grid-cols-2 gap-x-[4rem] gap-y-[2.4rem] rounded-[1.2rem] border border-gray-50 p-[3rem]'>
@@ -51,14 +53,13 @@ export default function OpenApplicationPanel() {
           errorId='hours-limit-error'
           errorMessage={hoursLimitRows
             .map(({ label, error }) => {
-              if (error?.min || error?.max) return `${label} 근로시간을 모두 입력해 주세요.`;
-              if (error?.message) return `${label} ${error.message}`;
-              return undefined;
+              const message = error?.min?.message ?? error?.max?.message ?? error?.message;
+              return message && `${label} ${message}`;
             })
             .find(Boolean)}
         >
           <div className='grid grid-cols-[3.2rem_1fr_auto_1fr_auto] items-center gap-x-[0.8rem] gap-y-[0.8rem]'>
-            {hoursLimitRows.map(({ label, limit, error, onChange }) => (
+            {hoursLimitRows.map(({ label, name, limit, error }) => (
               <Fragment key={label}>
                 <span className='caption-14-md text-gray-700'>{label}</span>
                 <Input
@@ -68,7 +69,9 @@ export default function OpenApplicationPanel() {
                   placeholder='최소'
                   hasError={error?.min !== undefined || error?.message !== undefined}
                   value={limit.min ?? ''}
-                  onChange={(event) => onChange('min', event.target.value)}
+                  onChange={(event) =>
+                    formHandlers.updateHoursLimit(name, 'min', event.target.value)
+                  }
                 />
                 <span className='caption-14-md text-gray-500'>~</span>
                 <Input
@@ -78,7 +81,9 @@ export default function OpenApplicationPanel() {
                   placeholder='최대'
                   hasError={error?.max !== undefined || error?.message !== undefined}
                   value={limit.max ?? ''}
-                  onChange={(event) => onChange('max', event.target.value)}
+                  onChange={(event) =>
+                    formHandlers.updateHoursLimit(name, 'max', event.target.value)
+                  }
                 />
                 <span className='caption-14-md text-gray-500'>시간</span>
               </Fragment>
@@ -136,8 +141,12 @@ export default function OpenApplicationPanel() {
       <ConfirmModal
         open={isConfirmOpen}
         handleOpenChange={setIsConfirmOpen}
-        title={`${yearMonth.month}월 근로신청을 열까요?`}
-        description='신청 기간 동안 근로장학생이 근무 시간을 신청할 수 있어요.'
+        title={`${yearMonth.month}월 근로신청을 ${isOpened ? '다시 ' : ''}열까요?`}
+        description={
+          isOpened
+            ? '이미 연 신청이에요. 다시 열면 지금까지 들어온 근로신청이 모두 초기화돼요.'
+            : '신청 기간 동안 근로장학생이 근무 시간을 신청할 수 있어요.'
+        }
         buttons={[
           { label: '이전', tone: 'subtle_2', color: 'gray', size: 'medium' },
           {

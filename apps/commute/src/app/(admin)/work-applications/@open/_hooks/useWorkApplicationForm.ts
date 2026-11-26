@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useWatch } from 'react-hook-form';
 import {
+  getWorkApplication,
   saveWorkApplication,
   type GetWorkApplicationRequest,
 } from '../../../_apis/workApplications';
@@ -24,6 +25,7 @@ export default function useWorkApplicationForm(
   const {
     handleSubmit,
     setValue,
+    trigger,
     control,
     formState: { errors },
   } = useForm<WorkApplicationInput, unknown, WorkApplication>({
@@ -38,6 +40,9 @@ export default function useWorkApplicationForm(
     },
     mode: 'onChange',
   });
+
+  // 이미 연 달을 다시 열면 들어온 근로신청이 모두 초기화돼서, 모달에서 따로 알린다
+  const { isOpened } = getWorkApplication(yearMonth);
 
   const formData = useWatch({ control, compute: (values: WorkApplicationInput) => values });
 
@@ -56,14 +61,10 @@ export default function useWorkApplicationForm(
     key: 'min' | 'max',
     value: string,
   ) => {
-    setValue(name, { ...formData[name], [key]: toNullableNumber(value) }, { shouldValidate: true });
+    setValue(`${name}.${key}`, toNullableNumber(value));
+    // 묶음 이름만 검증하면 RHF가 하위 칸 에러를 지워서, 묶음(최소 ≤ 최대) 다음에 하위 칸을 검증한다
+    void trigger([name, `${name}.min`, `${name}.max`]);
   };
-
-  const updateWeeklyHoursLimit = (key: 'min' | 'max', value: string) =>
-    updateHoursLimit('weeklyHoursLimit', key, value);
-
-  const updateMonthlyHoursLimit = (key: 'min' | 'max', value: string) =>
-    updateHoursLimit('monthlyHoursLimit', key, value);
 
   const updateUnavailableDates = (dates: Date[]) => {
     setValue('unavailableDates', dates, { shouldValidate: true });
@@ -76,8 +77,7 @@ export default function useWorkApplicationForm(
   const formHandlers = {
     updateApplyDate,
     updateMaxWorkers,
-    updateWeeklyHoursLimit,
-    updateMonthlyHoursLimit,
+    updateHoursLimit,
     updateUnavailableDates,
     updateUnavailableTimeRanges,
   };
@@ -90,7 +90,7 @@ export default function useWorkApplicationForm(
     try {
       saveWorkApplication({ ...yearMonth, settings: toWorkApplicationSettings(data) });
       setIsConfirmOpen(false);
-      onNotify(`${yearMonth.month}월 근로신청을 열었어요.`);
+      onNotify(`${yearMonth.month}월 근로신청을 ${isOpened ? '다시 ' : ''}열었어요.`);
       router.refresh();
     } catch {
       onNotify('근로신청을 열지 못했어요. 잠시 후 다시 시도해 주세요.', 'error');
@@ -102,6 +102,7 @@ export default function useWorkApplicationForm(
     handleConfirmSubmit,
     isConfirmOpen,
     setIsConfirmOpen,
+    isOpened,
     errors,
     formData,
     formHandlers,

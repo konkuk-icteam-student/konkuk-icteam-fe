@@ -1,9 +1,12 @@
 import { z } from 'zod';
 import { checkTimeFormat } from '../_utils/time';
 
+// 인원·시간은 0 이상의 정수만 받는다. 입력칸의 min={0}은 직접 친 음수를 못 막는다
 const requiredNumber = (message: string) =>
   z
     .number()
+    .int({ message: '정수로 입력해 주세요.' })
+    .min(0, { message: '0 이상으로 입력해 주세요.' })
     .nullable()
     .refine((value) => value !== null, { message });
 

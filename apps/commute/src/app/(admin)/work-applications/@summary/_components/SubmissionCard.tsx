@@ -25,7 +25,7 @@ export default function SubmissionCard({
         <StateChip label={isMet ? '충족' : '미충족'} tone={isMet ? 'blue' : 'gray'} />
       </div>
       <span className='caption-12-rg truncate text-gray-500'>
-        {[department, studentId, `${grade}학년`].join(' · ')}
+        {[department, studentId].join(' · ')}
       </span>
       <div className='caption-12-rg flex items-center justify-between gap-[0.8rem] text-gray-500'>
         <span>
