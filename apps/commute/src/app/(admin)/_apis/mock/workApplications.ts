@@ -156,9 +156,10 @@ export const saveWorkApplicationMock = (
   const isOpened = Boolean(SAVED_APPLICATIONS[monthKey]);
 
   SAVED_APPLICATIONS[monthKey] = application;
-  SAVED_SUBMISSIONS[monthKey] = isOpened
-    ? {}
-    : createDemoSubmissionsMock(year, month, application.settings);
+  // 이미 연 달은 기준만 바꾸고, 들어온 제출은 그대로 둔다
+  if (!isOpened) {
+    SAVED_SUBMISSIONS[monthKey] = createDemoSubmissionsMock(year, month, application.settings);
+  }
 };
 
 /**
