@@ -1,9 +1,32 @@
 import { SLOT_MINUTES, SLOT_TIMES } from '@/shared/config/slot';
 import { convertTimeToMinutes, type TimeRange } from '@/shared/utils/time';
-import { checkTimeFormat } from './timeInput';
 
+// 직접 입력한 시각 모양 (24시간 HH:mm)
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
+// 근무 시간(첫 칸 시작 ~ 마지막 칸 끝)을 자정부터 지난 분으로
 const DAY_START_MINUTES = convertTimeToMinutes(SLOT_TIMES[0]!.start);
 const DAY_END_MINUTES = convertTimeToMinutes(SLOT_TIMES[SLOT_TIMES.length - 1]!.end);
+
+/**
+ * 직접 입력한 글자를 HH:mm 모양으로 맞춥니다. 숫자만 남기고 4자리까지 받으며, 두 자리 뒤에 콜론을 넣습니다.
+ * @param value 입력한 글자
+ * @returns 맞춘 글자 (예: '17', '17:0', '17:00')
+ * @example formatTimeInput('1700'); // '17:00'
+ */
+export const formatTimeInput = (value: string) => {
+  const digits = value.replace(/\D/g, '').slice(0, 4);
+
+  return digits.length > 2 ? `${digits.slice(0, 2)}:${digits.slice(2)}` : digits;
+};
+
+/**
+ * 직접 입력한 시각이 24시간 HH:mm 모양인지 확인합니다.
+ * @param value 입력한 글자
+ * @returns HH:mm 모양이면 true
+ * @example checkTimeFormat('09:00'); // true
+ * @example checkTimeFormat('25:00'); // false
+ */
+export const checkTimeFormat = (value: string) => TIME_PATTERN.test(value);
 
 /**
  * 근무 불가 시간대로 넣을 수 없는 까닭을 얻습니다. 근무 시간(09:00 - 18:00) 안의 30분 단위여야 하고, 이미 넣은 시간대와 겹치면 안 됩니다.

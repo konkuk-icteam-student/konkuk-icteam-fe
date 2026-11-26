@@ -3,8 +3,7 @@
 import { useId, useState } from 'react';
 import { Button, Input, Message } from '@konkuk-icteam-fe/design-system/ui';
 import type { TimeRange } from '@/shared/utils/time';
-import { formatTimeInput } from '../_utils/timeInput';
-import { getTimeRangeError } from '../_utils/unavailableTimeRanges';
+import { formatTimeInput, getTimeRangeError } from '../_utils/time';
 
 type AddTimeRangePopoverProps = {
   // 이미 넣은 시간대. 겹치는지 확인한다
@@ -13,17 +12,14 @@ type AddTimeRangePopoverProps = {
   onClose: () => void;
 };
 
-// 근무 불가 시간대를 하나 더하는 작은 카드. 시각은 직접 입력하고(숫자만 쳐도 HH:mm로 맞춘다),
-// 추가를 누르거나 Enter를 칠 때 규칙을 확인한다. Esc로 닫는다
+// 근무 불가 시간대 추가 팝오버.
 export default function AddTimeRangePopover({
   existingRanges,
   onAdd,
   onClose,
 }: AddTimeRangePopoverProps) {
   const headingId = useId();
-  const errorId = useId();
   const [range, setRange] = useState<TimeRange>({ start: '', end: '' });
-  // 추가를 누른 뒤에만 오류를 보여 준다
   const [error, setError] = useState<string>();
 
   const handleRangeChange = (key: keyof TimeRange, value: string) => {
@@ -66,7 +62,7 @@ export default function AddTimeRangePopover({
           autoFocus
           hasError={error !== undefined}
           aria-invalid={error !== undefined}
-          aria-describedby={error ? errorId : undefined}
+          aria-describedby={error ? 'time-range-error' : undefined}
           value={range.start}
           onChange={(event) => handleRangeChange('start', event.target.value)}
         />
@@ -81,12 +77,12 @@ export default function AddTimeRangePopover({
           aria-label='끝 시각'
           hasError={error !== undefined}
           aria-invalid={error !== undefined}
-          aria-describedby={error ? errorId : undefined}
+          aria-describedby={error ? 'time-range-error' : undefined}
           value={range.end}
           onChange={(event) => handleRangeChange('end', event.target.value)}
         />
       </div>
-      <Message id={errorId} message={error} variant='error' />
+      <Message id='time-range-error' message={error} variant='error' />
       <div className='flex gap-[0.8rem]'>
         <Button size='medium' tone='subtle_2' color='gray' onClick={onClose}>
           취소
