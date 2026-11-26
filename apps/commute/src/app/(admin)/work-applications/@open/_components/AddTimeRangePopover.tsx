@@ -1,9 +1,10 @@
 'use client';
 
 import { useId, useState } from 'react';
-import { Button, Input, Message } from '@konkuk-icteam-fe/design-system/ui';
+import { Button, Message } from '@konkuk-icteam-fe/design-system/ui';
 import type { TimeRange } from '@/shared/utils/time';
-import { formatTimeInput, getTimeRangeError } from '../_utils/time';
+import { getTimeRangeError } from '../_utils/time';
+import TimeInput from './TimeInput';
 
 type AddTimeRangePopoverProps = {
   // 이미 넣은 시간대. 겹치는지 확인한다
@@ -23,7 +24,7 @@ export default function AddTimeRangePopover({
   const [error, setError] = useState<string>();
 
   const handleRangeChange = (key: keyof TimeRange, value: string) => {
-    setRange((prev) => ({ ...prev, [key]: formatTimeInput(value) }));
+    setRange((prev) => ({ ...prev, [key]: value }));
     setError(undefined);
   };
 
@@ -53,10 +54,7 @@ export default function AddTimeRangePopover({
         시간대 추가
       </h4>
       <div className='flex items-center gap-[0.8rem]'>
-        <Input
-          type='text'
-          inputMode='numeric'
-          maxLength={5}
+        <TimeInput
           placeholder='17:00'
           aria-label='시작 시각'
           autoFocus
@@ -64,22 +62,19 @@ export default function AddTimeRangePopover({
           aria-invalid={error !== undefined}
           aria-describedby={error ? 'time-range-error' : undefined}
           value={range.start}
-          onChange={(event) => handleRangeChange('start', event.target.value)}
+          onChange={(time) => handleRangeChange('start', time)}
         />
         <span aria-hidden className='caption-14-md text-gray-500'>
           -
         </span>
-        <Input
-          type='text'
-          inputMode='numeric'
-          maxLength={5}
+        <TimeInput
           placeholder='18:00'
           aria-label='끝 시각'
           hasError={error !== undefined}
           aria-invalid={error !== undefined}
           aria-describedby={error ? 'time-range-error' : undefined}
           value={range.end}
-          onChange={(event) => handleRangeChange('end', event.target.value)}
+          onChange={(time) => handleRangeChange('end', time)}
         />
       </div>
       <Message id='time-range-error' message={error} variant='error' />

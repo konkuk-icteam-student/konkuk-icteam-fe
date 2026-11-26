@@ -1,19 +1,14 @@
 'use client';
 
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import { Button, ConfirmModal, Input } from '@konkuk-icteam-fe/design-system/ui';
-import { useToast } from '@/shared/hooks/useToast';
 import useWorkApplicationForm from '../_hooks/useWorkApplicationForm';
 import ApplyPeriodSection from './ApplyPeriodSection';
 import FieldLayout from './FieldLayout';
 import { UnavailableDatesSection, UnavailableTimeRangesSection } from './UnavailableSections';
-import { getNextYearMonth } from '@/shared/utils/calendar';
 
 // 근로신청 열기
 export default function OpenApplicationPanel() {
-  // 처음 그릴 때의 다음 달로 고정한다. 자정을 넘겨도 제목·요약과 같은 달을 쓴다
-  const [yearMonth] = useState(getNextYearMonth);
-  const { showToast, toast } = useToast();
   const {
     handleSubmitForm,
     handleConfirmSubmit,
@@ -21,10 +16,12 @@ export default function OpenApplicationPanel() {
     isConfirmOpen,
     setIsConfirmOpen,
     isOpened,
+    yearMonth,
+    copy,
     errors,
     formData,
     formHandlers,
-  } = useWorkApplicationForm(yearMonth, showToast);
+  } = useWorkApplicationForm();
   const hoursLimitRows = [
     {
       label: '주간',
@@ -147,34 +144,25 @@ export default function OpenApplicationPanel() {
           className='w-[14rem]'
           onClick={() => void handleSubmitForm()}
         >
-          {isOpened ? '수정 저장' : '신청 받기'}
+          {copy.submitLabel}
         </Button>
       </div>
 
       <ConfirmModal
         open={isConfirmOpen}
         handleOpenChange={setIsConfirmOpen}
-        title={
-          isOpened
-            ? `${yearMonth.month}월 근로신청 기준을 수정할까요?`
-            : `${yearMonth.month}월 근로신청을 열까요?`
-        }
-        description={
-          isOpened
-            ? '이미 들어온 근로신청은 그대로 남아요.'
-            : '신청 기간 동안 근로장학생이 근무 시간을 신청할 수 있어요.'
-        }
+        title={copy.confirmTitle(yearMonth.month)}
+        description={copy.confirmDescription}
         buttons={[
           { label: '이전', tone: 'subtle_2', color: 'gray', size: 'medium' },
           {
-            label: isOpened ? '저장' : '열기',
+            label: copy.confirmLabel,
             color: 'blue',
             size: 'medium',
             onClick: () => void handleConfirmSubmit(),
           },
         ]}
       />
-      {toast}
     </div>
   );
 }

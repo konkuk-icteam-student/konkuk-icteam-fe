@@ -2,17 +2,17 @@
 
 import { useState } from 'react';
 import { Button } from '@konkuk-icteam-fe/design-system/ui';
-import { getNextYearMonth } from '@/shared/utils/calendar';
 import { formatMonthDay, formatMonthDayTime } from '@/shared/utils/formatDate';
-import { getWorkApplication } from '../../../_apis/workApplications';
-import { useApplicationEditor } from '../../_components/ApplicationEditor';
+import { useWorkApplication } from '../../_components/WorkApplicationProvider';
 
 // 연 근로신청 기준을 글로 보여 준다. 신청 마감 전에는 '수정'으로 입력 폼으로 바꿀 수 있다
 export default function ApplicationSettingsView() {
-  const [{ settings }] = useState(() => getWorkApplication(getNextYearMonth()));
+  const {
+    application: { settings },
+    startEditing,
+  } = useWorkApplication();
   // 마감은 처음 그릴 때 기준으로 본다
   const [isClosed] = useState(() => settings !== null && settings.applyEndDate < new Date());
-  const { startEditing } = useApplicationEditor();
 
   if (!settings) return null;
 

@@ -30,11 +30,14 @@ export type WorkApplicationSettings = {
   unavailableTimeRanges: TimeRange[];
 };
 
-export type GetWorkApplicationRequest = {
+// 연·월. 근로신청은 달 단위로 연다
+export type YearMonth = {
   year: number;
   // 1~12
   month: number;
 };
+
+export type GetWorkApplicationRequest = YearMonth;
 
 export type GetWorkApplicationResponse = {
   year: number;

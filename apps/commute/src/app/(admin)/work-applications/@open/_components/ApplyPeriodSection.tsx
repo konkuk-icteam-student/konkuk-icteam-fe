@@ -1,10 +1,9 @@
 import { Fragment } from 'react';
 import type { FieldErrors } from 'react-hook-form';
-import { Input } from '@konkuk-icteam-fe/design-system/ui';
 import DateRangeField from '../../../_components/DateRangeField';
-import { formatTimeInput } from '../_utils/time';
 import type { WorkApplication } from '../_lib/workApplicationSchema';
 import FieldLayout from './FieldLayout';
+import TimeInput from './TimeInput';
 
 type ApplyPeriodSectionProps = {
   value: WorkApplication['applyDate'];
@@ -37,16 +36,11 @@ export default function ApplyPeriodSection({ value, errors, onChange }: ApplyPer
         {TIME_FIELDS.map(({ key, label, placeholder }) => (
           <Fragment key={key}>
             {key === 'endTime' && <span className='caption-14-md text-gray-500'>~</span>}
-            <Input
+            <TimeInput
               aria-label={label}
-              type='text'
-              inputMode='numeric'
-              maxLength={5}
               placeholder={placeholder}
               value={value[key]}
-              onChange={(event) =>
-                onChange({ ...value, [key]: formatTimeInput(event.target.value) })
-              }
+              onChange={(time) => onChange({ ...value, [key]: time })}
             />
           </Fragment>
         ))}

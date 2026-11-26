@@ -15,6 +15,16 @@ export const SUBMISSION_SORT_LABELS: Record<SubmissionSortKey, string> = {
 
 type MonthlyHoursRange = Pick<WorkApplicationSettings, 'monthlyMinHours' | 'monthlyMaxHours'>;
 
+// 제출 현황 인원
+export type SubmissionCounts = {
+  submittedCount: number;
+  metCount: number;
+  unmetCount: number;
+};
+
+// 월간 기준 충족 여부를 붙인 제출
+export type SubmissionWithStatus = WorkApplicationSubmission & { isMet: boolean };
+
 /**
  * 총 제출시간이 월간 근로시간 기준을 충족하는지 확인합니다. 주간 기준은 보지 않습니다.
  * @param submittedMinutes 총 제출시간 (분). 미제출이면 0
@@ -43,7 +53,7 @@ export const checkMonthlyHoursMet = (
 export const getSubmissionCounts = (
   submissions: WorkApplicationSubmission[],
   range: MonthlyHoursRange,
-) => {
+): SubmissionCounts => {
   const metCount = submissions.filter(({ submittedMinutes }) =>
     checkMonthlyHoursMet(submittedMinutes, range),
   ).length;
@@ -55,6 +65,13 @@ export const getSubmissionCounts = (
   };
 };
 
+/**
+ * 두 제출을 학생 이름 가나다순으로 비교합니다. 정렬 기준이 같을 때 순서를 정합니다.
+ * @param a 앞 제출
+ * @param b 뒤 제출
+ * @returns a가 앞이면 음수, 뒤면 양수, 같으면 0
+ * @example compareName(김민지의 제출, 윤도현의 제출); // 음수 (김민지가 앞)
+ */
 const compareName = (a: WorkApplicationSubmission, b: WorkApplicationSubmission) =>
   a.name.localeCompare(b.name, 'ko');
 
@@ -80,14 +97,15 @@ export const createSortedSubmissions = (
   const getRecentTime = ({ lastSubmittedAt }: WorkApplicationSubmission) =>
     lastSubmittedAt?.getTime() ?? 0;
 
-  return [...submissions].sort((a, b) => {
-    const order =
-      sortKey === 'STATUS'
-        ? getStatusOrder(a) - getStatusOrder(b)
-        : sortKey === 'RECENT'
-          ? getRecentTime(b) - getRecentTime(a)
-          : 0;
+  // 이름순은 기준이 따로 없어서 아래 이름 비교로만 정한다
+  const compareBySortKey: Record<
+    SubmissionSortKey,
+    (a: WorkApplicationSubmission, b: WorkApplicationSubmission) => number
+  > = {
+    STATUS: (a, b) => getStatusOrder(a) - getStatusOrder(b),
+    NAME: () => 0,
+    RECENT: (a, b) => getRecentTime(b) - getRecentTime(a),
+  };
 
-    return order !== 0 ? order : compareName(a, b);
-  });
+  return [...submissions].sort((a, b) => compareBySortKey[sortKey](a, b) || compareName(a, b));
 };

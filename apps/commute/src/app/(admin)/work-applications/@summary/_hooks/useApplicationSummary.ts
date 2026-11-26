@@ -1,9 +1,6 @@
 import { useState } from 'react';
-import {
-  getWorkApplication,
-  GetWorkApplicationRequest,
-  getWorkApplicationSubmissions,
-} from '../../../_apis/workApplications';
+import { getWorkApplicationSubmissions } from '../../../_apis/workApplications';
+import { useWorkApplication } from '../../_components/WorkApplicationProvider';
 import {
   checkMonthlyHoursMet,
   createSortedSubmissions,
@@ -15,10 +12,13 @@ import {
 const SORT_KEYS = Object.keys(SUBMISSION_SORT_LABELS) as SubmissionSortKey[];
 
 // 근로신청 요약
-export default function useApplicationSummary(yearMonth: GetWorkApplicationRequest) {
+export default function useApplicationSummary() {
   const [sortKey, setSortKey] = useState<SubmissionSortKey>('STATUS');
-
-  const { settings } = getWorkApplication(yearMonth);
+  // 기준을 저장하면 context의 근로신청이 바뀌어서 제출 현황도 다시 읽는다
+  const {
+    yearMonth,
+    application: { settings },
+  } = useWorkApplication();
   const { submissions } = getWorkApplicationSubmissions(yearMonth);
 
   const counts = settings ? getSubmissionCounts(submissions, settings) : null;

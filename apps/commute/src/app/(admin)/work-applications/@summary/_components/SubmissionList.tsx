@@ -1,10 +1,10 @@
 import { Dropdown } from '@konkuk-icteam-fe/design-system/ui';
-import type { WorkApplicationSubmission } from '../../../_apis/workApplications';
+import type { SubmissionCounts, SubmissionWithStatus } from '../_utils/submission';
 import SubmissionCard from './SubmissionCard';
 
 type SubmissionListProps = {
-  counts: { submittedCount: number; metCount: number; unmetCount: number };
-  submissions: (WorkApplicationSubmission & { isMet: boolean })[];
+  counts: SubmissionCounts;
+  submissions: SubmissionWithStatus[];
   sortOptions: string[];
   sortLabel: string;
   onSortChange: (label: string) => void;

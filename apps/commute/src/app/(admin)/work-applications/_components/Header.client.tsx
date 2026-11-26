@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { getNextYearMonth } from '@/shared/utils/calendar';
+import { useWorkApplication } from './WorkApplicationProvider';
 
 export default function Header() {
-  const [{ month }] = useState(getNextYearMonth);
+  const {
+    yearMonth: { month },
+  } = useWorkApplication();
 
   return (
     <h1 className='title-26-eb flex items-center justify-start gap-[1rem] text-black'>

@@ -2,18 +2,15 @@ import { cn } from '@konkuk-icteam-fe/design-system/cn';
 import { StateChip } from '@konkuk-icteam-fe/design-system/ui';
 import { formatMonthDayTime } from '@/shared/utils/formatDate';
 import { formatWorkDuration } from '@/shared/utils/time';
-import type { WorkApplicationSubmission } from '../../../_apis/workApplications';
+import type { SubmissionWithStatus } from '../_utils/submission';
 
-type SubmissionCardProps = Omit<WorkApplicationSubmission, 'userId'> & {
-  isMet: boolean;
-};
+type SubmissionCardProps = Omit<SubmissionWithStatus, 'userId' | 'grade'>;
 
 // 근로장학생 한 명의 제출 카드
 export default function SubmissionCard({
   name,
   department,
   studentId,
-  grade,
   submittedMinutes,
   lastSubmittedAt,
   isMet,
